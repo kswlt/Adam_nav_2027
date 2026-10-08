@@ -21,6 +21,23 @@ profiles:
   enhanced:
     - rog_map
 sources:
+  kiss_matcher:
+    url: https://github.com/MIT-SPARK/KISS-Matcher.git
+    commit: e3440b63340af7414ebd0fdde04e40f02ff4e7d2
+    upstream_tag: v1.0.2
+    cpp_project_version: 0.3.0
+    license: MIT
+  robin:
+    url: https://github.com/MIT-SPARK/ROBIN.git
+    commit: 1832f4cc4cba357699b093c2751c0690c29a2442
+    upstream_tag: v.1.2.7
+  pmc:
+    url: https://github.com/MIT-SPARK/pmc.git
+    commit: 4bbd40ababd8e925c4e1845c509173afe766b443
+  xenium:
+    url: https://github.com/mpoeter/xenium.git
+    commit: 1c449ae953ce2a440b0d16c5ed1181d2754860ab
+    pin_patch: tools/bootstrap_kiss_matcher.sh
   small_gicp:
     url: https://github.com/koide3/small_gicp.git
     commit: fa0cfc983417c044b6036f71dfa448038bb9c820

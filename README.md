@@ -8,14 +8,14 @@
 ## 当前进度
 
 截至 2026-10-09，工程含 14 个 ROS 包，远端全量构建通过。
-最近一次测试汇总为 32 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
+最近一次测试汇总为 33 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
 单独加载 libscrc 1.8.1 后全部 13 项串口协议测试通过。
 
 | 功能 | 已验证内容 | 尚未完成 |
 | --- | --- | --- |
 | 原版通信 | 26-byte RX / 54-byte TX、原 CRC/符号/yaw/话题兼容、ROS 虚拟串口、平移超时停车 | 实车抓包、断线重连和下位机 watchdog 联调 |
 | Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor；横移导航、障碍/雷达断流/命令超时停车 | 实车定位输入、测量足迹、硬件速度与 yaw 适配 |
-| 局部配准 | 真实 small_gicp、冻结地图裁剪、odom 子地图 ROS 匹配、质量/时间/版本拒绝测试 | 目标 KD-tree 缓存、真实点云回放、KISS 恢复 |
+| 配准与恢复 | 真实 small_gicp、冻结地图 ROS 匹配、KISS→GICP 纯 C++ 后端、大修正候选门 | KISS 恢复 ROS 调度、目标 KD-tree 缓存、真实点云回放 |
 | TF 与定位 | SE(3) resolver、独占 map→odom 节点、健康超时、健康/许可控制输出门 | small_point_lio、动态云台编码器、EKF、完整任务权限节点 |
 | 优化建图 | 关键帧、回环候选、MapBundle 基础数据结构 | KISS 回环复核、GTSAM 优化、原始关键帧地图重建 |
 | 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
@@ -29,6 +29,7 @@
 cd /home/asus/nav_2027/rm_nav_v2
 source /opt/ros/jazzy/setup.bash
 RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_small_gicp.sh
+RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_kiss_matcher.sh
 CMAKE_PREFIX_PATH=/home/asus/nav_deps/install:${CMAKE_PREFIX_PATH:-} colcon build
 source install/setup.bash
 colcon test
@@ -36,7 +37,7 @@ colcon test-result --verbose
 ```
 
 远端已安装 Nav2 bringup/MPPI/collision monitor/velocity smoother、robot_localization、
-ros2_control 和 controllers。small_gicp 在用户目录构建，精确提交见
+ros2_control 和 controllers。small_gicp、KISS-Matcher、ROBIN 在用户目录构建，精确提交见
 [dependencies.repos](dependencies.repos)。[依赖清单](dependencies.lock.yaml) 目前仅部分锁定。
 
 ## 已实现的启动与验收
@@ -50,6 +51,9 @@ ROS_DOMAIN_ID=88 python3 tools/smoke_serial_pty.py
 
 # 真实 GICP 算法，验证已知变换和异常数据拒绝。
 ./build/rm_nav_registration/small_gicp_backend_test
+
+# 真实 KISS 粗配准与 GICP 精化，验证大初始偏差和候选门。
+./build/rm_nav_registration/kiss_gicp_backend_test
 
 # 真实配准和 TF 节点，模拟冻结地图及 odom 子地图；时间/版本/大修正拒绝。
 ROS_DOMAIN_ID=89 python3 tools/smoke_frozen_map_localization.py
@@ -99,6 +103,7 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 - [MPPI 软件基线](docs/mppi_baseline_acceptance.md)
 - [串口协议及 ROS/PTY](docs/serial_acceptance.md)
 - [small_gicp 后端](docs/small_gicp_acceptance.md)
+- [KISS→GICP 后端](docs/kiss_gicp_acceptance.md)
 - [冻结地图 ROS 定位链](docs/frozen_map_localization_acceptance.md)
 - [定位健康与运动许可](docs/motion_gate_acceptance.md)
 - [串口字段说明](docs/my_serial_py_interface.md)

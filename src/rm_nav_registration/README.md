@@ -4,7 +4,9 @@ Unified small_gicp and KISS registration adapters.
 
 `SmallGicpBackend` 已调用真实上游 helper 库，并通过已知变换与异常点云测试。
 接口接收 target/source 点云及初值；输出变换、Hessian、欧氏 RMSE、内点率和耗时。
-算法与度量说明见 [后端验收](../../docs/small_gicp_acceptance.md)。KISS 尚未接入。
+算法与度量说明见 [后端验收](../../docs/small_gicp_acceptance.md)。
+`KissGicpBackend` 已调用真实 KISS 粗配准和 GICP 精化；调用者必须提供受限候选区域。
+较大修正保持 CANDIDATE，不自动发布 TF，见 [KISS 验收](../../docs/kiss_gicp_acceptance.md)。
 
 `registration_types.hpp` is the shared result contract for local GICP, KISS coarse registration, AMCL/GICP and loop closure. It intentionally does not implement a registration algorithm or accept a result based only on a library `converged` flag.
 

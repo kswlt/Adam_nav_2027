@@ -1,4 +1,12 @@
 repositories:
+  KISS-Matcher:
+    type: git
+    url: https://github.com/MIT-SPARK/KISS-Matcher.git
+    version: e3440b63340af7414ebd0fdde04e40f02ff4e7d2
+  ROBIN:
+    type: git
+    url: https://github.com/MIT-SPARK/ROBIN.git
+    version: 1832f4cc4cba357699b093c2751c0690c29a2442
   small_gicp:
     type: git
     url: https://github.com/koide3/small_gicp.git

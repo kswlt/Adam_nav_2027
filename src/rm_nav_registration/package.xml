@@ -8,5 +8,9 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>eigen</depend>
   <depend>small_gicp</depend>
+  <!-- KISS/ROBIN are user-space CMake dependencies installed by the bootstrap script. -->
+  <depend>kiss_matcher</depend>
+  <depend>libtbb-dev</depend>
+  <depend>libflann-dev</depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>
