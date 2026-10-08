@@ -41,6 +41,16 @@ int main()
   require(result.inlier_ratio > 0.9 && result.residual < 0.02, "Incorrect residual/inliers");
   require(result.hessian.norm() > 0 && result.condition_score > 0, "Missing Hessian quality");
   require(validate(result, {}).state == ValidationState::ACCEPTED, "Recovered result not accepted");
+  auto warm = request;
+  warm.initial_target_T_source = result.target_T_source;
+  for (int i = 0; i < 40; ++i) {
+    const auto stable = backend.register_clouds(warm);
+    require(stable.converged, "Stationary warm start incorrectly lost convergence");
+    require(stable.residual < 0.02 && stable.inlier_ratio > 0.9, "Warm-start quality regressed");
+    require((expected.inverse()*stable.target_T_source).translation().norm() < 0.01,
+            "Warm-start registration drifted");
+    warm.initial_target_T_source = stable.target_T_source;
+  }
   require(!backend.register_clouds({}).converged, "Empty clouds accepted");
   auto invalid = request;
   invalid.source_points[0].x() = std::numeric_limits<double>::quiet_NaN();

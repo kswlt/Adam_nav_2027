@@ -1,5 +1,10 @@
 #include "rm_nav_registration/small_gicp_backend.hpp"
 #include <small_gicp/registration/registration_helper.hpp>
+#include <small_gicp/registration/registration.hpp>
+#include <small_gicp/registration/reduction_omp.hpp>
+#include <small_gicp/factors/gicp_factor.hpp>
+#include <small_gicp/ann/kdtree.hpp>
+#include <Eigen/Cholesky>
 #include <Eigen/Eigenvalues>
 #include <chrono>
 #include <limits>
@@ -49,8 +54,33 @@ RegistrationResult SmallGicpBackend::register_clouds(const RegistrationRequest &
   settings.max_correspondence_distance = config_.max_correspondence_distance;
   settings.translation_eps = config_.translation_epsilon;
   settings.rotation_eps = config_.rotation_epsilon;
-  const auto raw = small_gicp::align(*target, *source, *tree,
+  auto raw = small_gicp::align(*target, *source, *tree,
                                     request.initial_target_T_source, settings);
+  // LM can reject every trial at an already stationary warm start because
+  // roundoff makes new_e > e. Never infer convergence from low RMSE alone.
+  // Only for a finite, observable stationary system, run one genuine upstream
+  // Gauss-Newton step with the same points, correspondences and tolerances.
+  if (!raw.converged && valid_rigid_transform(raw.T_target_source) &&
+      raw.H.allFinite() && raw.b.allFinite() && std::isfinite(raw.error)) {
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6>> eig((raw.H + raw.H.transpose()) * 0.5);
+    if (eig.info() == Eigen::Success && eig.eigenvalues().maxCoeff() > 0 &&
+        eig.eigenvalues().minCoeff() / eig.eigenvalues().maxCoeff() >= 1e-6) {
+      const Eigen::Matrix<double, 6, 1> step = raw.H.ldlt().solve(-raw.b);
+      if (step.allFinite() && step.head<3>().norm() <= config_.rotation_epsilon &&
+          step.tail<3>().norm() <= config_.translation_epsilon) {
+        small_gicp::Registration<small_gicp::GICPFactor, small_gicp::ParallelReductionOMP,
+          small_gicp::NullFactor, small_gicp::DistanceRejector, small_gicp::GaussNewtonOptimizer> check;
+        check.reduction.num_threads = config_.num_threads;
+        check.rejector.max_dist_sq = settings.max_correspondence_distance * settings.max_correspondence_distance;
+        check.criteria.rotation_eps = config_.rotation_epsilon;
+        check.criteria.translation_eps = config_.translation_epsilon;
+        check.optimizer.max_iterations = 1;
+        const auto checked = check.align(*target, *source, *tree, raw.T_target_source);
+        if (checked.converged && std::isfinite(checked.error) &&
+            checked.error <= raw.error + 1e-9 * std::max(1.0, std::abs(raw.error))) raw = checked;
+      }
+    }
+  }
   result.target_T_source = raw.T_target_source;
   result.hessian = raw.H;
   result.iterations = raw.iterations;
