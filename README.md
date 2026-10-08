@@ -1,4 +1,4 @@
-# RM Nav V2
+# Adam_nav_2027
 
 面向 ASUS NUC 15 Pro + Ubuntu 24.04 + ROS 2 Jazzy 的哨兵导航框架。
 
