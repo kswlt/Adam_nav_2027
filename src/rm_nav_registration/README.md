@@ -2,10 +2,13 @@
 
 Unified small_gicp and KISS registration adapters.
 
-This package is part of the RM Nav V2 staged implementation.
+`SmallGicpBackend` 已调用真实上游 helper 库，并通过已知变换与异常点云测试。
+接口接收 target/source 点云及初值；输出变换、Hessian、欧氏 RMSE、内点率和耗时。
+算法与度量说明见 [后端验收](../../docs/small_gicp_acceptance.md)。KISS 尚未接入。
 
 `registration_types.hpp` is the shared result contract for local GICP, KISS coarse registration, AMCL/GICP and loop closure. It intentionally does not implement a registration algorithm or accept a result based only on a library `converged` flag.
 
-`localization_validator.hpp` applies configurable inlier, residual, degeneracy, jump and confidence gates. Large corrections become `CANDIDATE` and require a second observation before `map->odom` can be updated.
+`localization_validator.hpp` 提供有限值、SE(3)、内点、残差、退化、幅度与置信度门限。
+大幅修正返回 `CANDIDATE`；独立确认、停止确认与重规划提交事务仍待实现。
 
 `registration_backend.hpp` defines the common backend boundary. The unconfigured backend intentionally returns an invalid result so the caller must use a fallback instead of accepting a fabricated pose.

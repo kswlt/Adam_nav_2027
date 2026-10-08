@@ -8,15 +8,15 @@
 ## 当前进度
 
 截至 2026-10-09，工程含 14 个 ROS 包，远端全量构建通过。
-最近一次测试汇总为 31 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
+最近一次测试汇总为 32 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
 单独加载 libscrc 1.8.1 后全部 13 项串口协议测试通过。
 
 | 功能 | 已验证内容 | 尚未完成 |
 | --- | --- | --- |
 | 原版通信 | 26-byte RX / 54-byte TX、原 CRC/符号/yaw/话题兼容、ROS 虚拟串口、平移超时停车 | 实车抓包、断线重连和下位机 watchdog 联调 |
 | Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor；横移导航、障碍/雷达断流/命令超时停车 | 实车定位输入、测量足迹、硬件速度与 yaw 适配 |
-| 局部配准 | 真实 small_gicp C++ 后端、RMSE/Hessian/点数度量、合成点云精度及异常拒绝 | 冻结地图 ROS 接入、裁剪/缓存、KISS 恢复 |
-| TF 与定位 | SE(3) resolver、子地图及 MapOdomManager 数学接口 | small_point_lio、动态云台编码器、EKF 与真实 TF 节点 |
+| 局部配准 | 真实 small_gicp、冻结地图裁剪、odom 子地图 ROS 匹配、质量/时间/版本拒绝测试 | 目标 KD-tree 缓存、真实点云回放、KISS 恢复 |
+| TF 与定位 | SE(3) resolver、子地图接口、独占 map→odom 发布节点及健康超时 | small_point_lio、动态云台编码器、EKF、健康状态接入运动许可 |
 | 优化建图 | 关键帧、回环候选、MapBundle 基础数据结构 | KISS 回环复核、GTSAM 优化、原始关键帧地图重建 |
 | 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
 
@@ -50,6 +50,9 @@ ROS_DOMAIN_ID=88 python3 tools/smoke_serial_pty.py
 
 # 真实 GICP 算法，验证已知变换和异常数据拒绝。
 ./build/rm_nav_registration/small_gicp_backend_test
+
+# 真实配准和 TF 节点，模拟冻结地图及 odom 子地图；时间/版本/大修正拒绝。
+ROS_DOMAIN_ID=89 python3 tools/smoke_frozen_map_localization.py
 ```
 
 Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` TF。
@@ -57,6 +60,14 @@ Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` 
 输出链 `/nav/cmd_vel_raw → /nav/cmd_vel_smoothed → /nav/cmd_vel_safe`
 均为 `TwistStamped`、底盘坐标速度。当前输出隔离，尚未自动接到串口。
 footprint、停止区和速度约束目前为调试初值，需要实际尺寸与制动数据。
+
+冻结地图定位启动：
+`ros2 launch rm_nav_bringup frozen_map_localization.launch.py map_version:=<实际地图版本>`。
+输入 `/localization/frozen_map`（map 坐标、transient local）和
+`/localization/odom_submap`（odom 坐标、源观测时间戳、已去畸变）。
+输出 `/localization/estimate`、`map → odom` TF、`/localization/healthy` 和
+`/localization/correction_pending`。大修正当前只保留候选；双重确认与停车重规划还待实现。
+详细约定见 [冻结地图定位验收](docs/frozen_map_localization_acceptance.md)。
 
 串口启动：
 `ros2 launch my_serial_py serial.launch.py serial_port:=/dev/ttyUSB0 baud_rate:=115200 cmd_vel_timeout:=0.3`。
@@ -82,9 +93,10 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 - [MPPI 软件基线](docs/mppi_baseline_acceptance.md)
 - [串口协议及 ROS/PTY](docs/serial_acceptance.md)
 - [small_gicp 后端](docs/small_gicp_acceptance.md)
+- [冻结地图 ROS 定位链](docs/frozen_map_localization_acceptance.md)
 - [串口字段说明](docs/my_serial_py_interface.md)
 - [架构与 TF 契约](docs/architecture_contract.md)
 
-下一步接入冻结地图与 odom 子地图的 ROS 配准流程，以及 map→odom 唯一发布者；
-之后完成 KISS 丢失恢复、真实传感器/LIO 链路、优化建图、TDT 和最终控制链。
+下一步接入 KISS 丢失恢复、健康状态与运动许可，以及大修正的独立确认和停车重规划；
+之后完成真实传感器/LIO 链路、优化建图、TDT 和最终控制链。
 每个独立步骤先在 asus 验证，再以中文 commit 推送。提交身份统一为 `kswlt`。

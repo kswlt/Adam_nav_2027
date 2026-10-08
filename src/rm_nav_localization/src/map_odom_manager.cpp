@@ -6,7 +6,8 @@ bool MapOdomManager::apply(
     const Eigen::Isometry3d & candidate,
     rm_nav_registration::ValidationState validation_state)
 {
-  if (validation_state != rm_nav_registration::ValidationState::ACCEPTED) {
+  if (validation_state != rm_nav_registration::ValidationState::ACCEPTED ||
+      !rm_nav_registration::valid_rigid_transform(candidate)) {
     return false;
   }
   map_T_odom_ = candidate;
