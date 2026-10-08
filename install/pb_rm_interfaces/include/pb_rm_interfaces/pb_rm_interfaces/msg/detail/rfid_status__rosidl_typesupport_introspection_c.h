@@ -1,0 +1,1 @@
+/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces/rosidl_typesupport_introspection_c/pb_rm_interfaces/msg/detail/rfid_status__rosidl_typesupport_introspection_c.h

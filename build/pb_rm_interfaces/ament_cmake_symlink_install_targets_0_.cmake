@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces/rosidl_generator_py/pb_rm_interfaces/pb_rm_interfaces_s__rosidl_typesupport_fastrtps_c.so" "TARGETS" "pb_rm_interfaces_s__rosidl_typesupport_fastrtps_c" "DESTINATION" "lib/python3.12/site-packages/pb_rm_interfaces")

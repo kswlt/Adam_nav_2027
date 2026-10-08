@@ -1,0 +1,32 @@
+schema_version: 1
+platform:
+  os: ubuntu-24.04
+  ros: jazzy
+  architecture: x86_64
+  target: ASUS NUC 15 Pro
+profiles:
+  stable_baseline:
+    - ros-jazzy-nav2-bringup
+    - ros-jazzy-nav2-mppi-controller
+    - ros-jazzy-ros2-control
+    - ros-jazzy-robot-localization
+    - ros-jazzy-grid-map
+    - ros-jazzy-diagnostic-updater
+  enhanced:
+    - small_gicp
+    - kiss_matcher
+    - gtsam
+    - tdt-nav-kit
+    - rog_map
+sources:
+  my_serial_py:
+    source: original-workspace
+    path: src/my_serial_py
+    protocol: frozen-until-interface-review
+  pb_rm_interfaces:
+    source: original-workspace
+    path: src/pb_rm_interfaces
+policy:
+  apt_packages_are_preferred: true
+  third_party_requires_exact_commit: true
+  upstream_patches_are_concentrated: true

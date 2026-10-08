@@ -1,0 +1,1 @@
+/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces/rosidl_generator_rs/pb_rm_interfaces/rust/src/msg.rs

@@ -1,0 +1,1 @@
+/home/asus/nav_2027/rm_nav_v2/src/pb_rm_interfaces/msg/GimbalCmd.msg

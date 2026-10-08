@@ -1,0 +1,14 @@
+package.xml
+setup.cfg
+setup.py
+launch/serial.launch.py
+my_serial_py/__init__.py
+my_serial_py/serialpy_node.py
+my_serial_py.egg-info/PKG-INFO
+my_serial_py.egg-info/SOURCES.txt
+my_serial_py.egg-info/dependency_links.txt
+my_serial_py.egg-info/entry_points.txt
+my_serial_py.egg-info/requires.txt
+my_serial_py.egg-info/top_level.txt
+my_serial_py.egg-info/zip-safe
+resource/my_serial_py

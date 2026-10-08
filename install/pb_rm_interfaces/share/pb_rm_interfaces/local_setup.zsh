@@ -1,0 +1,1 @@
+/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces/ament_cmake_environment_hooks/local_setup.zsh

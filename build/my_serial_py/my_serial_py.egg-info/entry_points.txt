@@ -1,0 +1,2 @@
+[console_scripts]
+serial_node = my_serial_py.serialpy_node:main

@@ -1,0 +1,463 @@
+[0.177s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--symlink-install', '--packages-select', 'pb_rm_interfaces', 'my_serial_py', '--event-handlers', 'console_direct+']
+[0.177s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=14, event_handlers=['console_direct+'], ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=['pb_rm_interfaces', 'my_serial_py'], packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7c2513d7de20>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7c2513d7dd90>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7c2513d7dd90>>)
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.224s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.224s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/asus/nav_2027/rm_nav_v2'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.224s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.244s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extensions ['ignore', 'ignore_ament_install']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extension 'ignore'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extension 'ignore_ament_install'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extensions ['colcon_pkg']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extension 'colcon_pkg'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extensions ['colcon_meta']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extension 'colcon_meta'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extensions ['ros']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extension 'ros'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extensions ['cmake', 'python']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extension 'cmake'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extension 'python'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extensions ['python_setup_py']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(config) by extension 'python_setup_py'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extensions ['ignore', 'ignore_ament_install']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extension 'ignore'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extension 'ignore_ament_install'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extensions ['colcon_pkg']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extension 'colcon_pkg'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extensions ['colcon_meta']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extension 'colcon_meta'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extensions ['ros']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extension 'ros'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extensions ['cmake', 'python']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extension 'cmake'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extension 'python'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extensions ['python_setup_py']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(docs) by extension 'python_setup_py'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extensions ['ignore', 'ignore_ament_install']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extension 'ignore'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extension 'ignore_ament_install'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extensions ['colcon_pkg']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extension 'colcon_pkg'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extensions ['colcon_meta']
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extension 'colcon_meta'
+[0.245s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extensions ['ros']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extension 'ros'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extensions ['cmake', 'python']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extension 'cmake'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extension 'python'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extensions ['python_setup_py']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(patches) by extension 'python_setup_py'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/my_serial_py) by extensions ['ignore', 'ignore_ament_install']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/my_serial_py) by extension 'ignore'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/my_serial_py) by extension 'ignore_ament_install'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/my_serial_py) by extensions ['colcon_pkg']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/my_serial_py) by extension 'colcon_pkg'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/my_serial_py) by extensions ['colcon_meta']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/my_serial_py) by extension 'colcon_meta'
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/my_serial_py) by extensions ['ros']
+[0.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/my_serial_py) by extension 'ros'
+[0.249s] DEBUG:colcon.colcon_core.package_identification:Package 'src/my_serial_py' with type 'ros.ament_python' and name 'my_serial_py'
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/pb_rm_interfaces) by extensions ['ignore', 'ignore_ament_install']
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/pb_rm_interfaces) by extension 'ignore'
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/pb_rm_interfaces) by extension 'ignore_ament_install'
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/pb_rm_interfaces) by extensions ['colcon_pkg']
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/pb_rm_interfaces) by extension 'colcon_pkg'
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/pb_rm_interfaces) by extensions ['colcon_meta']
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/pb_rm_interfaces) by extension 'colcon_meta'
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/pb_rm_interfaces) by extensions ['ros']
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/pb_rm_interfaces) by extension 'ros'
+[0.249s] DEBUG:colcon.colcon_core.package_identification:Package 'src/pb_rm_interfaces' with type 'ros.ament_cmake' and name 'pb_rm_interfaces'
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extensions ['ignore', 'ignore_ament_install']
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extension 'ignore'
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extension 'ignore_ament_install'
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extensions ['colcon_pkg']
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extension 'colcon_pkg'
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extensions ['colcon_meta']
+[0.249s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extension 'colcon_meta'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extensions ['ros']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extension 'ros'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extensions ['cmake', 'python']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extension 'cmake'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extension 'python'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extensions ['python_setup_py']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_bringup) by extension 'python_setup_py'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extensions ['ignore', 'ignore_ament_install']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extension 'ignore'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extension 'ignore_ament_install'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extensions ['colcon_pkg']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extension 'colcon_pkg'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extensions ['colcon_meta']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extension 'colcon_meta'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extensions ['ros']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extension 'ros'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extensions ['cmake', 'python']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extension 'cmake'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extension 'python'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extensions ['python_setup_py']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_control) by extension 'python_setup_py'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extensions ['ignore', 'ignore_ament_install']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extension 'ignore'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extension 'ignore_ament_install'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extensions ['colcon_pkg']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extension 'colcon_pkg'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extensions ['colcon_meta']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extension 'colcon_meta'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extensions ['ros']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extension 'ros'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extensions ['cmake', 'python']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extension 'cmake'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extension 'python'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extensions ['python_setup_py']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_frames) by extension 'python_setup_py'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extensions ['ignore', 'ignore_ament_install']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extension 'ignore'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extension 'ignore_ament_install'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extensions ['colcon_pkg']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extension 'colcon_pkg'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extensions ['colcon_meta']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extension 'colcon_meta'
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extensions ['ros']
+[0.250s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extension 'ros'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extensions ['cmake', 'python']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extension 'cmake'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extension 'python'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extensions ['python_setup_py']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_hardware) by extension 'python_setup_py'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extensions ['ignore', 'ignore_ament_install']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extension 'ignore'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extension 'ignore_ament_install'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extensions ['colcon_pkg']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extension 'colcon_pkg'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extensions ['colcon_meta']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extension 'colcon_meta'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extensions ['ros']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extension 'ros'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extensions ['cmake', 'python']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extension 'cmake'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extension 'python'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extensions ['python_setup_py']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_interfaces) by extension 'python_setup_py'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extensions ['ignore', 'ignore_ament_install']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extension 'ignore'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extension 'ignore_ament_install'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extensions ['colcon_pkg']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extension 'colcon_pkg'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extensions ['colcon_meta']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extension 'colcon_meta'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extensions ['ros']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extension 'ros'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extensions ['cmake', 'python']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extension 'cmake'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extension 'python'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extensions ['python_setup_py']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_localization) by extension 'python_setup_py'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extensions ['ignore', 'ignore_ament_install']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extension 'ignore'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extension 'ignore_ament_install'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extensions ['colcon_pkg']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extension 'colcon_pkg'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extensions ['colcon_meta']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extension 'colcon_meta'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extensions ['ros']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extension 'ros'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extensions ['cmake', 'python']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extension 'cmake'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extension 'python'
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extensions ['python_setup_py']
+[0.251s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_mapping) by extension 'python_setup_py'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extensions ['ignore', 'ignore_ament_install']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extension 'ignore'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extension 'ignore_ament_install'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extensions ['colcon_pkg']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extension 'colcon_pkg'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extensions ['colcon_meta']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extension 'colcon_meta'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extensions ['ros']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extension 'ros'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extensions ['cmake', 'python']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extension 'cmake'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extension 'python'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extensions ['python_setup_py']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_perception) by extension 'python_setup_py'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extensions ['ignore', 'ignore_ament_install']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extension 'ignore'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extension 'ignore_ament_install'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extensions ['colcon_pkg']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extension 'colcon_pkg'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extensions ['colcon_meta']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extension 'colcon_meta'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extensions ['ros']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extension 'ros'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extensions ['cmake', 'python']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extension 'cmake'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extension 'python'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extensions ['python_setup_py']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_planning) by extension 'python_setup_py'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extensions ['ignore', 'ignore_ament_install']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extension 'ignore'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extension 'ignore_ament_install'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extensions ['colcon_pkg']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extension 'colcon_pkg'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extensions ['colcon_meta']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extension 'colcon_meta'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extensions ['ros']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extension 'ros'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extensions ['cmake', 'python']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extension 'cmake'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extension 'python'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extensions ['python_setup_py']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_registration) by extension 'python_setup_py'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extensions ['ignore', 'ignore_ament_install']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extension 'ignore'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extension 'ignore_ament_install'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extensions ['colcon_pkg']
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extension 'colcon_pkg'
+[0.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extensions ['colcon_meta']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extension 'colcon_meta'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extensions ['ros']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extension 'ros'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extensions ['cmake', 'python']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extension 'cmake'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extension 'python'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extensions ['python_setup_py']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sensors) by extension 'python_setup_py'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extensions ['ignore', 'ignore_ament_install']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extension 'ignore'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extension 'ignore_ament_install'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extensions ['colcon_pkg']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extension 'colcon_pkg'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extensions ['colcon_meta']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extension 'colcon_meta'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extensions ['ros']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extension 'ros'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extensions ['cmake', 'python']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extension 'cmake'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extension 'python'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extensions ['python_setup_py']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(src/rm_nav_sim) by extension 'python_setup_py'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extensions ['ignore', 'ignore_ament_install']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extension 'ignore'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extension 'ignore_ament_install'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extensions ['colcon_pkg']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extension 'colcon_pkg'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extensions ['colcon_meta']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extension 'colcon_meta'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extensions ['ros']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extension 'ros'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extensions ['cmake', 'python']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extension 'cmake'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extension 'python'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extensions ['python_setup_py']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(tests) by extension 'python_setup_py'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extensions ['ignore', 'ignore_ament_install']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extension 'ignore'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extension 'ignore_ament_install'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extensions ['colcon_pkg']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extension 'colcon_pkg'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extensions ['colcon_meta']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extension 'colcon_meta'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extensions ['ros']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extension 'ros'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extensions ['cmake', 'python']
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extension 'cmake'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extension 'python'
+[0.253s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extensions ['python_setup_py']
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(third_party) by extension 'python_setup_py'
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['ignore', 'ignore_ament_install']
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'ignore'
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'ignore_ament_install'
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['colcon_pkg']
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'colcon_pkg'
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['colcon_meta']
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'colcon_meta'
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['ros']
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'ros'
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['cmake', 'python']
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'cmake'
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'python'
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['python_setup_py']
+[0.254s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'python_setup_py'
+[0.254s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.254s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.254s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.254s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.254s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.271s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.271s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.274s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 302 installed packages in /opt/ros/jazzy
+[0.274s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'pb_rm_interfaces' build argument 'cmake_args' from command line to 'None'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'pb_rm_interfaces' build argument 'cmake_target' from command line to 'None'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'pb_rm_interfaces' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'pb_rm_interfaces' build argument 'cmake_clean_cache' from command line to 'False'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'pb_rm_interfaces' build argument 'cmake_clean_first' from command line to 'False'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'pb_rm_interfaces' build argument 'cmake_force_configure' from command line to 'False'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'pb_rm_interfaces' build argument 'ament_cmake_args' from command line to 'None'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'pb_rm_interfaces' build argument 'catkin_cmake_args' from command line to 'None'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'pb_rm_interfaces' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.297s] DEBUG:colcon.colcon_core.verb:Building package 'pb_rm_interfaces' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces', 'merge_install': False, 'path': '/home/asus/nav_2027/rm_nav_v2/src/pb_rm_interfaces', 'symlink_install': True, 'test_result_base': None}
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'my_serial_py' build argument 'cmake_args' from command line to 'None'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'my_serial_py' build argument 'cmake_target' from command line to 'None'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'my_serial_py' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'my_serial_py' build argument 'cmake_clean_cache' from command line to 'False'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'my_serial_py' build argument 'cmake_clean_first' from command line to 'False'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'my_serial_py' build argument 'cmake_force_configure' from command line to 'False'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'my_serial_py' build argument 'ament_cmake_args' from command line to 'None'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'my_serial_py' build argument 'catkin_cmake_args' from command line to 'None'
+[0.297s] Level 5:colcon.colcon_core.verb:set package 'my_serial_py' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.297s] DEBUG:colcon.colcon_core.verb:Building package 'my_serial_py' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/asus/nav_2027/rm_nav_v2/build/my_serial_py', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py', 'merge_install': False, 'path': '/home/asus/nav_2027/rm_nav_v2/src/my_serial_py', 'symlink_install': True, 'test_result_base': None}
+[0.297s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.298s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.298s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/asus/nav_2027/rm_nav_v2/src/pb_rm_interfaces' with build type 'ament_cmake'
+[0.298s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/asus/nav_2027/rm_nav_v2/src/pb_rm_interfaces'
+[0.301s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.301s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.301s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.305s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/asus/nav_2027/rm_nav_v2/src/pb_rm_interfaces -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces
+[2.641s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/asus/nav_2027/rm_nav_v2/src/pb_rm_interfaces -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces
+[2.642s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces -- -j14 -l14
+[7.659s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces -- -j14 -l14
+[7.666s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces
+[8.845s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(pb_rm_interfaces)
+[8.845s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces
+[8.850s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces' for CMake module files
+[8.851s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces' for CMake config files
+[8.852s] Level 1:colcon.colcon_core.shell:create_environment_hook('pb_rm_interfaces', 'cmake_prefix_path')
+[8.852s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/cmake_prefix_path.ps1'
+[8.852s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/cmake_prefix_path.dsv'
+[8.853s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/cmake_prefix_path.sh'
+[8.853s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib'
+[8.853s] Level 1:colcon.colcon_core.shell:create_environment_hook('pb_rm_interfaces', 'ld_library_path_lib')
+[8.854s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/ld_library_path_lib.ps1'
+[8.854s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/ld_library_path_lib.dsv'
+[8.854s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/ld_library_path_lib.sh'
+[8.854s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/bin'
+[8.854s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib/pkgconfig/pb_rm_interfaces.pc'
+[8.854s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib/python3.12/site-packages'
+[8.854s] Level 1:colcon.colcon_core.shell:create_environment_hook('pb_rm_interfaces', 'pythonpath')
+[8.855s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/pythonpath.ps1'
+[8.855s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/pythonpath.dsv'
+[8.855s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/pythonpath.sh'
+[8.855s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/bin'
+[8.855s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.ps1'
+[8.856s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.dsv'
+[8.856s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.sh'
+[8.857s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.bash'
+[8.857s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.zsh'
+[8.858s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/colcon-core/packages/pb_rm_interfaces)
+[8.858s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(pb_rm_interfaces)
+[8.858s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces' for CMake module files
+[8.859s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces' for CMake config files
+[8.860s] Level 1:colcon.colcon_core.shell:create_environment_hook('pb_rm_interfaces', 'cmake_prefix_path')
+[8.860s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/cmake_prefix_path.ps1'
+[8.860s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/cmake_prefix_path.dsv'
+[8.860s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/cmake_prefix_path.sh'
+[8.860s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib'
+[8.860s] Level 1:colcon.colcon_core.shell:create_environment_hook('pb_rm_interfaces', 'ld_library_path_lib')
+[8.860s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/ld_library_path_lib.ps1'
+[8.861s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/ld_library_path_lib.dsv'
+[8.861s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/ld_library_path_lib.sh'
+[8.861s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/bin'
+[8.861s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib/pkgconfig/pb_rm_interfaces.pc'
+[8.861s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib/python3.12/site-packages'
+[8.861s] Level 1:colcon.colcon_core.shell:create_environment_hook('pb_rm_interfaces', 'pythonpath')
+[8.861s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/pythonpath.ps1'
+[8.861s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/pythonpath.dsv'
+[8.861s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/hook/pythonpath.sh'
+[8.862s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/bin'
+[8.862s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.ps1'
+[8.862s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.dsv'
+[8.863s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.sh'
+[8.863s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.bash'
+[8.863s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/pb_rm_interfaces/package.zsh'
+[8.863s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/share/colcon-core/packages/pb_rm_interfaces)
+[8.864s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/asus/nav_2027/rm_nav_v2/src/my_serial_py' with build type 'ament_python'
+[8.864s] Level 1:colcon.colcon_core.shell:create_environment_hook('my_serial_py', 'ament_prefix_path')
+[8.864s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/hook/ament_prefix_path.ps1'
+[8.865s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/hook/ament_prefix_path.dsv'
+[8.865s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/hook/ament_prefix_path.sh'
+[8.865s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[8.865s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[8.976s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/asus/nav_2027/rm_nav_v2/src/my_serial_py'
+[8.976s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[8.976s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[9.333s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools commands: register, setopt, sdist, init_catalog, bdist, install, check, update_catalog, install_lib, upload, extract_messages, bdist_wheel, build_clib, egg_info, easy_install, install_egg_info, test, install_headers, editable_wheel, bdist_egg, build_ext, rotate, build, install_data, clean, bdist_dumb, alias, dist_info, symlink_data, build_scripts, build_py, develop, bdist_rpm, compile_catalog, install_scripts, upload_docs, saveopts
+[9.482s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools 'develop' options: --site-dirs, --exclude-scripts, --dry-run, --no-user-cfg, --install-layout, --verbose, --local-snapshots-ok, --multi-version, --no-deps, --force-installation-into-system-dir, --always-copy, --index-url, --prefix, --record, --build-directory, --script-dir, --install-dir, --version, --egg-path, --find-links, --allow-hosts, --no-find-links, --upgrade, --optimize, --zip-ok, --user, --quiet, --uninstall, --editable, --always-unzip, --help
+[9.483s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/asus/nav_2027/rm_nav_v2/build/my_serial_py': AMENT_PREFIX_PATH=/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/asus/nav_2027/rm_nav_v2/build/my_serial_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/lib/python3.12/site-packages:/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/asus/nav_2027/rm_nav_v2/build/my_serial_py/build --no-deps symlink_data
+[9.750s] Level 1:colcon.colcon_core.shell:create_environment_hook('my_serial_py', 'pythonpath_develop')
+[9.750s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/build/my_serial_py/share/my_serial_py/hook/pythonpath_develop.ps1'
+[9.751s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/asus/nav_2027/rm_nav_v2/build/my_serial_py' returned '0': AMENT_PREFIX_PATH=/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/asus/nav_2027/rm_nav_v2/build/my_serial_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/lib/python3.12/site-packages:/home/asus/nav_2027/rm_nav_v2/install/pb_rm_interfaces/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/asus/nav_2027/rm_nav_v2/build/my_serial_py/build --no-deps symlink_data
+[9.751s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/asus/nav_2027/rm_nav_v2/build/my_serial_py/share/my_serial_py/hook/pythonpath_develop.dsv'
+[9.751s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/build/my_serial_py/share/my_serial_py/hook/pythonpath_develop.sh'
+[9.752s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py' for CMake module files
+[9.752s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py' for CMake config files
+[9.752s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/lib'
+[9.752s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/bin'
+[9.752s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/lib/pkgconfig/my_serial_py.pc'
+[9.752s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/lib/python3.12/site-packages'
+[9.752s] Level 1:colcon.colcon_core.shell:create_environment_hook('my_serial_py', 'pythonpath')
+[9.752s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/hook/pythonpath.ps1'
+[9.752s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/hook/pythonpath.dsv'
+[9.753s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/hook/pythonpath.sh'
+[9.753s] Level 1:colcon.colcon_core.environment:checking '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/bin'
+[9.753s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(my_serial_py)
+[9.753s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/package.ps1'
+[9.753s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/package.dsv'
+[9.753s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/package.sh'
+[9.754s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/package.bash'
+[9.754s] INFO:colcon.colcon_core.shell:Creating package script '/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/my_serial_py/package.zsh'
+[9.754s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/asus/nav_2027/rm_nav_v2/install/my_serial_py/share/colcon-core/packages/my_serial_py)
+[9.754s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[9.754s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[9.754s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[9.754s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[9.755s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[9.755s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/asus/nav_2027/rm_nav_v2/install/local_setup.ps1'
+[9.756s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/asus/nav_2027/rm_nav_v2/install/_local_setup_util_ps1.py'
+[9.757s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/asus/nav_2027/rm_nav_v2/install/setup.ps1'
+[9.757s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/asus/nav_2027/rm_nav_v2/install/local_setup.sh'
+[9.757s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/asus/nav_2027/rm_nav_v2/install/_local_setup_util_sh.py'
+[9.758s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/asus/nav_2027/rm_nav_v2/install/setup.sh'
+[9.758s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/asus/nav_2027/rm_nav_v2/install/local_setup.bash'
+[9.758s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/asus/nav_2027/rm_nav_v2/install/setup.bash'
+[9.759s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/asus/nav_2027/rm_nav_v2/install/local_setup.zsh'
+[9.759s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/asus/nav_2027/rm_nav_v2/install/setup.zsh'
