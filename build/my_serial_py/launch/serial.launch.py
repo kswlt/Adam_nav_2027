@@ -1,1 +1,0 @@
-/home/asus/nav_2027/rm_nav_v2/src/my_serial_py/launch/serial.launch.py

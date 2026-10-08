@@ -1,0 +1,14 @@
+# ROS/colcon generated output
+build/
+install/
+log/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Local runtime data
+.ros/
+*.bag
+*.mcap

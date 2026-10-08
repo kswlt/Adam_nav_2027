@@ -1,1 +1,0 @@
-/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces/rosidl_generator_c/pb_rm_interfaces/msg/rfid_status.h

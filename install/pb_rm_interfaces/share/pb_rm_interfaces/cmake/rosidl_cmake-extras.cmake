@@ -1,1 +1,0 @@
-/home/asus/nav_2027/rm_nav_v2/build/pb_rm_interfaces/rosidl_cmake/rosidl_cmake-extras.cmake
