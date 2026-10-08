@@ -5,7 +5,7 @@ find_package(Eigen3 REQUIRED)
 find_package(rm_nav_registration REQUIRED)
 
 add_library(chassis_resolver src/chassis_resolver.cpp)
-target_sources(chassis_resolver PRIVATE src/candidate_region.cpp)
+target_sources(chassis_resolver PRIVATE src/candidate_region.cpp src/local_submap_builder.cpp)
 target_compile_features(chassis_resolver PUBLIC cxx_std_17)
 target_include_directories(chassis_resolver PUBLIC include ${rm_nav_registration_INCLUDE_DIRS})
 target_link_libraries(chassis_resolver Eigen3::Eigen)
@@ -17,12 +17,15 @@ target_link_libraries(candidate_region_test chassis_resolver)
 add_executable(map_odom_manager_test test/map_odom_manager_test.cpp)
 target_sources(chassis_resolver PRIVATE src/map_odom_manager.cpp)
 target_link_libraries(map_odom_manager_test chassis_resolver)
+add_executable(local_submap_builder_test test/local_submap_builder_test.cpp)
+target_link_libraries(local_submap_builder_test chassis_resolver)
 enable_testing()
 add_test(NAME chassis_resolver_test COMMAND chassis_resolver_test)
 add_test(NAME candidate_region_test COMMAND candidate_region_test)
 add_test(NAME map_odom_manager_test COMMAND map_odom_manager_test)
+add_test(NAME local_submap_builder_test COMMAND local_submap_builder_test)
 
-install(TARGETS chassis_resolver chassis_resolver_test candidate_region_test map_odom_manager_test
+install(TARGETS chassis_resolver chassis_resolver_test candidate_region_test map_odom_manager_test local_submap_builder_test
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME})

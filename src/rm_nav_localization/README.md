@@ -15,3 +15,5 @@ It does not filter, publish TF, or invent timestamps. Those responsibilities sta
 `CandidateRegionGenerator` limits global recovery search to `max_speed * lost_time + safety_margin`, clipped to official field bounds. KISS and GICP adapters consume this region but do not own its policy.
 
 `MapOdomManager` is the sole state holder for `map->odom`; it rejects `UNVERIFIED`, `CANDIDATE`, and `REJECTED` registration results. Point-LIO odometry remains continuous and is never reset here.
+
+`LocalSubmapBuilder` maintains the configured rolling time window and transforms each input frame into `odom`. It reports timestamps and point count for registration quality checks.
