@@ -3,3 +3,11 @@
 LIO adapter, chassis resolver, state estimation and relocalization.
 
 This package is part of the RM Nav V2 staged implementation.
+
+The first implemented component is `ChassisResolver`. It applies the PDF-defined relation:
+
+```text
+world_T_chassis = world_T_lidar * inverse(chassis_T_lidar(t))
+```
+
+It does not filter, publish TF, or invent timestamps. Those responsibilities stay with the Sensor Hub, `robot_localization`, and the TF authority layer.
