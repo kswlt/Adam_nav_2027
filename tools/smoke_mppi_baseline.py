@@ -21,6 +21,7 @@ from lifecycle_msgs.srv import GetState
 from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import OccupancyGrid, Odometry
 from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Bool
 from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 
 
@@ -33,6 +34,13 @@ class IdealPlant(Node):
         self.max_lateral = 0.0
         self.scan_mode = 'clear'
         self.output_count = 0
+        self.state_clients = {}
+        self.state_futures = {}
+        self.localization_healthy = True
+        self.publish_health = True
+        self.motion_enabled = True
+        self.health = self.create_publisher(Bool, '/localization/healthy', 10)
+        self.enable = self.create_publisher(Bool, '/nav/motion_enable', 10)
         self.raw = self.create_publisher(TwistStamped, '/nav/cmd_vel_raw', 10)
         self.create_subscription(TwistStamped, '/nav/cmd_vel_safe', self.command, 10)
         self.odom = self.create_publisher(Odometry, '/odom', 10)
@@ -74,6 +82,10 @@ class IdealPlant(Node):
         self.y += (s * twist.linear.x + c * twist.linear.y) * dt
         self.yaw += twist.angular.z * dt
         stamp = self.get_clock().now().to_msg()
+        # Ideal-plant commissioning inputs; no measured hardware health is implied.
+        if self.publish_health:
+            self.health.publish(Bool(data=self.localization_healthy))
+        self.enable.publish(Bool(data=self.motion_enabled))
         t = TransformStamped()
         t.header.stamp = stamp
         t.header.frame_id = 'odom'
@@ -107,16 +119,18 @@ class IdealPlant(Node):
         return False
 
     def active(self, name):
-        client = self.create_client(GetState, '/' + name + '/get_state')
-        try:
-            if not client.wait_for_service(timeout_sec=0.1):
-                return False
-            future = client.call_async(GetState.Request())
-            if not self.wait(future.done, 0.5):
-                return False
-            return future.result().current_state.id == 3
-        finally:
-            self.destroy_client(client)
+        if name not in self.state_clients:
+            self.state_clients[name] = self.create_client(GetState, '/' + name + '/get_state')
+        client = self.state_clients[name]
+        if not client.wait_for_service(timeout_sec=0.1):
+            return False
+        if name not in self.state_futures:
+            self.state_futures[name] = client.call_async(GetState.Request())
+        future = self.state_futures[name]
+        if not self.wait(future.done, 0.5):
+            return False
+        del self.state_futures[name]
+        return future.result().current_state.id == 3
 
     def inject_velocity(self, duration):
         end = time.monotonic() + duration
@@ -195,6 +209,25 @@ def main():
             require(abs(plant.latest.twist.linear.y) > 0.05, 'Failed to recover after scan dropout')
             require(plant.wait(plant.stopped, 2.0), 'Velocity smoother command timeout failed')
             report['command_timeout_stop'] = True
+            plant.inject_velocity(1.0)
+            require(abs(plant.latest.twist.linear.y) > 0.05, 'Gate blocked healthy permitted motion')
+            plant.localization_healthy = False
+            plant.inject_velocity(0.6)
+            require(plant.stopped(), 'Unhealthy localization failed to inhibit motion')
+            report['localization_unhealthy_stop'] = True
+            plant.localization_healthy = True
+            plant.inject_velocity(1.0)
+            require(abs(plant.latest.twist.linear.y) > 0.05, 'Localization recovery failed')
+            plant.publish_health = False
+            plant.inject_velocity(0.6)
+            require(plant.stopped(), 'Lost health heartbeat failed to inhibit motion')
+            report['localization_heartbeat_stop'] = True
+            plant.publish_health = True
+            plant.inject_velocity(1.0)
+            plant.motion_enabled = False
+            plant.inject_velocity(0.6)
+            require(plant.stopped(), 'Disabled motion permission failed to inhibit motion')
+            report['motion_permission_stop'] = True
             report['passed'] = True
     finally:
         if process is not None:

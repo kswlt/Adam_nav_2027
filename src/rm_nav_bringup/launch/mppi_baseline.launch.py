@@ -33,6 +33,9 @@ def generate_launch_description():
                   parameters=[params, {'use_sim_time': sim_time}], remappings=remaps)
              for pkg, name, remaps in specs]
     nodes.append(Node(
+        package='rm_nav_control', executable='motion_gate', name='motion_gate',
+        output='screen', parameters=[{'use_sim_time': sim_time}]))
+    nodes.append(Node(
         package='nav2_lifecycle_manager', executable='lifecycle_manager',
         name='lifecycle_manager_navigation', output='screen',
         parameters=[{'use_sim_time': sim_time, 'autostart': autostart,
