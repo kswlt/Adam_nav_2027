@@ -18,5 +18,6 @@ add_test(NAME localization_validator_test COMMAND localization_validator_test)
 install(TARGETS registration_types_test localization_validator_test
   RUNTIME DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY include/ DESTINATION include)
+ament_export_include_directories(include)
 install(FILES README.md DESTINATION share/${PROJECT_NAME})
 ament_package()
