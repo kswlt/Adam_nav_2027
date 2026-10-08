@@ -9,8 +9,8 @@
 | P4 | SE(3) chassis resolver、LocalSubmap、robot state 边界 | 数学单测完成；真实 LIO/IMU/轮速接入待完成 |
 | P5 | RegistrationResult、Validator、MapOdom、状态机、候选区域 | 状态与契约完成；small_gicp/KISS 后端待接入 |
 | P6 | Keyframe、LoopCandidate、MapBundle 契约 | 编排接口完成；GTSAM/地图重建待接入 |
-| P7 | TimedTrajectory、路径预处理、Stable/Enhanced profile | 契约完成；Nav2 真实 launch/参数待接入 |
-| P8 | SweptFootprint、CommandSynthesizer | 单测完成；TDT/MPPI/Omni PID 运行链待接入 |
+| P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch | 理想全向模型导航集成通过；环境查询和过滤层待接入 |
+| P8 | SweptFootprint、CommandSynthesizer、MPPI → smoother → collision monitor | 横移导航及三种停车集成通过；TDT/Omni PID/串口适配待接入 |
 | P9 | NavSupervisor、硬件边界、传感器契约 | 状态与接口完成；真实控制器/传感器运行待接入 |
 | P10 | 全量构建、CTest、版本化配置、远端推送 | 工程验证完成；实车回放和长期运行待完成 |
 
