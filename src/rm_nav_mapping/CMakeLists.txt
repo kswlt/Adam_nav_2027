@@ -11,10 +11,13 @@ add_executable(keyframe_manager_test test/keyframe_manager_test.cpp)
 target_link_libraries(keyframe_manager_test keyframe_manager)
 add_executable(loop_candidate_manager_test test/loop_candidate_manager_test.cpp)
 target_link_libraries(loop_candidate_manager_test keyframe_manager)
+add_executable(map_bundle_test test/map_bundle_test.cpp)
+target_link_libraries(map_bundle_test keyframe_manager)
 enable_testing()
 add_test(NAME keyframe_manager_test COMMAND keyframe_manager_test)
 add_test(NAME loop_candidate_manager_test COMMAND loop_candidate_manager_test)
-install(TARGETS keyframe_manager keyframe_manager_test loop_candidate_manager_test
+add_test(NAME map_bundle_test COMMAND map_bundle_test)
+install(TARGETS keyframe_manager keyframe_manager_test loop_candidate_manager_test map_bundle_test
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY include/ DESTINATION include)
