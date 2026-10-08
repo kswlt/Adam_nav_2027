@@ -2,7 +2,9 @@
 
 本文档总结当前工作区内串口通信节点的实际实现，便于上位机、下位机和行为树联调时对照。
 
-相关代码文件：
+当前运行入口为 `src/my_serial_py/my_serial_py/serial_bridge.py`，
+报文编解码为 `src/my_serial_py/my_serial_py/protocol.py`。
+以下是历史原版文件位置，原版 `serialpy_node.py` 在本仓库中保留作为参考：
 
 - [serialpy_node.py](/home/asus/nav3_mapping_nogicp_shortLA_stable/ros_ws/src/pb2025_sentry_nav/nav_adam_docker/src/pb2025_sentry_nav/my_serial_py/my_serial_py/serialpy_node.py)
 - [region_monitor_node.py](/home/asus/nav3_mapping_nogicp_shortLA_stable/ros_ws/src/pb2025_sentry_nav/nav_adam_docker/src/pb2025_region_monitor/pb2025_region_monitor/region_monitor_node.py)
@@ -18,6 +20,8 @@
 
 - 串口设备：`/dev/ttyUSB0`
 - 波特率：`115200`
+- 平移命令超时：`0.3 s`；超时将 xy 归零，保留原 yaw 目标。
+- 启动文件支持 `serial_port`、`baud_rate`、`cmd_vel_timeout` 参数。
 
 ## 2. STM32 -> ROS 接收协议
 
@@ -27,7 +31,7 @@
 
 - 帧头：`0xA5`
 - CRC：RoboMaster 官方 CRC16 查表算法
-- Python 解包格式：`<BBHHHHHHIIB`
+- Python 解包格式：`<BBHHHHHHIfB`
 
 完整包长：
 
@@ -135,13 +139,13 @@ typedef struct
 当前发送包使用：
 
 - 帧头：`0xAA`
-- CRC：`libscrc.modbus`
+- CRC：Modbus CRC16，与原版 `libscrc.modbus` 逐字节兼容
 - Python 打包格式：`<BffffBBB8f`
 
 完整包长：
 
-- payload：`39` 字节
-- packet：`39(payload) + 2(crc16) = 41` 字节
+- payload（含帧头）：`52` 字节
+- packet：`52(payload) + 2(crc16) = 54` 字节
 
 ### 3.4 字段顺序
 
@@ -236,7 +240,7 @@ typedef struct
 1. 下位机发送长度是否确实为 `26` 字节。
 2. 接收帧头是否为 `0xA5`。
 3. 接收 CRC 是否按 RoboMaster CRC16 计算。
-4. 下位机接收发送包时，是否按 `41` 字节和 `<BffffBBB8f + modbus crc>` 解析。
+4. 下位机接收发送包时，是否按 `54` 字节和 `<BffffBBB8f + modbus crc>` 解析。
 5. `contact_angle` 和 `is_fire` 的类型是否分别按 `float`、`uint8` 对齐。
 6. `/cmd_stance`、`/cmd_yaw_angle`、`/region`、`/big_yaw_aligned` 是否确实有数据在发。
 

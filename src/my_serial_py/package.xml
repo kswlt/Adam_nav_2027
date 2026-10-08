@@ -3,11 +3,11 @@
 <package format="3">
   <name>my_serial_py</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Adam serial bridge with original wire protocol and command watchdog.</description>
   <maintainer email="daibaoshan2018@163.com">d</maintainer>
   <license>TODO: License declaration</license>
 
-  <depend>serial</depend>
+  <exec_depend>python3-serial</exec_depend>
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>

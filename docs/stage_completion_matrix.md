@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | P0 | 原版、技术方案、参考仓库审计；Jazzy 远端确认 | 已完成 |
 | P1 | 14 个包可在 Jazzy 构建 | 已完成 |
-| P2 | `my_serial_py` 冻结复制、协议审计、硬件边界包 | 基线完成；实车报文仍需下位机抓包确认 |
+| P2 | 原版冻结保留、分离串口桥与协议、CRC/断帧单测、ROS/PTY 集成 | 软件兼容性和超时停车通过；实车报文仍需下位机抓包确认 |
 | P3 | TF 所有权、CalibrationBundle、ObservationBatch | 接口完成；真实外参待测量 |
 | P4 | SE(3) chassis resolver、LocalSubmap、robot state 边界 | 数学单测完成；真实 LIO/IMU/轮速接入待完成 |
 | P5 | RegistrationResult、Validator、MapOdom、状态机、候选区域 | 状态与契约完成；small_gicp/KISS 后端待接入 |

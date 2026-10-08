@@ -23,7 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'serial_node = my_serial_py.serialpy_node:main',
+            'serial_node = my_serial_py.serial_bridge:main',
         ],
     },
 )
