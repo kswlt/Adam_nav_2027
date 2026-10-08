@@ -19,13 +19,16 @@ target_sources(chassis_resolver PRIVATE src/map_odom_manager.cpp)
 target_link_libraries(map_odom_manager_test chassis_resolver)
 add_executable(local_submap_builder_test test/local_submap_builder_test.cpp)
 target_link_libraries(local_submap_builder_test chassis_resolver)
+add_executable(relocalization_state_machine_test test/relocalization_state_machine_test.cpp)
+target_link_libraries(relocalization_state_machine_test chassis_resolver)
 enable_testing()
 add_test(NAME chassis_resolver_test COMMAND chassis_resolver_test)
 add_test(NAME candidate_region_test COMMAND candidate_region_test)
 add_test(NAME map_odom_manager_test COMMAND map_odom_manager_test)
 add_test(NAME local_submap_builder_test COMMAND local_submap_builder_test)
+add_test(NAME relocalization_state_machine_test COMMAND relocalization_state_machine_test)
 
-install(TARGETS chassis_resolver chassis_resolver_test candidate_region_test map_odom_manager_test local_submap_builder_test
+install(TARGETS chassis_resolver chassis_resolver_test candidate_region_test map_odom_manager_test local_submap_builder_test relocalization_state_machine_test
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME})

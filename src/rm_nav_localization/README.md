@@ -17,3 +17,5 @@ It does not filter, publish TF, or invent timestamps. Those responsibilities sta
 `MapOdomManager` is the sole state holder for `map->odom`; it rejects `UNVERIFIED`, `CANDIDATE`, and `REJECTED` registration results. Point-LIO odometry remains continuous and is never reset here.
 
 `LocalSubmapBuilder` maintains the configured rolling time window and transforms each input frame into `odom`. It reports timestamps and point count for registration quality checks.
+
+`RelocalizationStateMachine` enforces the safe sequence `TRACKING → SUSPECT → RELOCALIZING → SAFE_STOP`; motion is disabled during global recovery and after unrecoverable failure.
