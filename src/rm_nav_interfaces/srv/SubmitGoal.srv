@@ -1,0 +1,6 @@
+geometry_msgs/PoseStamped goal
+---
+# Accepted means asynchronous planning started, not motion permission.
+bool accepted
+uint64 task_id
+string reason

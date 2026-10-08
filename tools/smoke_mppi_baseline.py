@@ -26,7 +26,7 @@ from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 
 
 class IdealPlant(Node):
-    def __init__(self, publish_global_tf=True, publish_localization_health=True):
+    def __init__(self, publish_global_tf=True, publish_localization_health=True, publish_motion_permission=True):
         super().__init__('baseline_acceptance_plant')
         self.x = self.y = self.yaw = 0.0
         self.latest = TwistStamped()
@@ -39,6 +39,7 @@ class IdealPlant(Node):
         self.localization_healthy = True
         self.publish_health = publish_localization_health
         self.motion_enabled = True
+        self.publish_motion_permission = publish_motion_permission
         self.health = self.create_publisher(Bool, '/localization/healthy', 10) if publish_localization_health else None
         self.enable = self.create_publisher(Bool, '/nav/motion_enable', 10)
         self.raw = self.create_publisher(TwistStamped, '/nav/cmd_vel_raw', 10)
@@ -86,7 +87,8 @@ class IdealPlant(Node):
         # Ideal-plant commissioning inputs; no measured hardware health is implied.
         if self.publish_health:
             self.health.publish(Bool(data=self.localization_healthy))
-        self.enable.publish(Bool(data=self.motion_enabled))
+        if self.publish_motion_permission:
+            self.enable.publish(Bool(data=self.motion_enabled))
         t = TransformStamped()
         t.header.stamp = stamp
         t.header.frame_id = 'odom'
@@ -165,7 +167,7 @@ def main():
     try:
         with log_path.open('w') as log:
             process = subprocess.Popen(
-                ['ros2', 'launch', 'rm_nav_bringup', 'mppi_baseline.launch.py'],
+                ['ros2', 'launch', 'rm_nav_bringup', 'mppi_baseline.launch.py', 'enable_task_supervisor:=false'],
                 stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             names = ['controller_server', 'planner_server', 'behavior_server',
                      'bt_navigator', 'velocity_smoother', 'collision_monitor']

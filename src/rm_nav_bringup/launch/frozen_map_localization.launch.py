@@ -16,6 +16,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument('enable_recovery', default_value='false'),
         DeclareLaunchArgument('enable_recovery_transaction', default_value='false'),
+        DeclareLaunchArgument('enable_auto_recovery', default_value='false'),
         DeclareLaunchArgument('recovery_timeout', default_value='5.0'),
         DeclareLaunchArgument('field_bounds', default_value='[0.0,0.0,0.0,0.0]',
                              description='Measured [min_x,max_x,min_y,max_y]; required for recovery'),
@@ -25,6 +26,7 @@ def generate_launch_description():
              name='map_odom_manager', parameters=[parameters, {
                  'enable_recovery': ParameterValue(LaunchConfiguration('enable_recovery'), value_type=bool),
                  'enable_recovery_transaction': ParameterValue(LaunchConfiguration('enable_recovery_transaction'), value_type=bool),
+                 'enable_auto_recovery': ParameterValue(LaunchConfiguration('enable_auto_recovery'), value_type=bool),
                  'recovery_timeout': ParameterValue(LaunchConfiguration('recovery_timeout'), value_type=float),
                  'field_bounds': ParameterValue(LaunchConfiguration('field_bounds')),
              }], output='screen'),

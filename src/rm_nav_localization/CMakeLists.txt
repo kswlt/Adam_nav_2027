@@ -11,6 +11,7 @@ find_package(tf2_ros REQUIRED)
 find_package(rm_nav_interfaces REQUIRED)
 find_package(action_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 add_library(chassis_resolver src/chassis_resolver.cpp)
 target_sources(chassis_resolver PRIVATE src/candidate_region.cpp src/local_submap_builder.cpp)
@@ -22,7 +23,7 @@ target_link_libraries(frozen_map_matcher rm_nav_registration::small_gicp_backend
 ament_target_dependencies(frozen_map_matcher rclcpp sensor_msgs geometry_msgs std_msgs rm_nav_interfaces)
 add_executable(map_odom_manager src/map_odom_manager_node.cpp)
 target_link_libraries(map_odom_manager chassis_resolver)
-ament_target_dependencies(map_odom_manager rclcpp sensor_msgs geometry_msgs std_msgs tf2_ros rm_nav_interfaces action_msgs nav2_msgs)
+ament_target_dependencies(map_odom_manager rclcpp sensor_msgs geometry_msgs std_msgs tf2_ros rm_nav_interfaces action_msgs nav2_msgs nav_msgs)
 
 add_executable(chassis_resolver_test test/chassis_resolver_test.cpp)
 target_link_libraries(chassis_resolver_test chassis_resolver)

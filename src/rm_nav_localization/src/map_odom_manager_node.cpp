@@ -14,6 +14,8 @@
 #include <rm_nav_interfaces/msg/recovery_state.hpp>
 #include <rm_nav_interfaces/srv/commit_recovery.hpp>
 #include "rm_nav_localization/nav_reset.hpp"
+#include <rm_nav_interfaces/srv/resume_recovery.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 
 namespace rm_nav_localization {
 class MapOdomManagerNode : public rclcpp::Node {
@@ -38,6 +40,8 @@ public:
     recovery_feature_range_ = declare_parameter("recovery_feature_range", 8.0);
     recovery_timeout_ = declare_parameter("recovery_timeout", 5.0);
     transaction_enabled_ = declare_parameter("enable_recovery_transaction", false);
+    auto_recovery_ = declare_parameter("enable_auto_recovery", false);
+    if (auto_recovery_ && !recovery_enabled_) throw std::invalid_argument("Automatic recovery requires bounded recovery");
     if (transaction_enabled_ && !recovery_enabled_) throw std::invalid_argument("Transaction requires recovery");
     if (transaction_enabled_) {
       nav_reset_ = std::make_unique<NavReset>(*this, declare_parameter<std::vector<std::string>>(
@@ -99,6 +103,29 @@ public:
         reason_ = "waiting for terminal navigation cancellation";
         nav_reset_->start(); response->accepted = true; response->reason = reason_;
       });
+    nav_status_sub_ = create_subscription<action_msgs::msg::GoalStatusArray>(
+      "/navigate_to_pose/_action/status", rclcpp::QoS(1).transient_local(),
+      [this](action_msgs::msg::GoalStatusArray::ConstSharedPtr msg) {
+        nav_status_ = msg; nav_status_received_ = std::chrono::steady_clock::now();
+      });
+    resume_service_ = create_service<rm_nav_interfaces::srv::ResumeRecovery>(
+      "/localization/resume_recovery", [this](
+        const std::shared_ptr<rm_nav_interfaces::srv::ResumeRecovery::Request> request,
+        std::shared_ptr<rm_nav_interfaces::srv::ResumeRecovery::Response> response) {
+        resume(*request, *response);
+      });
+    odom_sub_ = create_subscription<nav_msgs::msg::Odometry>("/odom", 10,
+      [this](nav_msgs::msg::Odometry::ConstSharedPtr msg) {
+        const auto stamp = rclcpp::Time(msg->header.stamp, get_clock()->get_clock_type()).nanoseconds();
+        const auto & position = msg->pose.pose.position;
+        const double age = (now().nanoseconds() - stamp) / 1e9;
+        if (msg->header.frame_id == odom_frame_ && msg->child_frame_id == "base_link" &&
+            stamp > odom_stamp_ && age >= -0.05 && age <= 0.2 &&
+            std::isfinite(position.x) && std::isfinite(position.y) && std::isfinite(position.z)) {
+          odom_position_ = Eigen::Vector3d(position.x, position.y, position.z);
+          odom_stamp_ = stamp; odom_received_ = std::chrono::steady_clock::now();
+        }
+      });
     recovery_service_ = create_service<rm_nav_interfaces::srv::RequestRecovery>(
       "/localization/request_recovery", [this](
         const std::shared_ptr<rm_nav_interfaces::srv::RequestRecovery::Request> request,
@@ -111,6 +138,62 @@ public:
     timer_ = create_wall_timer(std::chrono::milliseconds(50), [this]() { publish(); });
   }
 private:
+  bool odom_fresh() const
+  {
+    const double age = (now().nanoseconds() - odom_stamp_) / 1e9;
+    return odom_stamp_ > 0 && age >= -0.05 && age <= 0.2 &&
+      std::chrono::duration<double>(std::chrono::steady_clock::now() - odom_received_).count() <= 0.2;
+  }
+  void remember_good_position()
+  {
+    if (odom_fresh()) {
+      last_good_position_ = manager_.current() * odom_position_;
+      last_good_time_ = std::chrono::steady_clock::now(); have_good_position_ = true;
+    }
+    auto_attempted_ = false;
+    normal_failures_ = 0;
+  }
+  void resume(const rm_nav_interfaces::srv::ResumeRecovery::Request & request,
+              rm_nav_interfaces::srv::ResumeRecovery::Response & response)
+  {
+    const auto current = std::chrono::steady_clock::now();
+    const double plan_age = (now() - rclcpp::Time(request.planned_path.header.stamp, get_clock()->get_clock_type())).seconds();
+    bool active_goal = false;
+    if (nav_status_ && std::chrono::duration<double>(current - nav_status_received_).count() <= 0.5) {
+      for (const auto & goal : nav_status_->status_list) {
+        if (goal.goal_info.goal_id.uuid == request.goal_id && (goal.status == 1 || goal.status == 2)) active_goal = true;
+      }
+    }
+    if (!recovery_active_ || phase_ != rm_nav_interfaces::msg::RecoveryState::WAIT_REPLAN ||
+        request.map_version != map_version_ || request.recovery_id != recovery_id_ || !active_goal ||
+        stable_count_ < 3 || (now().nanoseconds() - last_accepted_) / 1e9 > 0.4 ||
+        !stopped() || !map_available() || !odom_fresh() ||
+        request.planned_path.header.frame_id != map_frame_ || plan_age < -0.1 || plan_age > 2.0 ||
+        rclcpp::Time(request.planned_path.header.stamp, get_clock()->get_clock_type()).nanoseconds() <= commit_stamp_ ||
+        request.planned_path.poses.size() < 2 || request.planned_path.poses.size() > 10000) {
+      response.reason = "Need current session, stable post-commit localization, stop and a new active goal/path"; return;
+    }
+    for (const auto & pose : request.planned_path.poses) {
+      const auto & p = pose.pose.position;
+      const auto & q = pose.pose.orientation;
+      const double norm = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+      if ((!pose.header.frame_id.empty() && pose.header.frame_id != map_frame_) ||
+          !std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) ||
+          !std::isfinite(norm) || std::abs(norm - 1.0) > 0.01 ||
+          p.x < field_[0] || p.x > field_[1] || p.y < field_[2] || p.y > field_[3]) {
+        response.reason = "Replanned path geometry/frame/bounds invalid"; return;
+      }
+    }
+    const auto & start = request.planned_path.poses.front().pose.position;
+    if ((Eigen::Vector3d(start.x,start.y,start.z) - manager_.current()*odom_position_).head<2>().norm() > 0.5) {
+      response.reason = "Replanned path starts away from current robot position"; return;
+    }
+    recovery_active_ = false; pending_ = false; confirmed_ = false; healthy_ = true;
+    phase_ = rm_nav_interfaces::msg::RecoveryState::TRACKING;
+    reason_ = "new navigation goal and stable localization verified; recovery hold released";
+    remember_good_position(); response.accepted = true; response.reason = reason_;
+    publish();
+  }
   void receive_motion_feedback(const geometry_msgs::msg::TwistStamped & msg)
   {
     const auto current = std::chrono::steady_clock::now();
@@ -163,6 +246,7 @@ private:
         phase_ = State::FAULT; reason_ = "candidate confirmation expired before commit"; return;
       }
       has_transform_ = true; publish_accepted_transform_ = true;
+      commit_stamp_ = now().nanoseconds(); stable_count_ = 0; stable_stamp_ = 0;
       geometry_msgs::msg::TransformStamped committed;
       committed.header.stamp = now(); committed.header.frame_id = map_frame_;
       committed.child_frame_id = odom_frame_;
@@ -211,6 +295,7 @@ private:
     recovery_request_.prior = to_ros_transform(manager_.current());
     recovery_active_ = true; confirmed_ = false; have_candidate_ = false;
     phase_ = State::SEARCHING; seen_clouds_.clear();
+    stable_count_ = 0; stable_stamp_ = 0;
     recovery_started_ = std::chrono::steady_clock::now();
     healthy_ = false; pending_ = true; reason_ = "bounded KISS recovery active; motion suspended";
     publish();  // Withdraw health before dispatching work to the matcher.
@@ -289,10 +374,14 @@ private:
           result.translation_delta = difference.translation().norm();
           result.rotation_delta = Eigen::AngleAxisd(difference.rotation()).angle();
           const auto verdict = rm_nav_registration::validate(result, config_);
-          if (verdict.state == rm_nav_registration::ValidationState::ACCEPTED) {
+          if (verdict.state == rm_nav_registration::ValidationState::ACCEPTED && stamp.nanoseconds() > commit_stamp_) {
+            if (stamp.nanoseconds() - stable_stamp_ > 500000000) stable_count_ = 0;
+            if (stamp.nanoseconds() - stable_stamp_ >= 150000000) {
+              stable_count_ = std::min(3U, stable_count_ + 1); stable_stamp_ = stamp.nanoseconds();
+            }
             last_accepted_ = stamp.nanoseconds();
             reason_ = "fresh localization verified; new plan and task permission still required";
-          }
+          } else { stable_count_ = 0; }
         } else { receive_recovery(msg, result); }
         last_stamp_ = stamp.nanoseconds();
         return;
@@ -314,9 +403,12 @@ private:
         healthy_ = true;
         last_accepted_ = stamp.nanoseconds();
         publish_accepted_transform_ = true;
+        remember_good_position();
         // Rejection/candidate does not refresh this timestamp or change TF.
-      }
+      } else { ++normal_failures_; }
     } catch (const std::exception & e) {
+      if (recovery_active_ && phase_ == rm_nav_interfaces::msg::RecoveryState::WAIT_REPLAN) stable_count_ = 0;
+      if (has_transform_ && !recovery_active_) ++normal_failures_;
       healthy_ = false;
       reason_ = e.what();
     }
@@ -331,6 +423,20 @@ private:
       healthy_ = false;
       reason_ = "accepted estimate timed out";
     }
+    if (auto_recovery_ && has_transform_ && !healthy_ && !recovery_active_ && !auto_attempted_ &&
+        have_good_position_ && odom_fresh() && (normal_failures_ >= 3 || age > quality_timeout_)) {
+      auto_attempted_ = true;
+      rm_nav_interfaces::srv::RequestRecovery::Request request;
+      rm_nav_interfaces::srv::RequestRecovery::Response response;
+      request.map_version = map_version_;
+      request.center.x = last_good_position_.x(); request.center.y = last_good_position_.y();
+      request.center.z = last_good_position_.z();
+      request.source_origin.x = odom_position_.x(); request.source_origin.y = odom_position_.y();
+      request.source_origin.z = odom_position_.z();
+      request.lost_time = std::chrono::duration<double>(std::chrono::steady_clock::now() - last_good_time_).count();
+      begin_recovery(request, response);
+      if (!response.accepted) reason_ = "automatic bounded recovery refused; safe stop: " + response.reason;
+    }
     if (recovery_active_ && phase_ <= rm_nav_interfaces::msg::RecoveryState::CONFIRMED && std::chrono::duration<double>(
         std::chrono::steady_clock::now() - recovery_started_).count() > recovery_timeout_) {
       healthy_ = false; confirmed_ = false;
@@ -343,7 +449,7 @@ private:
     healthy_pub_->publish(health); pending_pub_->publish(pending);
     std_msgs::msg::String reason; reason.data = reason_;
     reason_pub_->publish(reason);
-    if (recovery_active_) {
+    if (recovery_id_ != 0) {
       rm_nav_interfaces::msg::RecoveryState state;
       state.header.stamp = current; state.header.frame_id = map_frame_;
       state.map_version = map_version_; state.recovery_id = recovery_id_; state.phase = phase_;
@@ -378,6 +484,16 @@ private:
   Eigen::Isometry3d confirmed_transform_{Eigen::Isometry3d::Identity()};
   std::unordered_set<std::uint64_t> seen_clouds_;
   std::int64_t confirmation_stamp_{0}, feedback_stamp_{0};
+  std::int64_t commit_stamp_{0}, stable_stamp_{0}, odom_stamp_{0};
+  unsigned stable_count_{0};
+  unsigned normal_failures_{0};
+  bool auto_recovery_{false}, auto_attempted_{false}, have_good_position_{false};
+  Eigen::Vector3d odom_position_{Eigen::Vector3d::Zero()}, last_good_position_{Eigen::Vector3d::Zero()};
+  std::chrono::steady_clock::time_point odom_received_{}, last_good_time_{}, nav_status_received_{};
+  action_msgs::msg::GoalStatusArray::ConstSharedPtr nav_status_;
+  rclcpp::Subscription<action_msgs::msg::GoalStatusArray>::SharedPtr nav_status_sub_;
+  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
+  rclcpp::Service<rm_nav_interfaces::srv::ResumeRecovery>::SharedPtr resume_service_;
   bool transaction_enabled_{false}, feedback_valid_{false};
   std::uint8_t phase_{rm_nav_interfaces::msg::RecoveryState::SEARCHING};
   std::chrono::steady_clock::time_point feedback_received_{}, stop_started_{};

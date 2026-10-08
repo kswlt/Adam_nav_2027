@@ -5,6 +5,7 @@ uint8 COMMITTED=3
 uint8 CLEARING=4
 uint8 WAIT_REPLAN=5
 uint8 FAULT=6
+uint8 TRACKING=7
 std_msgs/Header header
 string map_version
 uint64 recovery_id

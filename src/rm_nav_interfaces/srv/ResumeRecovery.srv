@@ -1,0 +1,7 @@
+string map_version
+uint64 recovery_id
+uint8[16] goal_id
+nav_msgs/Path planned_path
+---
+bool accepted
+string reason

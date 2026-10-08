@@ -15,8 +15,8 @@
 | --- | --- | --- |
 | 原版通信 | 26-byte RX / 54-byte TX、原 CRC/符号/yaw/话题兼容、ROS 虚拟串口、平移超时停车 | 实车抓包、断线重连和下位机 watchdog 联调 |
 | Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor；横移导航、障碍/雷达断流/命令超时停车 | 实车定位输入、测量足迹、硬件速度与 yaw 适配 |
-| 配准与恢复 | 真实 GICP/KISS 恢复、双次候选复核、实测停车门、Nav2取消/TF提交/清图事务 | 自动丢失触发、新规划和运动许可恢复、真实点云回放 |
-| TF 与定位 | SE(3) resolver、独占 map→odom 节点、健康超时、健康/许可控制输出门 | small_point_lio、动态云台编码器、EKF、完整任务权限节点 |
+| 配准与恢复 | 真实 GICP/KISS、双候选、受限自动触发、停车/取消/TF/清图、新规划放行 | 真实点云回放与实车稳定性验证 |
+| TF 与定位 | SE(3) resolver、独占 map→odom、健康/许可输出门、任务监管 | small_point_lio、动态云台编码器、EKF、实车反馈 |
 | 优化建图 | 关键帧、回环候选、MapBundle 基础数据结构 | KISS 回环复核、GTSAM 优化、原始关键帧地图重建 |
 | 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
 
@@ -70,6 +70,10 @@ ROS_DOMAIN_ID=92 python3 tools/smoke_recovery_transaction.py
 ROS_DOMAIN_ID=93 python3 tools/smoke_recovery_transaction_faults.py cancel_rejected
 ROS_DOMAIN_ID=94 python3 tools/smoke_recovery_transaction_faults.py clear_timeout
 ROS_DOMAIN_ID=95 python3 tools/smoke_recovery_transaction_faults.py map_changed
+
+# 自动受限搜索与真实 Nav2 新任务/恢复许可；仍使用理想底盘反馈。
+ROS_DOMAIN_ID=96 python3 tools/smoke_auto_recovery.py
+ROS_DOMAIN_ID=97 python3 tools/smoke_task_resume.py
 ```
 
 Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` TF。
@@ -78,7 +82,9 @@ Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` 
 均为 `TwistStamped`、底盘坐标速度。当前输出隔离，尚未自动接到串口。
 footprint、停止区和速度约束目前为调试初值，需要实际尺寸与制动数据。
 最终输出门要求新鲜的 `/localization/healthy` 和 `/nav/motion_enable` true 心跳，
-以及新鲜有效的底盘坐标速度；默认零输出。运动许可的任务/监管发布节点仍待实现。
+以及新鲜有效的底盘坐标速度；默认零输出。launch 默认启动 task_supervisor，
+通过 `/nav/submit_goal` 提交任务；只有监管拥有的唯一活动目标能够获得许可。
+直接向 Nav2 提交目标不会自动获得运动许可。
 见 [运动许可验收](docs/motion_gate_acceptance.md)。
 
 冻结地图定位启动：
@@ -90,10 +96,13 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 一致性复核。显式启用 `enable_recovery_transaction:=true` 后，可通过
 `/localization/commit_recovery` 请求实测停车、取消旧目标、TF提交和清图事务。
 它要求独立的 `/hardware/measured_twist`；原串口没有速度反馈，目前不自动提供该话题。
-提交后停在 WAIT_REPLAN，新规划与运动许可恢复仍待实现。
+提交后停在 WAIT_REPLAN；稳定的提交后局部定位、新鲜规划路径与新 Nav2 目标
+经验证后可进入 TRACKING，由任务监管决定运动许可。
+见 [自动恢复与新任务验收](docs/task_supervisor_acceptance.md)。
 见 [恢复提交事务验收](docs/recovery_transaction_acceptance.md)。
 恢复默认关闭，开启时必须指定场地边界；通过 `/localization/request_recovery` 请求，
-期间健康保持 false。见 [受限恢复 ROS 验收](docs/kiss_recovery_ros_acceptance.md)。
+期间健康保持 false。额外开启 `enable_auto_recovery:=true` 才会根据最后可靠位置、
+新鲜 odom 和观测丢失自动创建一次受限搜索。见 [受限恢复 ROS 验收](docs/kiss_recovery_ros_acceptance.md)。
 详细约定见 [冻结地图定位验收](docs/frozen_map_localization_acceptance.md)。
 
 串口启动：
@@ -123,11 +132,12 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 - [KISS→GICP 后端](docs/kiss_gicp_acceptance.md)
 - [受限 KISS 恢复 ROS 链](docs/kiss_recovery_ros_acceptance.md)
 - [停车与恢复提交事务](docs/recovery_transaction_acceptance.md)
+- [自动恢复与新任务许可](docs/task_supervisor_acceptance.md)
 - [冻结地图 ROS 定位链](docs/frozen_map_localization_acceptance.md)
 - [定位健康与运动许可](docs/motion_gate_acceptance.md)
 - [串口字段说明](docs/my_serial_py_interface.md)
 - [架构与 TF 契约](docs/architecture_contract.md)
 
-下一步接入自动丢失触发、实车速度反馈、新规划任务调度和运动许可恢复；
-之后完成真实传感器/LIO 链路、优化建图、TDT 和最终控制链。
+下一步接入真实传感器/LIO、动态云台与 EKF，并完成实车速度反馈适配和回放；
+之后完成优化建图、TDT 和最终控制链。
 每个独立步骤先在 asus 验证，再以中文 commit 推送。提交身份统一为 `kswlt`。

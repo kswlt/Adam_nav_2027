@@ -8,6 +8,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -33,6 +34,10 @@ def generate_launch_description():
                   parameters=[params, {'use_sim_time': sim_time}], remappings=remaps)
              for pkg, name, remaps in specs]
     nodes.append(Node(
+        package='rm_nav_bringup', executable='task_supervisor', name='task_supervisor',
+        output='screen', parameters=[{'use_sim_time': sim_time}],
+        condition=IfCondition(LaunchConfiguration('enable_task_supervisor'))))
+    nodes.append(Node(
         package='rm_nav_control', executable='motion_gate', name='motion_gate',
         output='screen', parameters=[{'use_sim_time': sim_time}]))
     nodes.append(Node(
@@ -44,5 +49,6 @@ def generate_launch_description():
         DeclareLaunchArgument('params_file', default_value=default_params),
         DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument('autostart', default_value='true'),
+        DeclareLaunchArgument('enable_task_supervisor', default_value='true'),
         *nodes,
     ])

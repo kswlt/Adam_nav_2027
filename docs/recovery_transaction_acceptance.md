@@ -62,5 +62,6 @@ ROS_DOMAIN_ID=95 python3 tools/smoke_recovery_transaction_faults.py map_changed
 地图变更验收验证已确认候选被作废。
 所有停车反馈来自理想模型，不能作为实车已停止、通信 watchdog 或运动控制验收。
 
-下一步：自动恢复触发、带新规划版本的任务调度、稳定定位确认与运动许可恢复，
-以及实车反馈适配器。当前 WAIT_REPLAN 没有自动解除入口。
+后续已接入自动受限触发、新 Nav2 规划/目标、稳定定位确认与任务运动许可，见
+[新任务验收](task_supervisor_acceptance.md)。本文件的事务验收单独关闭任务监管，
+验证 WAIT_REPLAN 保持；实车反馈适配器与 TDT 轨迹版本仍待完成。

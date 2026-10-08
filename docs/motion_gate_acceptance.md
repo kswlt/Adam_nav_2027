@@ -26,7 +26,9 @@ MPPI/behavior → /nav/cmd_vel_raw → velocity_smoother
 输出 `/nav/motion_allowed` 和 `/nav/motion_gate_reason` 用于诊断。
 
 实际定位链的健康发布者是 `map_odom_manager`。
-运动许可应由任务/监管的唯一权限节点周期发布，当前尚未实现完整 NavSupervisor/BT 集成。
+运动许可由后续接入的 `task_supervisor` 唯一周期发布，见
+[任务监管验收](task_supervisor_acceptance.md)。独立门验收关闭该节点并使用明确的许可替身；
+生产启动不要同时发布第二路许可。
 没有该许可源时保持零输出，不在启动文件中自动造一个恒 true 许可。
 理想模型测试会显式模拟健康与许可心跳。
 

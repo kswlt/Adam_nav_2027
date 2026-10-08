@@ -62,6 +62,7 @@ ROS_DOMAIN_ID=91 python3 tools/smoke_kiss_recovery.py
 这是软件算法及编排验收，不能推断实车定位精度或下位机停车状态。
 
 Nav2 取消、唯一 TF 提交和双 costmap 清理已在后续事务接入，必须有独立实测速度输入。
-尚需接入：自动丢失触发、真实 odom/最后可靠位置、实车反馈适配、
-TDT 旧轨迹失效、新规划调度及稳定健康确认。
+自动丢失触发、odom/最后可靠位置门、新规划与稳定定位放行已接入，见
+[任务监管验收](task_supervisor_acceptance.md)。尚需真实 odom/LIO 与反馈适配、
+TDT 旧轨迹失效及实车回放。
 recovery_confirmed=true 本身不能提交 TF，也不能恢复运动。

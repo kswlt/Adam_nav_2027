@@ -23,8 +23,9 @@ from smoke_frozen_map_localization import cloud, require
 
 
 class Plant(IdealPlant):
-    def __init__(self):
-        super().__init__(publish_global_tf=False, publish_localization_health=False)
+    def __init__(self, publish_motion_permission=True):
+        super().__init__(publish_global_tf=False, publish_localization_health=False,
+                         publish_motion_permission=publish_motion_permission)
         latched = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.frozen = self.create_publisher(PointCloud2, '/localization/frozen_map', latched)
         self.submap = self.create_publisher(PointCloud2, '/localization/odom_submap', qos_profile_sensor_data)
@@ -73,7 +74,7 @@ def main():
                 ['ros2', 'launch', 'rm_nav_bringup', 'frozen_map_localization.launch.py',
                  'map_version:=transaction-v1', 'enable_recovery:=true', 'enable_recovery_transaction:=true',
                  'recovery_timeout:=20.0', 'field_bounds:=[-12.0,12.0,-12.0,12.0]'],
-                ['ros2', 'launch', 'rm_nav_bringup', 'mppi_baseline.launch.py'],
+                ['ros2', 'launch', 'rm_nav_bringup', 'mppi_baseline.launch.py', 'enable_task_supervisor:=false'],
             ]:
                 processes.append(subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True))
             rng = random.Random(42)
