@@ -1,0 +1,10 @@
+# Caller supplies a last-good/spawn position in map and robot origin in odom.
+# lost_time contributes to a bounded radius; field/speed limits are server parameters.
+string map_version
+geometry_msgs/Point center
+geometry_msgs/Point source_origin
+float64 lost_time
+---
+bool accepted
+uint64 recovery_id
+string reason

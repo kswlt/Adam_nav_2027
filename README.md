@@ -15,7 +15,7 @@
 | --- | --- | --- |
 | 原版通信 | 26-byte RX / 54-byte TX、原 CRC/符号/yaw/话题兼容、ROS 虚拟串口、平移超时停车 | 实车抓包、断线重连和下位机 watchdog 联调 |
 | Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor；横移导航、障碍/雷达断流/命令超时停车 | 实车定位输入、测量足迹、硬件速度与 yaw 适配 |
-| 配准与恢复 | 真实 small_gicp、冻结地图 ROS 匹配、KISS→GICP 纯 C++ 后端、大修正候选门 | KISS 恢复 ROS 调度、目标 KD-tree 缓存、真实点云回放 |
+| 配准与恢复 | 真实 small_gicp、冻结地图 ROS 匹配、受限 KISS→GICP 恢复会话、双次候选复核 | 自动丢失触发、停车/TF提交/重规划事务、真实点云回放 |
 | TF 与定位 | SE(3) resolver、独占 map→odom 节点、健康超时、健康/许可控制输出门 | small_point_lio、动态云台编码器、EKF、完整任务权限节点 |
 | 优化建图 | 关键帧、回环候选、MapBundle 基础数据结构 | KISS 回环复核、GTSAM 优化、原始关键帧地图重建 |
 | 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
@@ -60,6 +60,9 @@ ROS_DOMAIN_ID=89 python3 tools/smoke_frozen_map_localization.py
 
 # 失健康、失许可、心跳中断、无缓存重放与非法命令拒绝。
 ROS_DOMAIN_ID=90 python3 tools/smoke_motion_gate.py
+
+# 真实受限 KISS/GICP ROS 恢复、独立候选确认、会话和停车输出保持。
+ROS_DOMAIN_ID=91 python3 tools/smoke_kiss_recovery.py
 ```
 
 Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` TF。
@@ -76,7 +79,10 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 输入 `/localization/frozen_map`（map 坐标、transient local）和
 `/localization/odom_submap`（odom 坐标、源观测时间戳、已去畸变）。
 输出 `/localization/estimate`、`map → odom` TF、`/localization/healthy` 和
-`/localization/correction_pending`。大修正当前只保留候选；双重确认与停车重规划还待实现。
+`/localization/correction_pending`。大修正当前只保留候选；KISS 会话已支持两份不同云的
+一致性复核，停车反馈、TF提交和重规划事务还待实现。
+恢复默认关闭，开启时必须指定场地边界；通过 `/localization/request_recovery` 请求，
+期间健康保持 false。见 [受限恢复 ROS 验收](docs/kiss_recovery_ros_acceptance.md)。
 详细约定见 [冻结地图定位验收](docs/frozen_map_localization_acceptance.md)。
 
 串口启动：
@@ -104,11 +110,12 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 - [串口协议及 ROS/PTY](docs/serial_acceptance.md)
 - [small_gicp 后端](docs/small_gicp_acceptance.md)
 - [KISS→GICP 后端](docs/kiss_gicp_acceptance.md)
+- [受限 KISS 恢复 ROS 链](docs/kiss_recovery_ros_acceptance.md)
 - [冻结地图 ROS 定位链](docs/frozen_map_localization_acceptance.md)
 - [定位健康与运动许可](docs/motion_gate_acceptance.md)
 - [串口字段说明](docs/my_serial_py_interface.md)
 - [架构与 TF 契约](docs/architecture_contract.md)
 
-下一步接入 KISS 丢失恢复、任务权限节点，以及大修正的独立确认和停车重规划；
+下一步接入自动丢失触发、任务权限节点，以及大修正的停车确认和重规划事务；
 之后完成真实传感器/LIO 链路、优化建图、TDT 和最终控制链。
 每个独立步骤先在 asus 验证，再以中文 commit 推送。提交身份统一为 `kswlt`。

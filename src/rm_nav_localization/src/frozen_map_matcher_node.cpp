@@ -1,5 +1,7 @@
 #include "rm_nav_localization/ros_conversions.hpp"
 #include "rm_nav_registration/small_gicp_backend.hpp"
+#include "rm_nav_registration/kiss_gicp_backend.hpp"
+#include <rm_nav_interfaces/msg/recovery_request.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <limits>
@@ -27,6 +29,37 @@ public:
     config.num_threads = declare_parameter("num_threads", 2);
     config.max_iterations = declare_parameter("max_iterations", 40);
     backend_ = std::make_unique<rm_nav_registration::SmallGicpBackend>(config);
+    rm_nav_registration::KissGicpConfig recovery_config;
+    recovery_config.refinement = config;
+    recovery_config.feature_resolution = declare_parameter("kiss_feature_resolution", 0.3);
+    recovery_config.num_threads = config.num_threads;
+    recovery_backend_ = std::make_unique<rm_nav_registration::KissGicpBackend>(recovery_config);
+    recovery_sub_ = create_subscription<rm_nav_interfaces::msg::RecoveryRequest>(
+      "/localization/recovery_request", rclcpp::QoS(1).transient_local(),
+      [this](rm_nav_interfaces::msg::RecoveryRequest::ConstSharedPtr msg) {
+        const auto stamp = rclcpp::Time(msg->header.stamp, get_clock()->get_clock_type());
+        const double age = (now() - stamp).seconds();
+        const auto finite = [](double value) { return std::isfinite(value); };
+        if (msg->header.frame_id != map_frame_ || msg->map_version != map_version_ ||
+            msg->recovery_id == 0 || age < -0.1 || !finite(msg->timeout) ||
+            msg->timeout <= 0 || age > msg->timeout || !finite(msg->radius) || msg->radius <= 0 ||
+            !finite(msg->target_feature_range) || msg->target_feature_range <= 0 ||
+            !finite(msg->min_x) || !finite(msg->max_x) || !finite(msg->min_y) || !finite(msg->max_y) ||
+            msg->min_x >= msg->max_x || msg->min_y >= msg->max_y ||
+            !finite(msg->center.x) || !finite(msg->center.y) ||
+            msg->center.x < msg->min_x || msg->center.x > msg->max_x ||
+            msg->center.y < msg->min_y || msg->center.y > msg->max_y) {
+          RCLCPP_WARN(get_logger(), "Invalid or expired recovery request"); return;
+        }
+        try {
+          from_ros_transform(msg->prior);
+          recovery_request_ = msg;
+          recovery_deadline_ = std::chrono::steady_clock::now() +
+            std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+              std::chrono::duration<double>(msg->timeout - std::max(0.0, age)));
+          last_start_ = {};  // New session can schedule immediately on a fresh observation.
+        } catch (const std::exception & e) { RCLCPP_WARN(get_logger(), "%s", e.what()); }
+      });
     estimates_ = create_publisher<rm_nav_interfaces::msg::RegistrationEstimate>("/localization/estimate", 10);
     map_sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(
       "/localization/frozen_map", rclcpp::QoS(1).transient_local(),
@@ -82,11 +115,15 @@ private:
         throw std::invalid_argument("Submap frame, timestamp or age invalid");
       }
       const auto current = std::chrono::steady_clock::now();
+      const bool recovering = static_cast<bool>(recovery_request_);
+      if (recovering && (current > recovery_deadline_ ||
+          stamp < rclcpp::Time(recovery_request_->header.stamp, get_clock()->get_clock_type()))) return;
+      const double frequency = recovering ? 1.0 : match_hz_;
       if (last_start_ != std::chrono::steady_clock::time_point{} &&
-          std::chrono::duration<double>(current - last_start_).count() < 1.0 / match_hz_) return;
+          std::chrono::duration<double>(current - last_start_).count() < 1.0 / frequency) return;
       rm_nav_registration::RegistrationRequest request;
-      request.source_points = read_xyz(msg, 1000000);
-      request.initial_target_T_source = seed_;
+      request.source_points = read_xyz(msg, recovering ? 50000 : 1000000);
+      request.initial_target_T_source = recovering ? from_ros_transform(recovery_request_->prior) : seed_;
       Eigen::Vector3d lower = Eigen::Vector3d::Constant(std::numeric_limits<double>::infinity());
       Eigen::Vector3d upper = -lower;
       for (const auto & p : request.source_points) {
@@ -95,13 +132,24 @@ private:
       }
       lower.array() -= padding_; upper.array() += padding_;
       for (const auto & p : map_points_) {
-        if ((p.array() >= lower.array()).all() && (p.array() <= upper.array()).all()) {
+        bool inside = (p.array() >= lower.array()).all() && (p.array() <= upper.array()).all();
+        if (recovering) {
+          const auto & region = *recovery_request_;
+          inside = p.x() >= region.min_x && p.x() <= region.max_x &&
+            p.y() >= region.min_y && p.y() <= region.max_y &&
+            (p.head<2>() - Eigen::Vector2d(region.center.x, region.center.y)).norm() <=
+              region.radius + region.target_feature_range;
+        }
+        if (inside) {
           request.target_points.push_back(p);
+          if (recovering && request.target_points.size() > 50000) {
+            throw std::invalid_argument("Recovery target exceeds point limit; reduce region or downsample map");
+          }
         }
       }
       last_start_ = current;
       last_stamp_ = stamp.nanoseconds();
-      const auto result = backend_->register_clouds(request);
+      const auto result = recovering ? recovery_backend_->register_clouds(request) : backend_->register_clouds(request);
       rm_nav_interfaces::msg::RegistrationEstimate out;
       out.header = msg.header; out.header.frame_id = map_frame_;
       out.source_frame = odom_frame_; out.map_version = map_version_;
@@ -114,6 +162,13 @@ private:
       out.runtime_ms = result.runtime_ms; out.confidence = result.confidence;
       out.source_point_count = result.source_point_count; out.target_point_count = result.target_point_count;
       out.iterations = result.iterations;
+      if (recovering) {
+        out.recovery_id = recovery_request_->recovery_id;
+        // FNV-1a detects exact reused cloud data; timestamps never contribute.
+        std::uint64_t fingerprint = 14695981039346656037ULL;
+        for (const auto byte : msg.data) { fingerprint ^= byte; fingerprint *= 1099511628211ULL; }
+        out.source_fingerprint = fingerprint == 0 ? 1 : fingerprint;
+      }
       for (int i = 0; i < 36; ++i) out.hessian[i] = result.hessian(i / 6, i % 6);
       estimates_->publish(out);
     } catch (const std::exception & e) {
@@ -130,6 +185,10 @@ private:
   std::vector<Eigen::Vector3d> map_points_;
   sensor_msgs::msg::PointCloud2::ConstSharedPtr map_msg_;
   std::unique_ptr<rm_nav_registration::SmallGicpBackend> backend_;
+  std::unique_ptr<rm_nav_registration::KissGicpBackend> recovery_backend_;
+  rm_nav_interfaces::msg::RecoveryRequest::ConstSharedPtr recovery_request_;
+  std::chrono::steady_clock::time_point recovery_deadline_{};
+  rclcpp::Subscription<rm_nav_interfaces::msg::RecoveryRequest>::SharedPtr recovery_sub_;
   rclcpp::Publisher<rm_nav_interfaces::msg::RegistrationEstimate>::SharedPtr estimates_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr map_sub_, cloud_sub_;
   rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr guess_sub_, accepted_sub_;

@@ -6,6 +6,8 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/RegistrationEstimate.msg"
+  "msg/RecoveryRequest.msg"
+  "srv/RequestRecovery.srv"
   DEPENDENCIES std_msgs geometry_msgs)
 ament_export_dependencies(rosidl_default_runtime)
 install(FILES README.md DESTINATION share/${PROJECT_NAME})

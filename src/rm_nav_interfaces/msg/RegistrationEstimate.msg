@@ -26,3 +26,6 @@ float64[36] hessian
 uint32 source_point_count
 uint32 target_point_count
 uint32 iterations
+# Zero outside a recovery session. Fingerprint excludes timestamp.
+uint64 recovery_id
+uint64 source_fingerprint
