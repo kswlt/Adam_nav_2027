@@ -2,6 +2,8 @@
 #include "rm_nav_registration/small_gicp_backend.hpp"
 #include "rm_nav_registration/kiss_gicp_backend.hpp"
 #include <rm_nav_interfaces/msg/recovery_request.hpp>
+#include <rm_nav_interfaces/msg/recovery_state.hpp>
+#include <std_msgs/msg/bool.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <limits>
@@ -61,6 +63,23 @@ public:
         } catch (const std::exception & e) { RCLCPP_WARN(get_logger(), "%s", e.what()); }
       });
     estimates_ = create_publisher<rm_nav_interfaces::msg::RegistrationEstimate>("/localization/estimate", 10);
+    map_valid_pub_ = create_publisher<std_msgs::msg::Bool>(
+      "/localization/frozen_map_valid", rclcpp::QoS(1).transient_local());
+    map_timer_ = create_wall_timer(std::chrono::milliseconds(100), [this]() {
+      std_msgs::msg::Bool valid; valid.data = map_msg_ && !map_conflict_; map_valid_pub_->publish(valid);
+    });
+    state_sub_ = create_subscription<rm_nav_interfaces::msg::RecoveryState>(
+      "/localization/recovery_state", rclcpp::QoS(1).transient_local(),
+      [this](rm_nav_interfaces::msg::RecoveryState::ConstSharedPtr msg) {
+        if (recovery_request_ && msg->map_version == map_version_ &&
+            msg->recovery_id == recovery_request_->recovery_id &&
+            msg->phase >= msg->COMMITTED && msg->phase <= msg->WAIT_REPLAN) {
+          try {
+            seed_ = from_ros_transform(msg->map_to_odom);
+            recovery_request_.reset(); last_start_ = {};
+          } catch (const std::exception & e) { RCLCPP_WARN(get_logger(), "%s", e.what()); }
+        }
+      });
     map_sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(
       "/localization/frozen_map", rclcpp::QoS(1).transient_local(),
       [this](sensor_msgs::msg::PointCloud2::ConstSharedPtr msg) {
@@ -73,6 +92,7 @@ public:
                 msg->row_step != map_msg_->row_step || msg->point_step != map_msg_->point_step ||
                 msg->is_bigendian != map_msg_->is_bigendian) {
               map_conflict_ = true;
+              std_msgs::msg::Bool invalid; invalid.data = false; map_valid_pub_->publish(invalid);
               throw std::invalid_argument("Frozen map changed within the same version; restart session");
             }
             return;
@@ -189,6 +209,9 @@ private:
   rm_nav_interfaces::msg::RecoveryRequest::ConstSharedPtr recovery_request_;
   std::chrono::steady_clock::time_point recovery_deadline_{};
   rclcpp::Subscription<rm_nav_interfaces::msg::RecoveryRequest>::SharedPtr recovery_sub_;
+  rclcpp::Subscription<rm_nav_interfaces::msg::RecoveryState>::SharedPtr state_sub_;
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr map_valid_pub_;
+  rclcpp::TimerBase::SharedPtr map_timer_;
   rclcpp::Publisher<rm_nav_interfaces::msg::RegistrationEstimate>::SharedPtr estimates_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr map_sub_, cloud_sub_;
   rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr guess_sub_, accepted_sub_;

@@ -1,0 +1,6 @@
+# Starts an asynchronous stop/cancel/TF/clear transaction. accepted is not completion.
+string map_version
+uint64 recovery_id
+---
+bool accepted
+string reason

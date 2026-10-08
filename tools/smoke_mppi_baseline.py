@@ -26,7 +26,7 @@ from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 
 
 class IdealPlant(Node):
-    def __init__(self):
+    def __init__(self, publish_global_tf=True, publish_localization_health=True):
         super().__init__('baseline_acceptance_plant')
         self.x = self.y = self.yaw = 0.0
         self.latest = TwistStamped()
@@ -37,9 +37,9 @@ class IdealPlant(Node):
         self.state_clients = {}
         self.state_futures = {}
         self.localization_healthy = True
-        self.publish_health = True
+        self.publish_health = publish_localization_health
         self.motion_enabled = True
-        self.health = self.create_publisher(Bool, '/localization/healthy', 10)
+        self.health = self.create_publisher(Bool, '/localization/healthy', 10) if publish_localization_health else None
         self.enable = self.create_publisher(Bool, '/nav/motion_enable', 10)
         self.raw = self.create_publisher(TwistStamped, '/nav/cmd_vel_raw', 10)
         self.create_subscription(TwistStamped, '/nav/cmd_vel_safe', self.command, 10)
@@ -54,7 +54,8 @@ class IdealPlant(Node):
         t.header.frame_id = 'map'
         t.child_frame_id = 'odom'
         t.transform.rotation.w = 1.0
-        self.static_tf.sendTransform(t)
+        if publish_global_tf:
+            self.static_tf.sendTransform(t)
         grid = OccupancyGrid()
         grid.header.frame_id = 'map'
         grid.info.resolution = 0.05

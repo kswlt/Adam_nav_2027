@@ -7,7 +7,9 @@ LIO adapter, chassis resolver, state estimation and relocalization.
 启动、话题和故障验收见 [冻结地图定位验收](../../docs/frozen_map_localization_acceptance.md)。
 KISS→GICP 受限恢复会话已接入；不同源点云复核候选，期间健康为 false。
 见 [恢复调度验收](../../docs/kiss_recovery_ros_acceptance.md)。健康信号已接到 motion_gate。
-输入子地图生成、LIO、EKF、自动恢复触发及停车/重规划提交事务仍待完成。
+实测停车门、Nav2 取消、TF 提交及双清图事务已接入，见
+[事务验收](../../docs/recovery_transaction_acceptance.md)。默认关闭，提交后仍等待新规划。
+输入子地图生成、LIO、EKF、自动恢复触发、实车反馈与新规划/运动恢复仍待完成。
 
 The first implemented component is `ChassisResolver`. It applies the PDF-defined relation:
 

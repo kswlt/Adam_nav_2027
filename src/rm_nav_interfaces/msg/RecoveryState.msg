@@ -1,0 +1,13 @@
+uint8 SEARCHING=0
+uint8 CONFIRMED=1
+uint8 CANCELLING=2
+uint8 COMMITTED=3
+uint8 CLEARING=4
+uint8 WAIT_REPLAN=5
+uint8 FAULT=6
+std_msgs/Header header
+string map_version
+uint64 recovery_id
+uint8 phase
+geometry_msgs/Transform map_to_odom
+string reason

@@ -7,11 +7,11 @@
 | P2 | 原版冻结保留、分离串口桥与协议、CRC/断帧单测、ROS/PTY 集成 | 软件兼容性和超时停车通过；实车报文仍需下位机抓包确认 |
 | P3 | TF 所有权、CalibrationBundle、ObservationBatch | 接口完成；真实外参待测量 |
 | P4 | SE(3) chassis resolver、LocalSubmap、robot state 边界 | 数学单测完成；真实 LIO/IMU/轮速接入待完成 |
-| P5 | 真实 small_gicp、受限 KISS→GICP ROS会话、不同点云双次候选复核与健康输出门 | 软件恢复会话通过；自动触发、停车/TF提交/重规划事务和真实回放待完成 |
+| P5 | 真实GICP/KISS、双次候选、停车门、Nav2取消/TF提交/双清图事务 | 软件事务通过；自动触发、新规划与运动恢复、真实回放待完成 |
 | P6 | Keyframe、LoopCandidate、MapBundle 契约 | 编排接口完成；GTSAM/地图重建待接入 |
 | P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch | 理想全向模型导航集成通过；环境查询和过滤层待接入 |
 | P8 | SweptFootprint、CommandSynthesizer、MPPI → smoother → collision monitor | 横移导航及三种停车集成通过；TDT/Omni PID/串口适配待接入 |
-| P9 | NavSupervisor接口、健康/许可输出门、心跳/速度超时、非法命令拒绝 | 输出门与完整MPPI链验收通过；任务权限发布、恢复事务与实车控制待完成 |
+| P9 | 健康/许可输出门、速度超时、恢复提交及取消/清图失败保持 | 软件门与事务通过；任务权限发布、恢复后新规划及实车控制待完成 |
 | P10 | 全量构建、CTest、版本化配置、远端推送 | 工程验证完成；实车回放和长期运行待完成 |
 
 ## 不得误报为完成的项目
