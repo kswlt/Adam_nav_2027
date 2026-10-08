@@ -1,0 +1,5 @@
+repositories:
+  small_gicp:
+    type: git
+    url: https://github.com/koide3/small_gicp.git
+    version: fa0cfc983417c044b6036f71dfa448038bb9c820

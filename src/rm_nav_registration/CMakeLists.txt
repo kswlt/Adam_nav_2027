@@ -2,10 +2,16 @@ cmake_minimum_required(VERSION 3.8)
 project(rm_nav_registration)
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(small_gicp CONFIG REQUIRED)
 
 add_library(registration_types INTERFACE)
-target_include_directories(registration_types INTERFACE include)
+target_include_directories(registration_types INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 target_link_libraries(registration_types INTERFACE Eigen3::Eigen)
+target_compile_features(registration_types INTERFACE cxx_std_17)
+add_library(small_gicp_backend src/small_gicp_backend.cpp)
+target_link_libraries(small_gicp_backend PUBLIC registration_types PRIVATE small_gicp::small_gicp)
 
 add_executable(registration_types_test test/registration_types_test.cpp)
 target_link_libraries(registration_types_test registration_types)
@@ -17,10 +23,20 @@ enable_testing()
 add_test(NAME registration_types_test COMMAND registration_types_test)
 add_test(NAME localization_validator_test COMMAND localization_validator_test)
 add_test(NAME registration_backend_test COMMAND registration_backend_test)
+add_executable(small_gicp_backend_test test/small_gicp_backend_test.cpp)
+target_link_libraries(small_gicp_backend_test small_gicp_backend)
+add_test(NAME small_gicp_backend_test COMMAND small_gicp_backend_test)
+foreach(test_target registration_types_test localization_validator_test registration_backend_test)
+  target_compile_options(${test_target} PRIVATE -UNDEBUG)
+endforeach()
 
 install(TARGETS registration_types_test localization_validator_test registration_backend_test
   RUNTIME DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY include/ DESTINATION include)
+install(TARGETS registration_types small_gicp_backend EXPORT registration_targets
+  ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
+ament_export_targets(registration_targets HAS_LIBRARY_TARGET)
+ament_export_dependencies(Eigen3 small_gicp)
 ament_export_include_directories(include)
 install(FILES README.md DESTINATION share/${PROJECT_NAME})
 ament_package()

@@ -7,7 +7,7 @@
 | P2 | 原版冻结保留、分离串口桥与协议、CRC/断帧单测、ROS/PTY 集成 | 软件兼容性和超时停车通过；实车报文仍需下位机抓包确认 |
 | P3 | TF 所有权、CalibrationBundle、ObservationBatch | 接口完成；真实外参待测量 |
 | P4 | SE(3) chassis resolver、LocalSubmap、robot state 边界 | 数学单测完成；真实 LIO/IMU/轮速接入待完成 |
-| P5 | RegistrationResult、Validator、MapOdom、状态机、候选区域 | 状态与契约完成；small_gicp/KISS 后端待接入 |
+| P5 | 真实 small_gicp 后端、Hessian/残差度量、Validator、MapOdom/状态机契约 | 合成点云精度/拒绝测试通过；ROS冻结地图流程和KISS恢复待接入 |
 | P6 | Keyframe、LoopCandidate、MapBundle 契约 | 编排接口完成；GTSAM/地图重建待接入 |
 | P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch | 理想全向模型导航集成通过；环境查询和过滤层待接入 |
 | P8 | SweptFootprint、CommandSynthesizer、MPPI → smoother → collision monitor | 横移导航及三种停车集成通过；TDT/Omni PID/串口适配待接入 |

@@ -30,9 +30,12 @@ big_gimbal_yaw -> lidar     CalibrationBundle
 
 先完成：small_point_lio、dynamic-gimbal resolver、robot_localization、Nav2 Costmap、Nav2 Planner、MPPI Omni、Velocity Smoother、Collision Monitor 和 `my_serial_py`。
 
-## Enhanced Profile
+## 技术方案要求的完整能力
 
-在基线通过固定数据和实车检查后，按需启用 KISS、GTSAM、ROG-Map/ESDF、TDT 轨迹后端、Omni PID、动态障碍预测和 ScanContext。
+基线之后继续实现 small_gicp 局部配准、KISS 丢失恢复、验收器、MapOdomManager、
+OPTIMIZED_BUILD 的 GTSAM 位姿优化与原始关键帧地图重建，以及 TDT 轨迹后端和最终 Omni PID。
+这些属于技术方案的目标能力，不能因为 MPPI 基线通过而省略。
+ROG-Map/ESDF、动态障碍预测和 ScanContext 等增强项按技术方案中的启用条件接入。
 
 ## 不重复实现
 

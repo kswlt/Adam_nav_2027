@@ -1,4 +1,5 @@
 schema_version: 1
+lock_status: partial  # Only sources with a commit field are actually pinned.
 platform:
   os: ubuntu-24.04
   ros: jazzy
@@ -6,19 +7,25 @@ platform:
   target: ASUS NUC 15 Pro
 profiles:
   stable_baseline:
+    - small_gicp
     - ros-jazzy-nav2-bringup
     - ros-jazzy-nav2-mppi-controller
     - ros-jazzy-ros2-control
     - ros-jazzy-robot-localization
     - ros-jazzy-grid-map
     - ros-jazzy-diagnostic-updater
-  enhanced:
-    - small_gicp
+  target_required:
     - kiss_matcher
     - gtsam
     - tdt-nav-kit
+  enhanced:
     - rog_map
 sources:
+  small_gicp:
+    url: https://github.com/koide3/small_gicp.git
+    commit: fa0cfc983417c044b6036f71dfa448038bb9c820
+    upstream_version: 1.0.1
+    license: MIT
   my_serial_py:
     source: original-workspace
     path: src/my_serial_py

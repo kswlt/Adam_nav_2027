@@ -6,5 +6,7 @@
   <maintainer email="nav@kswlt.dev">RM Nav Team</maintainer>
   <license>Apache-2.0</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>eigen</depend>
+  <depend>small_gicp</depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>
