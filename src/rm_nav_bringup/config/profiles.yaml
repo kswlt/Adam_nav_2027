@@ -1,0 +1,19 @@
+profiles:
+  stable_baseline:
+    localization: small_point_lio
+    environment: nav2_costmap
+    planner: nav2_planner
+    controller: nav2_mppi_omni
+    trajectory_backend: disabled
+    registration_global_recovery: disabled
+    safety: collision_monitor
+  enhanced:
+    localization: small_point_lio_with_relocalization
+    environment: nav2_costmap_with_optional_rog_adapter
+    planner: nav2_planner
+    controller: omni_pid
+    trajectory_backend: tdt_polynomial
+    registration_global_recovery: kiss_then_gicp
+    safety: swept_footprint_and_collision_monitor
+defaults:
+  active_profile: stable_baseline
