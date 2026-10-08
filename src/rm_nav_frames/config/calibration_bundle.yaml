@@ -1,0 +1,25 @@
+schema_version: 1
+bundle_id: v0001
+status: draft
+frames:
+  map: map
+  odom: odom
+  base_footprint: base_footprint
+  chassis: chassis
+  big_gimbal_yaw: big_gimbal_yaw
+sensors:
+  front_mid360:
+    parent: big_gimbal_yaw
+    roles: [localization, obstacle, terrain, corridor]
+  rear_mid360:
+    parent: chassis
+    roles: [obstacle, terrain]
+extrinsics:
+  source: pending_measurement
+  file: sensor_extrinsics.yaml
+timing:
+  source: pending_measurement
+  file: time_offsets.yaml
+robot:
+  footprint_file: footprint.yaml
+  wheel_geometry_file: wheel_geometry.yaml
