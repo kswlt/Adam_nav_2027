@@ -16,4 +16,5 @@ install(PROGRAMS scripts/gimbal_tf.py DESTINATION lib/${PROJECT_NAME} RENAME gim
 install(PROGRAMS scripts/pcd_map_publisher.py DESTINATION lib/${PROJECT_NAME} RENAME pcd_map_publisher)
 install(PROGRAMS scripts/foxglove_trace_publisher.py DESTINATION lib/${PROJECT_NAME} RENAME foxglove_trace_publisher)
 install(PROGRAMS scripts/foxglove_graph_publisher.py DESTINATION lib/${PROJECT_NAME} RENAME foxglove_graph_publisher)
+install(PROGRAMS scripts/foxglove_map_status.py DESTINATION lib/${PROJECT_NAME} RENAME foxglove_map_status)
 ament_package()

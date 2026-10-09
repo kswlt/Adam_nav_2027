@@ -26,6 +26,10 @@ def nodes(context):
                             name='foxglove_graph_publisher',
                             arguments=['--poses', graph_poses, '--loops', LaunchConfiguration('graph_loops').perform(context),
                                        '--frame', LaunchConfiguration('map_frame').perform(context)], output='screen'))
+    manifest = LaunchConfiguration('map_bundle').perform(context)
+    if manifest:
+        actions.append(Node(package='rm_nav_bringup', executable='foxglove_map_status',
+                            name='foxglove_map_status', arguments=['--manifest', manifest], output='screen'))
     return actions
 
 
@@ -37,5 +41,6 @@ def generate_launch_description():
         DeclareLaunchArgument('map_pcd', default_value='', description='Optional binary XYZ PCD to publish latched'),
         DeclareLaunchArgument('graph_poses', default_value='', description='Optional optimized_poses.json'),
         DeclareLaunchArgument('graph_loops', default_value='', description='Optional loop_edges.json'),
+        DeclareLaunchArgument('map_bundle', default_value='', description='Optional map_bundle.json manifest'),
         OpaqueFunction(function=nodes),
     ])
