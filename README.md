@@ -29,6 +29,8 @@ Foxglove 查看地图、TF、原始点云及实时建图请看 [Foxglove 可视�
 MPPI 基线已提供官方 `pointcloud_to_laserscan` 适配器，可将质量门后的 MID-360 点云转换为
 Nav2 使用的 `/scan`；默认关闭，必须先完成实测 TF、传感器高度和 footprint 验收后再启用，
 详见 [MPPI 点云适配说明](docs/mppi_pointcloud_scan_adapter.md)。
+已用原版静态 TF 完成现场接口联调，`/scan` 已收到 `base_link` 帧的 360 线束；证据仅覆盖
+消息接口和 Costmap 输入，不代表实测标定或整车验收。
 
 MID-360 已接通 ASUS，修复有线/无线重叠路由。原始点云质量门已接入，可拒绝有效回波不足、
 几何退化、时间异常和断流，并联锁 LIO 健康；移除遮挡后每帧有效点约 1.41–1.48 万，

@@ -1,0 +1,20 @@
+{
+  "test": "mid360_pointcloud_to_laserscan_live",
+  "date": "2026-10-10",
+  "source_topic": "/sensors/front_mid360/guarded_points",
+  "output_topic": "/scan",
+  "target_frame": "base_link",
+  "tf_source": "原版Adam rm_static_tf 静态外参，待实测复核",
+  "scan_angle_increment_rad": 0.01745329238474369,
+  "scan_bins": 360,
+  "range_min_m": 0.15,
+  "range_max_m": 30.0,
+  "finite_ranges_observed": true,
+  "infinite_ranges_observed": true,
+  "result": "pass_for_costmap_interface_only",
+  "limitations": [
+    "未使用实测 CalibrationBundle",
+    "未完成真实 footprint 和制动距离验收",
+    "不代表定位精度或整车导航通过"
+  ]
+}
