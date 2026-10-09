@@ -17,4 +17,5 @@ install(PROGRAMS scripts/pcd_map_publisher.py DESTINATION lib/${PROJECT_NAME} RE
 install(PROGRAMS scripts/foxglove_trace_publisher.py DESTINATION lib/${PROJECT_NAME} RENAME foxglove_trace_publisher)
 install(PROGRAMS scripts/foxglove_graph_publisher.py DESTINATION lib/${PROJECT_NAME} RENAME foxglove_graph_publisher)
 install(PROGRAMS scripts/foxglove_map_status.py DESTINATION lib/${PROJECT_NAME} RENAME foxglove_map_status)
+install(PROGRAMS scripts/live_map_preview.py DESTINATION lib/${PROJECT_NAME} RENAME live_map_preview)
 ament_package()

@@ -42,6 +42,8 @@ ws://192.168.1.145:8765
 | Nav2 轨迹 | `/visualization/nav_path` | `nav_msgs/Path`，有界 5000 点 |
 | 优化轨迹/关键帧/回环 | `/visualization/optimization_graph` | `MarkerArray`，离线建图结果 |
 | 地图版本状态 | `/visualization/map_bundle_status` | JSON `String`，版本、哈希、坐标系、发布资格 |
+| 实时累积地图预览 | `/visualization/live_map_preview` | `odom` 坐标、有界体素预览，不是优化/冻结地图 |
+| 实时预览状态 | `/visualization/live_map_status` | 点数、体素上限、淘汰数、断流状态 |
 | 地图修正 | TF `map → odom` | 仅 MapOdomManager 发布 |
 | 质量状态 | `/sensors/front_mid360/cloud_healthy` | 通过/拒绝 |
 | 质量原因 | `/sensors/front_mid360/cloud_reason` | 退化、超时、字段错误原因 |
@@ -114,6 +116,8 @@ ROS_DOMAIN_ID=104 ros2 launch rm_nav_bringup foxglove_visualization.launch.py
 
 在 Foxglove 中重点观察 `/livox/lidar` → `/sensors/front_mid360/guarded_points` →
 `/lio/deskewed_odom_cloud` → `/localization/odom_submap` 的数据链。
+另外观察 `/visualization/live_map_preview`；它将去畸变 `odom` 点云做有界体素累积，适合实时看建图进展。
+它断流时会在 `/visualization/live_map_status` 标记 `input_stale=true`，不会把旧点云重新伪装成新时间。
 `/mapping/keyframe_archive` 只是提交状态，不是点云；实时“地图效果”应使用
 `/localization/odom_submap`。关键帧归档停止后，再运行离线优化器生成最终 PCD；
 离线 PCD 不会自动覆盖实时子地图。

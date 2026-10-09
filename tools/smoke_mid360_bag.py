@@ -23,6 +23,7 @@ def main():
     parser.add_argument('--bag', required=True)
     parser.add_argument('--output', required=True)
     parser.add_argument('--deps', default='/home/asus/nav_deps')
+    parser.add_argument('--with-visualization', action='store_true')
     parser.add_argument('--max-speed', type=float, default=5.0)
     parser.add_argument('--max-displacement', type=float, default=10.0)
     parser.add_argument('--max-rotation', type=float, default=1.0,
@@ -56,6 +57,18 @@ def main():
     rclpy.init()
     node = Node('mid360_real_bag_lio_probe')
     odom, clouds, tf, errors = [], [], [], []
+    visual = {'path_messages':0, 'path_poses':0, 'preview_messages':0, 'preview_points':0}
+    if args.with_visualization:
+        from nav_msgs.msg import Path as RosPath
+        from rclpy.qos import QoSProfile, DurabilityPolicy
+        qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        def path_cb(m):
+            visual['path_messages'] += 1; visual['path_poses'] = len(m.poses)
+        def preview_cb(m):
+            visual['preview_messages'] += 1; visual['preview_points'] = m.width*m.height
+            if m.header.frame_id != 'odom': errors.append('preview coordinate frame invalid')
+        node.create_subscription(RosPath, '/visualization/lio_path', path_cb, qos)
+        node.create_subscription(PointCloud2, '/visualization/live_map_preview', preview_cb, qos)
     input_last = 0
     first_input = None
     def stamp(m):
@@ -88,6 +101,10 @@ def main():
         p = subprocess.Popen(cmd,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
         procs.append(p); return p
     try:
+        visual_procs = []
+        if args.with_visualization:
+            for exe in ('foxglove_trace_publisher', 'live_map_preview'):
+                visual_procs.append(launch(['ros2','run','rm_nav_bringup',exe],exe+'.log'))
         lio = launch(['ros2','run','small_point_lio','small_point_lio_node',
                       '--ros-args','--params-file',str(config),
                       '-r','/Odometry:=/lio/sensor_odometry',
@@ -105,6 +122,10 @@ def main():
         while time.monotonic()-start < 3:
             rclpy.spin_once(node,timeout_sec=.01)
         if lio.poll() is not None: raise RuntimeError('LIO exited early')
+        if args.with_visualization:
+            if any(p.poll() is not None for p in visual_procs): raise RuntimeError('visualization process exited')
+            if visual['path_poses'] < 30 or visual['preview_points'] < 100 or visual['preview_messages'] < 3:
+                raise RuntimeError('real LIO output did not generate live trace/map preview')
     except Exception as exc:
         errors.append(str(exc))
     finally:
@@ -137,6 +158,7 @@ def main():
     if not motion_passed: errors.append('estimated motion exceeds explicit diagnostic envelope')
     passed = transport_passed and motion_passed
     report = {'passed': passed, 'transport_passed':transport_passed,
+              'visualization_enabled':args.with_visualization, 'visualization':visual,
               'motion_envelope_passed':motion_passed,
               'max_displacement_m':displacement,'max_step_speed_mps':speed,
               'max_rotation_rad':angle,

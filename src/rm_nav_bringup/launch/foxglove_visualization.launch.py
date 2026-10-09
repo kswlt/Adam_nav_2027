@@ -15,6 +15,10 @@ def nodes(context):
     actions.append(Node(package='rm_nav_bringup', executable='foxglove_trace_publisher',
                         name='foxglove_trace_publisher',
                         output='screen'))
+    actions.append(Node(package='rm_nav_bringup', executable='live_map_preview',
+                        condition=IfCondition(LaunchConfiguration('enable_live_preview')),
+                        arguments=['--max-voxels', LaunchConfiguration('preview_max_voxels').perform(context)],
+                        output='screen'))
     if map_pcd:
         actions.append(Node(package='rm_nav_bringup', executable='pcd_map_publisher',
                             name='foxglove_map_cloud',
@@ -38,6 +42,8 @@ def generate_launch_description():
         DeclareLaunchArgument('port', default_value='8765'),
         DeclareLaunchArgument('address', default_value='0.0.0.0'),
         DeclareLaunchArgument('map_frame', default_value='map'),
+        DeclareLaunchArgument('enable_live_preview', default_value='true'),
+        DeclareLaunchArgument('preview_max_voxels', default_value='200000'),
         DeclareLaunchArgument('map_pcd', default_value='', description='Optional binary XYZ PCD to publish latched'),
         DeclareLaunchArgument('graph_poses', default_value='', description='Optional optimized_poses.json'),
         DeclareLaunchArgument('graph_loops', default_value='', description='Optional loop_edges.json'),

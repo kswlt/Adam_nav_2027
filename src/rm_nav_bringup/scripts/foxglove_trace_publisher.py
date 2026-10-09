@@ -28,8 +28,10 @@ class TracePublisher(Node):
         if not msg.header.frame_id or not all(math.isfinite(v) for v in values): return
         if abs(sum(v*v for v in [q.x,q.y,q.z,q.w])-1) > 1e-3: return
         buffer = self.buffers[output]
+        source_ns = msg.header.stamp.sec*10**9 + msg.header.stamp.nanosec
+        last_ns = (buffer[-1].header.stamp.sec*10**9 + buffer[-1].header.stamp.nanosec) if buffer else -1
         if buffer and (msg.header.frame_id != buffer[-1].header.frame_id or
-                       msg.header.stamp <= buffer[-1].header.stamp): return
+                       source_ns <= last_ns): return
         pose = msg.pose.pose
         from geometry_msgs.msg import PoseStamped
         sample = PoseStamped(); sample.header = msg.header; sample.pose = pose
