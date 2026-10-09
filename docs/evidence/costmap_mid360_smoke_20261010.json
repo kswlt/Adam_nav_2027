@@ -1,0 +1,17 @@
+{
+  "test": "costmap_mid360_smoke",
+  "date": "2026-10-10",
+  "launch": "costmap_mid360_smoke.launch.py",
+  "map_server": "activated",
+  "map": {"width": 20, "height": 20, "resolution_m": 0.1, "frame": "map"},
+  "global_costmap": "activated_and_resized_from_map",
+  "local_costmap": "activated",
+  "local_costmap_observed_rate_hz": 3.456,
+  "pointcloud_to_laserscan": "subscribed_when_costmap_activated",
+  "hardware_connected": false,
+  "limitations": [
+    "测试地图，不是正式场地地图",
+    "legacy Adam 静态外参",
+    "未做真实 footprint、障碍物位置和制动距离验收"
+  ]
+}
