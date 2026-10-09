@@ -5,8 +5,8 @@
 | P0 | 原版、技术方案、参考仓库审计；Jazzy 远端确认 | 已完成 |
 | P1 | 14 个包可在 Jazzy 构建 | 已完成 |
 | P2 | 原版冻结保留、分离串口桥与协议、CRC/断帧单测、ROS/PTY 集成 | 软件兼容性和超时停车通过；实车报文仍需下位机抓包确认 |
-| P3 | TF 所有权、CalibrationBundle、ObservationBatch | 接口完成；真实外参待测量 |
-| P4 | SE(3) chassis resolver、LocalSubmap、robot state 边界 | 数学单测完成；真实 LIO/IMU/轮速接入待完成 |
+| P3 | TF 所有权、显式标定模板、绝对编码器时间戳 TF、ObservationBatch | 动态 TF 软件验收通过；真实外参/时钟/原生 Sensor Hub 待接入 |
+| P4 | 固定上游 small_point_lio、完整 SE(3) ROS resolver、协方差传播、真实 robot_localization | 上游合成传感器与状态链分别验收通过；真实驱动/回放、Nav2 状态适配及轮速反馈待完成 |
 | P5 | 真实GICP/KISS、双次候选、受限自动触发、停车/取消/TF/清图及新任务放行 | 软件恢复链已接入；真实回放与实车稳定性待验证 |
 | P6 | Keyframe、LoopCandidate、MapBundle 契约 | 编排接口完成；GTSAM/地图重建待接入 |
 | P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch | 理想全向模型导航集成通过；环境查询和过滤层待接入 |

@@ -1,0 +1,26 @@
+schema_version: 1
+bundle_id: pending_measurement
+status: draft  # local_state.launch.py refuses this template until measured and verified.
+frames:
+  base_footprint: base_footprint
+  chassis: chassis
+  big_gimbal_yaw: big_gimbal_yaw
+  imu: front_mid360_imu
+  lidar: front_mid360
+encoder:
+  joint: big_gimbal_yaw
+  sign: 1.0
+  zero_offset: null
+transforms:
+  footprint_to_chassis:
+    translation: [null, null, null]
+    quaternion_xyzw: [null, null, null, null]
+  chassis_to_yaw_zero:
+    translation: [null, null, null]
+    quaternion_xyzw: [null, null, null, null]
+  yaw_to_imu:
+    translation: [null, null, null]
+    quaternion_xyzw: [null, null, null, null]
+  imu_to_lidar:
+    translation: [null, null, null]
+    quaternion_xyzw: [null, null, null, null]

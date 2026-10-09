@@ -11,7 +11,10 @@ KISS→GICP 受限恢复会话已接入；不同源点云复核候选，期间�
 [事务验收](../../docs/recovery_transaction_acceptance.md)。默认关闭，提交后仍等待新规划。
 受限自动恢复、提交后稳定确认与新任务放行已接入，见
 [任务验收](../../docs/task_supervisor_acceptance.md)。
-输入子地图生成、真实 LIO、EKF、实车反馈与回放仍待完成。
+上游 small_point_lio 已固定版本构建；`sensor_pose_resolver` 按源时刻查询云台 TF，
+输出完整底盘位姿及杠杆臂传播后的协方差，交给真实 robot_localization EKF。
+见 [状态链验收](../../docs/local_state_acceptance.md)。
+输入子地图生成、实测标定、真实驱动/反馈与回放仍待完成。
 
 The first implemented component is `ChassisResolver`. It applies the PDF-defined relation:
 

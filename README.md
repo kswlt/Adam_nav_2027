@@ -16,7 +16,7 @@
 | 原版通信 | 26-byte RX / 54-byte TX、原 CRC/符号/yaw/话题兼容、ROS 虚拟串口、平移超时停车 | 实车抓包、断线重连和下位机 watchdog 联调 |
 | Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor；横移导航、障碍/雷达断流/命令超时停车 | 实车定位输入、测量足迹、硬件速度与 yaw 适配 |
 | 配准与恢复 | 真实 GICP/KISS、双候选、受限自动触发、停车/取消/TF/清图、新规划放行 | 真实点云回放与实车稳定性验证 |
-| TF 与定位 | 上游 small_point_lio 构建/合成输入、SE(3) resolver、独占 map→odom、健康/许可门 | 动态云台/EKF 联调、实际传感器与实车反馈 |
+| TF 与定位 | 上游 small_point_lio、时间对齐云台 TF/SE(3) resolver、真实 EKF、独占 map→odom | 实测标定、硬件同步、真实回放与状态/导航联锁 |
 | 优化建图 | 关键帧、回环候选、MapBundle 基础数据结构 | KISS 回环复核、GTSAM 优化、原始关键帧地图重建 |
 | 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
 
@@ -79,6 +79,9 @@ ROS_DOMAIN_ID=97 python3 tools/smoke_task_resume.py
 
 # 真实上游 Point-LIO：合成 PointCloud2/IMU 输入，不接物理传感器。
 ROS_DOMAIN_ID=98 python3 tools/smoke_small_point_lio.py
+
+# 真实云台 TF、resolver 和 EKF；编码器/原始位姿为明确的合成测试输入。
+ROS_DOMAIN_ID=99 python3 tools/smoke_local_state.py
 ```
 
 Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` TF。
@@ -116,6 +119,14 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 `/cmd_vel` 仅提供 xy 平移；`/cmd_yaw_angle` 提供 yaw 目标角（度），
 报文不发送 `angular.z`。因此现有平移 watchdog 不能替代全底盘停车联调。
 
+本地状态启动：
+`ros2 launch rm_nav_bringup local_state.launch.py calibration_file:=<实测标定> lio_params_file:=<驱动/滤波配置>`。
+模板未测量并默认拒绝启动；绝对云台反馈来自 `/hardware/gimbal_joint_states`，不使用
+`/contact_angle`。LIO 发布原始 IMU 位姿，resolver 按源时刻查询外参并保留完整 SE(3)，
+EKF 唯一发布 odom→base_footprint，状态输出 `/state/chassis`。
+当前没有自动把该状态转换为 Nav2 `/odom` 或接物理底盘；还需参考点适配与本地健康联锁。
+见 [动态云台状态链验收](docs/local_state_acceptance.md)。
+
 ## 包结构
 
 | 包 | 职责 |
@@ -135,6 +146,7 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 - [串口协议及 ROS/PTY](docs/serial_acceptance.md)
 - [small_gicp 后端](docs/small_gicp_acceptance.md)
 - [small_point_lio 上游接入](docs/small_point_lio_acceptance.md)
+- [动态云台与真实 EKF](docs/local_state_acceptance.md)
 - [KISS→GICP 后端](docs/kiss_gicp_acceptance.md)
 - [受限 KISS 恢复 ROS 链](docs/kiss_recovery_ros_acceptance.md)
 - [停车与恢复提交事务](docs/recovery_transaction_acceptance.md)
@@ -144,6 +156,7 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 - [串口字段说明](docs/my_serial_py_interface.md)
 - [架构与 TF 契约](docs/architecture_contract.md)
 
-下一步接入真实传感器/LIO、动态云台与 EKF，并完成实车速度反馈适配和回放；
+下一步接入 Sensor Hub、状态/导航参考点和健康联锁，并完成真实驱动、实测标定、
+硬件时间同步与回放；实车速度反馈仍需独立适配。
 之后完成优化建图、TDT 和最终控制链。
 每个独立步骤先在 asus 验证，再以中文 commit 推送。提交身份统一为 `kswlt`。

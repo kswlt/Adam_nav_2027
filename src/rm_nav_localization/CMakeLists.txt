@@ -22,6 +22,9 @@ add_executable(frozen_map_matcher src/frozen_map_matcher_node.cpp)
 target_link_libraries(frozen_map_matcher rm_nav_registration::small_gicp_backend rm_nav_registration::kiss_gicp_backend chassis_resolver)
 ament_target_dependencies(frozen_map_matcher rclcpp sensor_msgs geometry_msgs std_msgs rm_nav_interfaces)
 add_executable(map_odom_manager src/map_odom_manager_node.cpp)
+add_executable(sensor_pose_resolver src/sensor_pose_resolver_node.cpp)
+target_link_libraries(sensor_pose_resolver chassis_resolver)
+ament_target_dependencies(sensor_pose_resolver rclcpp geometry_msgs std_msgs tf2_ros nav_msgs rm_nav_interfaces sensor_msgs)
 target_link_libraries(map_odom_manager chassis_resolver)
 ament_target_dependencies(map_odom_manager rclcpp sensor_msgs geometry_msgs std_msgs tf2_ros rm_nav_interfaces action_msgs nav2_msgs nav_msgs)
 
@@ -56,6 +59,6 @@ install(TARGETS chassis_resolver chassis_resolver_test candidate_region_test map
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY include/ DESTINATION include)
-install(TARGETS frozen_map_matcher map_odom_manager RUNTIME DESTINATION lib/${PROJECT_NAME})
+install(TARGETS frozen_map_matcher map_odom_manager sensor_pose_resolver RUNTIME DESTINATION lib/${PROJECT_NAME})
 install(FILES README.md DESTINATION share/${PROJECT_NAME})
 ament_package()
