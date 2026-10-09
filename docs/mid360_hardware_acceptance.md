@@ -30,6 +30,14 @@ Point-LIO/Foxglove 回放输出 267 条轨迹、56 条实时累积地图消息�
 [几何](evidence/mid360_line1m_20261010_geometry.json)、
 [LIO/Foxglove 回放](evidence/mid360_line1m_20261010_lio.json)。
 
+## 资源基线（2026-10-10）
+
+单实例 Livox + Point-LIO + Guard + Foxglove 低延迟预览运行 10 s 的只读监控已保存。
+监控记录每个进程 CPU、RSS、线程数以及磁盘余量；本次磁盘余量约 9.3 GiB，
+不能作为长期运行安全余量，后续需要在更长 bag/建图写盘期间重新监控。
+证据：[runtime_sensor_baseline_20261010.json](evidence/runtime_sensor_baseline_20261010.json)。
+该监控是资源基线，不是实时调度可证明性。
+
 ## 动态采集与 Foxglove 回放（2026-10-09）
 
 使用 ROS Domain 108 采集 40 s 原始数据，随后在 Domain 109 使用固定 Point-LIO overlay 回放。

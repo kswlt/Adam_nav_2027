@@ -1,0 +1,1018 @@
+{
+  "passed": true,
+  "duration_s": 10.0,
+  "pattern": "livox_ros_driver2|small_point_lio|foxglove_bridge|live_map_preview|rm_nav",
+  "processes": [
+    {
+      "pid": 243742,
+      "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+      "cpu_max_percent": 0.0,
+      "rss_max_bytes": 42790912,
+      "threads_max": 3,
+      "samples": 10
+    },
+    {
+      "pid": 243754,
+      "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+      "cpu_max_percent": 19.9,
+      "rss_max_bytes": 196067328,
+      "threads_max": 45,
+      "samples": 10
+    },
+    {
+      "pid": 243755,
+      "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+      "cpu_max_percent": 59.9,
+      "rss_max_bytes": 81920000,
+      "threads_max": 15,
+      "samples": 10
+    },
+    {
+      "pid": 243756,
+      "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+      "cpu_max_percent": 79.7,
+      "rss_max_bytes": 124219392,
+      "threads_max": 15,
+      "samples": 10
+    },
+    {
+      "pid": 243757,
+      "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+      "cpu_max_percent": 0.0,
+      "rss_max_bytes": 77533184,
+      "threads_max": 15,
+      "samples": 10
+    },
+    {
+      "pid": 243758,
+      "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+      "cpu_max_percent": 0.0,
+      "rss_max_bytes": 78372864,
+      "threads_max": 15,
+      "samples": 10
+    },
+    {
+      "pid": 243759,
+      "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+      "cpu_max_percent": 0.0,
+      "rss_max_bytes": 74412032,
+      "threads_max": 15,
+      "samples": 10
+    },
+    {
+      "pid": 247952,
+      "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+      "cpu_max_percent": 0.0,
+      "rss_max_bytes": 14454784,
+      "threads_max": 1,
+      "samples": 10
+    },
+    {
+      "pid": 247961,
+      "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+      "cpu_max_percent": 0.0,
+      "rss_max_bytes": 42729472,
+      "threads_max": 3,
+      "samples": 10
+    },
+    {
+      "pid": 247965,
+      "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+      "cpu_max_percent": 19.9,
+      "rss_max_bytes": 59727872,
+      "threads_max": 22,
+      "samples": 10
+    },
+    {
+      "pid": 247966,
+      "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+      "cpu_max_percent": 79.8,
+      "rss_max_bytes": 38432768,
+      "threads_max": 15,
+      "samples": 10
+    },
+    {
+      "pid": 247967,
+      "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+      "cpu_max_percent": 20.0,
+      "rss_max_bytes": 55271424,
+      "threads_max": 16,
+      "samples": 10
+    }
+  ],
+  "disk_free_bytes_min": 9334702080,
+  "disk_used_percent_max": 87.3732405104765,
+  "samples": [
+    {
+      "elapsed_s": 0.6243129250069614,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 0.0,
+          "rss_bytes": 195661824,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 19.9,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 39.8,
+          "rss_bytes": 123699200,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 0.0,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 59.6,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    },
+    {
+      "elapsed_s": 1.6977062440128066,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 0.0,
+          "rss_bytes": 194023424,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 59.7,
+          "rss_bytes": 123699200,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 0.0,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 59.7,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 19.9,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    },
+    {
+      "elapsed_s": 2.7720109050133033,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 0.0,
+          "rss_bytes": 194666496,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 19.9,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 59.8,
+          "rss_bytes": 123699200,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 0.0,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 19.9,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 19.9,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    },
+    {
+      "elapsed_s": 3.845265500000096,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 0.0,
+          "rss_bytes": 194109440,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 19.9,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 0.0,
+          "rss_bytes": 123699200,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 19.9,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 19.9,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    },
+    {
+      "elapsed_s": 4.919705732012517,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 19.9,
+          "rss_bytes": 191971328,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 19.9,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 39.9,
+          "rss_bytes": 123699200,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 19.9,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 79.8,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    },
+    {
+      "elapsed_s": 5.993573155006743,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 0.0,
+          "rss_bytes": 192675840,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 59.7,
+          "rss_bytes": 123699200,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 0.0,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 59.8,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 20.0,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    },
+    {
+      "elapsed_s": 7.066923748003319,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 0.0,
+          "rss_bytes": 195956736,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 19.9,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 0.0,
+          "rss_bytes": 123699200,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 19.9,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 0.0,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 19.9,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    },
+    {
+      "elapsed_s": 8.13979276700411,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 0.0,
+          "rss_bytes": 195788800,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 59.9,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 39.9,
+          "rss_bytes": 123699200,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 0.0,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 19.9,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    },
+    {
+      "elapsed_s": 9.212558008002816,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 19.9,
+          "rss_bytes": 193122304,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 79.7,
+          "rss_bytes": 124219392,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 0.0,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 59.8,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    },
+    {
+      "elapsed_s": 10.286943112005247,
+      "processes": [
+        {
+          "pid": 243742,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup foxglove_visualization.launch.py map_pcd:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd map_frame:=mapping_odom graph_poses:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json graph_loops:=/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json map_bundle:=/tmp/map_bundle_test.json",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42790912,
+          "threads": 3
+        },
+        {
+          "pid": 243754,
+          "cmdline": "/opt/ros/jazzy/lib/foxglove_bridge/foxglove_bridge --ros-args -r __node:=foxglove_bridge --params-file /tmp/launch_params_jki60dt5",
+          "cpu_percent": 0.0,
+          "rss_bytes": 196067328,
+          "threads": 45
+        },
+        {
+          "pid": 243755,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_trace_publisher --ros-args -r __node:=foxglove_trace_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 81920000,
+          "threads": 15
+        },
+        {
+          "pid": 243756,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/live_map_preview --max-voxels 80000 --voxel 0.15 --publish-hz 2.0 --ros-args",
+          "cpu_percent": 59.8,
+          "rss_bytes": 123699200,
+          "threads": 15
+        },
+        {
+          "pid": 243757,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/pcd_map_publisher --pcd /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/rebuilt_map.pcd --frame mapping_odom --topic /visualization/map_cloud --ros-args -r __node:=foxglove_map_cloud",
+          "cpu_percent": 0.0,
+          "rss_bytes": 77533184,
+          "threads": 15
+        },
+        {
+          "pid": 243758,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_graph_publisher --poses /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/optimized_poses.json --loops /home/asus/nav_2027/rm_nav_v2/log/loop_mapping_nq714mnj/optimized/loop_edges.json --frame mapping_odom --ros-args -r __node:=foxglove_graph_publisher",
+          "cpu_percent": 0.0,
+          "rss_bytes": 78372864,
+          "threads": 15
+        },
+        {
+          "pid": 243759,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/install/rm_nav_bringup/lib/rm_nav_bringup/foxglove_map_status --manifest /tmp/map_bundle_test.json --ros-args -r __node:=foxglove_map_status",
+          "cpu_percent": 0.0,
+          "rss_bytes": 74412032,
+          "threads": 15
+        },
+        {
+          "pid": 247952,
+          "cmdline": "python3 /home/asus/nav_2027/rm_nav_v2/tools/run_sensor_view.py --driver-config /tmp/mid360_asus.json --lio-params /home/asus/nav_deps/src/small_point_lio/config/mid360.yaml",
+          "cpu_percent": 0.0,
+          "rss_bytes": 14454784,
+          "threads": 1
+        },
+        {
+          "pid": 247961,
+          "cmdline": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup mid360_diagnostic.launch.py driver_config:=/tmp/mid360_asus.json lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml port:=8765",
+          "cpu_percent": 0.0,
+          "rss_bytes": 42729472,
+          "threads": 3
+        },
+        {
+          "pid": 247965,
+          "cmdline": "/home/asus/nav_deps/livox_ws/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node --ros-args --params-file /tmp/launch_params_l0dq4e__",
+          "cpu_percent": 0.0,
+          "rss_bytes": 59727872,
+          "threads": 22
+        },
+        {
+          "pid": 247966,
+          "cmdline": "/home/asus/nav_2027/rm_nav_v2/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args",
+          "cpu_percent": 39.8,
+          "rss_bytes": 38432768,
+          "threads": 15
+        },
+        {
+          "pid": 247967,
+          "cmdline": "/home/asus/nav_deps/install_lio/small_point_lio/lib/small_point_lio/small_point_lio_node --ros-args --params-file /tmp/launch_params_x0abecq7 -r /Odometry:=/lio/sensor_odometry -r /cloud_registered:=/lio/deskewed_odom_cloud",
+          "cpu_percent": 19.9,
+          "rss_bytes": 55271424,
+          "threads": 16
+        }
+      ],
+      "disk_free_bytes": 9334702080,
+      "disk_used_percent": 87.3732405104765
+    }
+  ],
+  "scope": "read-only resource baseline; not a real-time schedulability proof"
+}
