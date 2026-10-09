@@ -248,8 +248,8 @@ ros2 run rm_nav_mapping offline_graph_optimizer /absolute/completed_session /abs
    把现有遮挡失败 bag 用作退化输入拒绝案例，确保不能仅凭持续输出位姿宣称健康。
    采集受控动态序列后检查去畸变、连续性、延迟和资源；记录实际运动条件，不用静止数据代替。
 2. **完成建图 KISS 回环。** 候选预算、双向质量门、KISS 正反向配准和 GTSAM validated loop edge/Huber 接口已完成；
-   `offline_graph_optimizer --enable-loops` 已能生成并提交通过验收的回环边；离线 smoke 已覆盖无候选路径。
-   仍需真实回环场景、错误回环和长期地图数据验收。
+   `offline_graph_optimizer --enable-loops` 已能生成并提交通过验收的回环边；离线 smoke 已覆盖无候选和受控返回路径，
+   后者实际接受 3 条 KISS/GICP 双向回环边。仍需真实场地回环、错误回环和长期地图数据验收。
    加入有界候选搜索、真实 KISS + GICP 复核、覆盖/残差/inlier/Hessian/几何/轨迹一致性判定；
    只有接受的回环进入图。测试正确回环、误回环、重复结构和退化拒绝。
    不能把已完成的 KISS 丢失恢复宣称为建图回环。

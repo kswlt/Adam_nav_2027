@@ -81,6 +81,12 @@ GTSAM 切空间顺序为旋转 xyz、平移 xyz；相邻因子固定 sigma 为 0
 `tools/smoke_offline_mapping.py` 现在还会运行 `--enable-loops` 路径，确认无候选时输出确定性的空
 `loop_edges.json`，并验证原始归档、相邻图和地图重建不受影响。该测试证明的是接线和门逻辑，不证明真实场地回环率。
 
+`tools/smoke_loop_enabled_mapping.py` 进一步构造了 12 帧真实 CDR/PointCloud2 的“离开后返回”归档，
+通过官方归档读取、真实 KISS/GICP 正反向配准和 GTSAM 优化；本次生成并接受了 3 条
+`KISS_GICP_bidirectional_validated` 回环边，且原始 CDR 哈希保持不变。证据见
+`docs/evidence/loop_mapping_controlled_20261009.json` 和对应日志。该数据是受控几何 fixture，
+用于验证接线，不代表真实场地回环成功率或地图精度。
+
 运行时默认 use_voxelized_target=false，仍使用原有 GICP；
 内部 MAPPING_VGICP 枚举不向运行时定位 ROS 消息发布。
 

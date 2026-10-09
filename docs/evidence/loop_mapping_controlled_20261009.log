@@ -1,0 +1,15 @@
+edge=0->1 converged=1 rmse=0.00160175 inliers=1 condition=0.138999
+edge=1->2 converged=1 rmse=0.00141941 inliers=1 condition=0.0878053
+edge=2->3 converged=1 rmse=0.00143588 inliers=1 condition=0.0483986
+edge=3->4 converged=1 rmse=0.00144042 inliers=1 condition=0.0279324
+edge=4->5 converged=1 rmse=0.00146692 inliers=1 condition=0.0238824
+edge=5->6 converged=1 rmse=0.00130803 inliers=1 condition=0.0361991
+edge=6->7 converged=1 rmse=0.00142694 inliers=1 condition=0.062837
+edge=7->8 converged=1 rmse=0.00158729 inliers=1 condition=0.114903
+edge=8->9 converged=1 rmse=0.00161029 inliers=1 condition=0.156398
+edge=9->10 converged=1 rmse=0.00140227 inliers=1 condition=0.163765
+edge=10->11 converged=1 rmse=0.00141075 inliers=1 condition=0.163999
+loop=0->10 accepted=1 reason=accepted bidirectional loop
+loop=1->11 accepted=1 reason=accepted bidirectional loop
+loop=0->11 accepted=1 reason=accepted bidirectional loop
+PASS actual VGICP + GTSAM adjacent graph; error=10.1805->2.23123e-06 rebuilt_voxels=12021 output="/home/asus/nav_2027/rm_nav_v2/log/loop_mapping_08kqvdj2/optimized"
