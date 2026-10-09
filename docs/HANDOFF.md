@@ -249,9 +249,8 @@ ros2 run rm_nav_mapping offline_graph_optimizer /absolute/completed_session /abs
    采集受控动态序列后检查去畸变、连续性、延迟和资源；记录实际运动条件，不用静止数据代替。
 2. **完成建图 KISS 回环。** 候选预算、双向质量门、KISS 正反向配准和 GTSAM validated loop edge/Huber 接口已完成；
    `offline_graph_optimizer --enable-loops` 已能生成并提交通过验收的回环边；离线 smoke 已覆盖无候选和受控返回路径，
-   后者实际接受 3 条 KISS/GICP 双向回环边。仍需真实场地回环、错误回环和长期地图数据验收。
-   加入有界候选搜索、真实 KISS + GICP 复核、覆盖/残差/inlier/Hessian/几何/轨迹一致性判定；
-   只有接受的回环进入图。测试正确回环、误回环、重复结构和退化拒绝。
+   后者实际接受 3 条 KISS/GICP 双向回环边，并限制每个当前关键帧最多一条回环边。仍需真实场地回环、错误回环和长期地图数据验收。
+   继续用真实场地数据测试错误回环、重复结构和退化拒绝；当前只有通过所有质量门的回环进入图。
    不能把已完成的 KISS 丢失恢复宣称为建图回环。
 3. **扩展图优化验收。** 当前 `pose_graph.cpp` 的最终残差门限针对可拟合的相邻链；
    含噪回环通常有非零残差，需设计合理因子噪声、鲁棒核和优化后约束检查，
@@ -270,6 +269,12 @@ ros2 run rm_nav_mapping offline_graph_optimizer /absolute/completed_session /abs
    详细强制要求见 [公开 rosbag 系统测试计划](rosbag_system_test_plan.md)。
 
 ## 9. 提交和继续工作约定
+
+Foxglove 可视化已接入官方 `ros-jazzy-foxglove-bridge` 3.6.0。
+使用 `ros2 launch rm_nav_bringup foxglove_visualization.launch.py` 后，Windows Foxglove Studio
+连接 `ws://192.168.1.145:8765`；可选 `map_pcd:=... map_frame:=mapping_odom` 发布二进制 XYZ PCD 到
+`/visualization/map_cloud`。完整话题清单、实时建图启动顺序和 Frame/时间边界见
+[Foxglove 可视化说明](foxglove_visualization.md)。Bridge 只可视化，不启动底盘或串口。
 
 每个可审阅的独立步骤：ASUS 验证 → 更新 README/阶段矩阵/报告 → 中文 commit → push → 核验远端 SHA。
 延续当前功能需求，不因用户说“继续”就丢失前面的 P0–P10、通信和系统测试要求。

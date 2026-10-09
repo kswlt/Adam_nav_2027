@@ -66,7 +66,8 @@ GTSAM 切空间顺序为旋转 xyz、平移 xyz；相邻因子固定 sigma 为 0
 
 `LoopCandidateManager` 现在具有显式且有界的配置：最小时间间隔、最小关键帧 ID 间隔、最大空间距离和最多候选数。
 候选按空间距离、时间间隔和 ID 确定性排序，超出预算直接截断。默认最小时间间隔 10 s、最小 ID 间隔 3、
-最大距离 5 m、最多 20 个候选。候选只是搜索入口，不代表回环成立。
+最大距离 5 m、最多 20 个候选。候选只是搜索入口，不代表回环成立；每个当前关键帧最多接受一条
+通过验收的回环边，首条通过后停止该帧的其他候选计算。
 
 `loop_validator.hpp` 只接受真实 `RegistrationResult`，正反向都必须收敛并达到 inlier/比例、RMSE、Hessian 条件、
 双向重叠和三维几何阈值；修正不能超过轨迹先验，并检查正反向变换往返误差。任一条件失败即拒绝，
@@ -130,5 +131,5 @@ ROS_DOMAIN_ID=103 python3 tools/smoke_small_point_lio.py --with-state --with-map
 实际采集节点、Point-LIO/EKF/观测/GICP/归档与运动门回归另使用明确的合成硬件输入。
 日志与样例保留在 asus 工程 log/offline_mapping_*，生成数据不上传 Git。
 
-下一步接入 KISS 候选粗配准 + 精化 + LoopValidator，再允许回环因子进入图。
+仍需真实场地回环、错误回环和长期地图数据验收；当前实现已接入 KISS 候选粗配准、精化、LoopValidator 和回环因子。
 之后完成地图清理、官方坐标对齐、MapBundle 原子发布和真实 MCAP/实车验收。

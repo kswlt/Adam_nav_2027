@@ -12,7 +12,7 @@
 | P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch | 理想全向模型导航集成通过；环境查询和过滤层待接入 |
 | P8 | SweptFootprint、CommandSynthesizer、MPPI → smoother → collision monitor | 横移导航及三种停车集成通过；TDT/Omni PID/串口适配待接入 |
 | P9 | 本地/全局健康联锁、许可输出门、任务监管、恢复后新规划、外部抢占与故障保持 | 软件监管已接入；实车反馈、最终控制和运行验收待完成 |
-| P10 | 全量构建、CTest、版本化配置、远端推送 | 工程验证完成；框架完成后自行寻找公开 rosbag 系统测试、实车及长期验收待完成 |
+| P10 | 全量构建、CTest、版本化配置、远端推送；Foxglove Bridge、实时话题清单和 PCD 可视化发布器 | 工程验证完成；框架完成后自行寻找公开 rosbag 系统测试、实车及长期验收待完成 |
 
 ## 不得误报为完成的项目
 

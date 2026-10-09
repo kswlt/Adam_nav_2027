@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <regex>
 #include <map>
+#include <set>
 #include <tuple>
 #include <sys/syscall.h>
 #include <linux/fs.h>
@@ -179,9 +180,11 @@ int main(int argc,char ** argv)
       rm_nav_registration::KissGicpConfig kiss_config;kiss_config.num_threads=1;kiss_config.max_input_points=50000;
       kiss_config.refinement.num_threads=1;kiss_config.refinement.max_input_points=50000;
       rm_nav_registration::KissGicpBackend kiss(kiss_config);
+      std::set<std::size_t> loop_current_frames;
       for(std::size_t j=0;j<keyframes.size();++j) {
         std::vector<rm_nav_mapping::Keyframe> history(keyframes.begin(),keyframes.begin()+j);
         for(const auto id:candidates.candidates(keyframes[j],history)) {
+          if (loop_current_frames.count(j)) break;
           const std::size_t i=static_cast<std::size_t>(id);
           rm_nav_registration::RegistrationRequest forward_request;
           forward_request.target_points=bounded_cloud(clouds[i]);forward_request.source_points=bounded_cloud(clouds[j]);
@@ -203,6 +206,7 @@ int main(int argc,char ** argv)
           rm_nav_mapping::GraphEdge edge;edge.from=i;edge.to=j;edge.from_T_to=forward.target_T_source;
           edge.loop=true;edge.validated=true;edge.huber_k=1.;edge.sigmas<<.05,.05,.05,.10,.10,.10;
           loop_edges.push_back(edge);loop_qualities.push_back(forward);
+          loop_current_frames.insert(j);
         }
       }
     }
