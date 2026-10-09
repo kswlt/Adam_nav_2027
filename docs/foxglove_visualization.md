@@ -74,6 +74,17 @@ ros2 launch rm_nav_bringup foxglove_visualization.launch.py \
 如果同时指定图优化文件，`/visualization/optimization_graph` 会显示蓝色优化轨迹、黄色关键帧和红色已验收回环边。
 该 MarkerArray 可直接放入 Foxglove 3D Panel，不需要手工解析 JSON。
 
+可为离线结果生成显式地图清单：
+
+```bash
+python3 tools/create_map_bundle.py \
+  --optimized-dir /absolute/optimized_output \
+  --output /absolute/optimized_output/map_bundle.json
+```
+
+当前清单状态为 `draft_mapping_odom`，带 PCD、位姿、回环和输入哈希；
+`publishable_for_frozen_localization` 明确为 false，完成官方坐标对齐、占据栅格和实测验证前不能启动正式冻结地图。
+
 ## 4. 实时建图查看
 
 实时建图必须同时启动传感器、LIO、状态链和关键帧采集；Bridge 单独启动不会产生地图：
