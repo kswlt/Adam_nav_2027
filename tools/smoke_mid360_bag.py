@@ -25,8 +25,10 @@ def main():
     parser.add_argument('--deps', default='/home/asus/nav_deps')
     parser.add_argument('--max-speed', type=float, default=5.0)
     parser.add_argument('--max-displacement', type=float, default=10.0)
+    parser.add_argument('--max-rotation', type=float, default=1.0,
+                        help='Maximum orientation change from first estimate, radians')
     args = parser.parse_args()
-    if not all(math.isfinite(v) and v > 0 for v in (args.max_speed, args.max_displacement)):
+    if not all(math.isfinite(v) and v > 0 for v in (args.max_speed, args.max_displacement, args.max_rotation)):
         raise ValueError('Positive finite diagnostic motion limits required')
     if os.environ.get('ROS_DOMAIN_ID') in (None, '', '0'):
         raise RuntimeError('Use an isolated ROS domain')
@@ -70,7 +72,8 @@ def main():
                 or abs(sum(v*v for v in [q.x,q.y,q.z,q.w])-1) > 1e-4
                 or (odom and stamp(m) < odom[-1]['stamp_ns'])):
             if len(errors) < 20: errors.append('invalid raw odometry')
-        odom.append({'stamp_ns': stamp(m), 'position': [p.x,p.y,p.z]})
+        odom.append({'stamp_ns': stamp(m), 'position': [p.x,p.y,p.z],
+                     'quaternion_xyzw': [q.x,q.y,q.z,q.w]})
     def cloud_cb(m):
         if m.header.frame_id != 'odom' or not m.width*m.height:
             if len(errors) < 20: errors.append('invalid deskewed cloud')
@@ -120,15 +123,27 @@ def main():
     def distance(a, b):
         return math.sqrt(sum((x-y)**2 for x,y in zip(a['position'],b['position'])))
     displacement = max((distance(odom[0],m) for m in odom),default=0)
+    def rotation(a, b):
+        qa, qb = a['quaternion_xyzw'], b['quaternion_xyzw']
+        norm = math.sqrt(sum(v*v for v in qa) * sum(v*v for v in qb))
+        if not math.isfinite(norm) or norm < 1e-12: return math.inf
+        dot = abs(sum(x*y for x,y in zip(qa,qb))) / norm
+        return 2 * math.acos(min(1.0,max(0.0,dot)))
+    angle = max((rotation(odom[0],m) for m in odom),default=0)
     speed = max((distance(a,b)*1e9/(b['stamp_ns']-a['stamp_ns'])
                  for a,b in zip(odom,odom[1:]) if b['stamp_ns']-a['stamp_ns']>=1000000),default=0)
-    motion_passed = bool(odom) and displacement <= args.max_displacement and speed <= args.max_speed
+    motion_passed = (bool(odom) and displacement <= args.max_displacement
+                     and speed <= args.max_speed and angle <= args.max_rotation)
     if not motion_passed: errors.append('estimated motion exceeds explicit diagnostic envelope')
     passed = transport_passed and motion_passed
     report = {'passed': passed, 'transport_passed':transport_passed,
               'motion_envelope_passed':motion_passed,
               'max_displacement_m':displacement,'max_step_speed_mps':speed,
-              'motion_limits':{'speed_mps':args.max_speed,'displacement_m':args.max_displacement},
+              'max_rotation_rad':angle,
+              'final_relative_displacement_m':distance(odom[0],odom[-1]) if odom else None,
+              'output_span_s':(odom[-1]['stamp_ns']-odom[0]['stamp_ns'])/1e9 if odom else 0,
+              'motion_limits':{'speed_mps':args.max_speed,'displacement_m':args.max_displacement,
+                               'rotation_rad':args.max_rotation},
               'scope': 'real bag -> sensor LIO only; no truth accuracy or chassis/navigation acceptance',
               'bag': str(bag), 'internal_extrinsics': 'unverified upstream example; not measured robot calibration',
               'raw_acc_norm': 1.0, 'odometry_count': len(odom), 'deskewed_cloud_count':len(clouds),
@@ -136,6 +151,7 @@ def main():
               'first_odometry':odom[0] if odom else None,'last_odometry':odom[-1] if odom else None,
               'errors':errors}
     (output/'report.json').write_text(json.dumps(report,indent=2)+'\n')
+    (output/'odometry_trace.json').write_text(json.dumps(odom,indent=2)+'\n')
     print(json.dumps(report,indent=2))
     return 0 if passed else 1
 

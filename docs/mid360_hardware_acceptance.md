@@ -1,5 +1,45 @@
 # MID-360 实机接入记录（2026-10-09）
 
+## 最新结果：移除遮挡后的静止对照通过
+
+用户移动雷达、移除大部分遮挡，并明确确认采集期间保持静止。
+重新采集 25 s，再用同一固定版本 Point-LIO 与相同算法参数回放。
+本次增加姿态变化检查并保存 `odometry_trace.json`，没有放宽门限或修改滤波器。
+
+| 检查 | 本次结果 |
+| --- | --- |
+| 稳定段原始频率 | 点云 10.00 Hz，IMU 200.00 Hz |
+| 稳定段最大点云头时间差 | 0.1035 s |
+| 每帧有效点（相同 tag/距离条件） | 14121–14754，之前为 0–5 |
+| 回放输出跨度 | 20.6998 s，208 条里程计 / 208 帧去畸变云 |
+| 从首个估计起最大位置变化 | 0.00837 m |
+| 最后相对首个估计的位置变化 | 0.00445 m |
+| 最大姿态变化 | 0.001577 rad，约 0.0903° |
+| 相邻估计最大速度 | 0.0653 m/s |
+| TF 发布数 | 0 |
+| 本次静止检查阈值 | 位移 0.1 m、相邻速度 0.2 m/s、姿态变化 0.05 rad |
+| 结果 | 传输、输出和静止变化检查通过 |
+
+证据：[实时传输](evidence/mid360_unblocked_live_20261009.json)、
+[原始几何](evidence/mid360_unblocked_geometry_20261009.json)、
+[真实 LIO 回放](evidence/mid360_unblocked_lio_20261009.json)。
+原始数据：`/home/asus/nav_data/mid360_20261009_unblocked_a/raw_bag`（118 MiB）；
+MCAP SHA256：`27b186cc4f0c6fbd76f1a2ec1c6477b7e1d4378fd3fcd673f4cba9dce9d4139b`。
+完整位姿轨迹留在 `/home/asus/nav_data/mid360_20261009_unblocked_lio_b/odometry_trace.json`。
+
+```bash
+source /home/asus/nav_deps/install_lio/setup.bash
+ROS_DOMAIN_ID=105 python3 tools/smoke_mid360_bag.py \
+  --bag /home/asus/nav_data/mid360_20261009_unblocked_a/raw_bag \
+  --output /home/asus/nav_data/mid360_unblocked_retest \
+  --max-speed 0.2 --max-displacement 0.1 --max-rotation 0.05
+```
+
+这些是静止条件下相对首个估计的变化，**不是带真值的定位精度**。
+移除遮挡后有效点恢复、原先的大位移不再复现，支持有效几何不足是之前异常的重要因素，
+但不是对全部潜在故障的排除。本次仍使用上游示例内部外参，尚未验收动态运动、
+云台/底盘标定、多雷达、重定位回环或整车导航。以下保留此前失败样本作为对照。
+
 ## 网络修复
 
 ASUS 的 Wi-Fi 为 `192.168.1.145/23`，有线 `enp86s0` 接 MID-360。

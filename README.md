@@ -17,17 +17,17 @@
 | Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor；横移导航、障碍/雷达断流/命令超时停车 | 实车定位输入、测量足迹、硬件速度与 yaw 适配 |
 | 配准与恢复 | 真实 GICP/KISS、双候选、受限自动触发、停车/取消/TF/清图、新规划放行 | 真实点云回放与实车稳定性验证 |
 | TF 与定位 | 上游 small_point_lio、时间对齐云台 TF/SE(3) resolver、真实 EKF、独占 map→odom | 实测标定、硬件同步与真实回放 |
-| Sensor Hub | 主 LIO 原生观测、源原点、角色约束、有界定位子地图；MID-360 实机传输/时间字段检查 | 当前实测数据受遮挡、有效点不足，真实 LIO 稳定性未通过；多源及感知适配 |
+| Sensor Hub | 主 LIO 原生观测、源原点、角色约束、有界定位子地图；MID-360 实机传输/时间字段及无遮挡静止回放通过 | 动态真实回放、多源及感知适配 |
 | 优化建图 | 原始关键帧采集、真实 VGICP 相邻因子、GTSAM 位姿链与原始点云重建 | KISS 回环复核、官方对齐、地图清理与 MapBundle 发布 |
 | 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
 
 **P0–P10 尚未全部完成。** 数据结构和单元测试不等于完整导航功能。
 详细进度见 [阶段验收矩阵](docs/stage_completion_matrix.md)。
 
-MID-360 已接通 ASUS，修复了有线/无线重叠路由；固定版本 Livox 驱动构建通过，
-稳定段点云约 9.74 Hz、IMU 200 Hz。当前遮挡样本每帧仅 0–5 个有效点，
-真实 LIO 回放出现大位移异常，**定位质量未通过**。
-接线配置、原始 rosbag 和失败证据见 [实机接入记录](docs/mid360_hardware_acceptance.md)。
+MID-360 已接通 ASUS，修复有线/无线重叠路由。移除遮挡后每帧有效点约 1.41–1.48 万，
+稳定段点云 10 Hz、IMU 200 Hz；真实 rosbag 静止回放约 20.7 s，最大位置变化 8.4 mm、
+最大姿态变化约 0.09°，本次静止检查通过，动态和整车验收仍待完成。
+接线配置、原始 rosbag 及遮挡失败对照见 [实机接入记录](docs/mid360_hardware_acceptance.md)。
 
 ## 构建（asus 主机）
 

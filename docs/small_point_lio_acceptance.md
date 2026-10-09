@@ -32,10 +32,12 @@ bootstrap 接受原始固定提交或本项目完整补丁，不覆盖额外修�
 - 新增 odom/state frame 参数和 `publish_tf`，默认 false。
   生产链唯一 odom→底盘 TF 来自 robot_localization，LIO 不争抢该 TF。
 
-目前构建没有安装 Livox CustomMsg 驱动，支持上游 `livox_pointcloud2`、其他可用适配器。
+最初的 LIO 构建未链接 Livox CustomMsg 驱动，支持上游 `livox_pointcloud2`、其他可用适配器。
+现已在独立 overlay 构建官方 Livox 驱动，并通过其 PointCloud2 接入真实 MID-360；
+无需为了当前接入重新启用 CustomMsg。
 PointCloud2 的 Livox 模式需要 FLOAT32 XYZ、UINT8 tag、FLOAT64 timestamp；
 每点 timestamp 为绝对纳秒，不能随意把秒、相对 offset 或消息时间戳代入。
-实车应先安装官方驱动并核对实际字段、硬件时间与 IMU 量纲，不自研 UDP 协议。
+实测已经确认上述字段和绝对纳秒时间，原始 IMU 单位为 g；该模式 `acc_norm=1.0`。
 
 ## 2026-10-09 软件结果
 
@@ -51,3 +53,11 @@ PointCloud2 的 Livox 模式需要 FLOAT32 XYZ、UINT8 tag、FLOAT64 timestamp�
 真实传感器字段/时间检查、Sensor Hub、回放、标定和长期运行仍需接入。
 
 ROS_DOMAIN_ID=100 python3 tools/smoke_small_point_lio.py --with-state 验收上游→resolver→EKF→状态桥→观测→子地图→GICP，输入仍是合成静态三平面/IMU/编码器，不代替实车动态回放。见 [集成说明](state_observation_acceptance.md)。
+
+## 2026-10-09 真实 MID-360 静止对照
+
+移除遮挡后，每帧有效点 14121–14754。真实 rosbag 回放输出 208 条里程计和 208 帧点云，
+跨度约 20.7 s，最大位置变化 8.4 mm、最大姿态变化约 0.09°，严格静止诊断通过。
+此前遮挡样本只有 0–5 个有效点并出现严重漂移，失败证据继续保留。
+详见 [实机记录与重现命令](mid360_hardware_acceptance.md)。这是传感器级静止诊断，
+不等于动态精度、实测机器人标定或整车导航验收。
