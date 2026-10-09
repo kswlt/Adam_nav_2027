@@ -100,6 +100,10 @@ ROS_DOMAIN_ID=104 ros2 launch rm_nav_bringup foxglove_visualization.launch.py
 `/localization/odom_submap`。关键帧归档停止后，再运行离线优化器生成最终 PCD；
 离线 PCD 不会自动覆盖实时子地图。
 
+最近一次 40 s 实机采集已验证原始输入、局部子地图输入和 LIO 回放链；该次雷达没有形成足够大的可量化运动，
+因此轨迹图可用性已验证，动态精度尚未验收。下一次采集应在 Foxglove 中同时观察三条 Path，
+并记录明确的移动距离、旋转角度和起止位置。
+
 ## 5. 时间、Frame 和安全边界
 
 - 连接 Foxglove 前确保电脑与 ASUS 在同一网络；有线雷达网口仍使用 `.50/32`，不能改回 `.50/24`。
