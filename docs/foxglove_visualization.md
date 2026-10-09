@@ -40,6 +40,7 @@ ws://192.168.1.145:8765
 | LIO 轨迹 | `/visualization/lio_path` | `nav_msgs/Path`，有界 5000 点 |
 | 底盘轨迹 | `/visualization/chassis_path` | `nav_msgs/Path`，有界 5000 点 |
 | Nav2 轨迹 | `/visualization/nav_path` | `nav_msgs/Path`，有界 5000 点 |
+| 优化轨迹/关键帧/回环 | `/visualization/optimization_graph` | `MarkerArray`，离线建图结果 |
 | 地图修正 | TF `map → odom` | 仅 MapOdomManager 发布 |
 | 质量状态 | `/sensors/front_mid360/cloud_healthy` | 通过/拒绝 |
 | 质量原因 | `/sensors/front_mid360/cloud_reason` | 退化、超时、字段错误原因 |
@@ -63,11 +64,15 @@ ws://192.168.1.145:8765
 ```bash
 ros2 launch rm_nav_bringup foxglove_visualization.launch.py \
   map_pcd:=/absolute/path/to/rebuilt_map.pcd \
-  map_frame:=mapping_odom
+  map_frame:=mapping_odom \
+  graph_poses:=/absolute/path/to/optimized_poses.json \
+  graph_loops:=/absolute/path/to/loop_edges.json
 ```
 
 该 PCD 会以 transient-local `/visualization/map_cloud` 发布，Foxglove 连接后仍可收到。
 它不自动变成正式 `map`，也不替代 MapBundle/官方坐标对齐。
+如果同时指定图优化文件，`/visualization/optimization_graph` 会显示蓝色优化轨迹、黄色关键帧和红色已验收回环边。
+该 MarkerArray 可直接放入 Foxglove 3D Panel，不需要手工解析 JSON。
 
 ## 4. 实时建图查看
 

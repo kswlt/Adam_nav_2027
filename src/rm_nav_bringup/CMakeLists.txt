@@ -15,4 +15,5 @@ install(PROGRAMS scripts/task_supervisor.py DESTINATION lib/${PROJECT_NAME} RENA
 install(PROGRAMS scripts/gimbal_tf.py DESTINATION lib/${PROJECT_NAME} RENAME gimbal_tf)
 install(PROGRAMS scripts/pcd_map_publisher.py DESTINATION lib/${PROJECT_NAME} RENAME pcd_map_publisher)
 install(PROGRAMS scripts/foxglove_trace_publisher.py DESTINATION lib/${PROJECT_NAME} RENAME foxglove_trace_publisher)
+install(PROGRAMS scripts/foxglove_graph_publisher.py DESTINATION lib/${PROJECT_NAME} RENAME foxglove_graph_publisher)
 ament_package()
