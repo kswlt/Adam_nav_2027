@@ -1,0 +1,166 @@
+--- a/src/small_point_lio_node.cpp
++++ b/src/small_point_lio_node.cpp
+@@ -22,6 +22,12 @@
+         std::string lidar_type = declare_parameter<std::string>("lidar_type");
+         std::string lidar_frame = declare_parameter<std::string>("lidar_frame");
+         bool save_pcd = declare_parameter<bool>("save_pcd");
++        const auto odom_frame = declare_parameter<std::string>("odom_frame", "odom");
++        const auto state_frame = declare_parameter<std::string>("state_frame", "front_mid360_imu");
++        const bool publish_tf = declare_parameter<bool>("publish_tf", false);
++        if (odom_frame.empty() || state_frame.empty() || odom_frame == state_frame) {
++            throw std::invalid_argument("Invalid raw LIO state frames");
++        }
+         small_point_lio = std::make_unique<small_point_lio::SmallPointLio>(*this);
+         odometry_publisher = create_publisher<nav_msgs::msg::Odometry>("/Odometry", 1000);
+         pointcloud_publisher = create_publisher<sensor_msgs::msg::PointCloud2>("/cloud_registered", 1000);
+@@ -49,82 +55,50 @@
+                         RCLCPP_INFO(rclcpp::get_logger("small_point_lio"), "save pcd success");
+                     }).detach();
+                 });
+-        small_point_lio->set_odometry_callback([this, lidar_frame](const common::Odometry &odometry) {
++        // Expose the upstream IMU state without chassis TF conversion.
++        small_point_lio->set_odometry_callback([this, odom_frame, state_frame, publish_tf](const common::Odometry &odometry) {
+             last_odometry = odometry;
+-
+-            builtin_interfaces::msg::Time time_msg;
+-            time_msg.sec = std::floor(odometry.timestamp);
+-            time_msg.nanosec = static_cast<uint32_t>((odometry.timestamp - time_msg.sec) * 1e9);
+-
+-            geometry_msgs::msg::TransformStamped transform_stamped;
+-            transform_stamped.header.stamp = time_msg;
+-            transform_stamped.header.frame_id = "odom";
+-            transform_stamped.child_frame_id = "base_link";
+-            geometry_msgs::msg::TransformStamped base_link_to_lidar_frame_transform;
+-            try {
+-                base_link_to_lidar_frame_transform = tf_buffer->lookupTransform(lidar_frame, "base_link", time_msg);
+-            } catch (tf2::TransformException &ex) {
+-                RCLCPP_ERROR(rclcpp::get_logger("small_point_lio"), "Failed to lookup transform from base_link to %s: %s", lidar_frame.c_str(), ex.what());
+-                return;
++            nav_msgs::msg::Odometry msg;
++            msg.header.stamp.sec = std::floor(odometry.timestamp);
++            msg.header.stamp.nanosec = static_cast<uint32_t>((odometry.timestamp - msg.header.stamp.sec) * 1e9);
++            msg.header.frame_id = odom_frame;
++            msg.child_frame_id = state_frame;
++            msg.pose.pose.position.x = odometry.position.x();
++            msg.pose.pose.position.y = odometry.position.y();
++            msg.pose.pose.position.z = odometry.position.z();
++            msg.pose.pose.orientation.x = odometry.orientation.x();
++            msg.pose.pose.orientation.y = odometry.orientation.y();
++            msg.pose.pose.orientation.z = odometry.orientation.z();
++            msg.pose.pose.orientation.w = odometry.orientation.w();
++            for (int row = 0; row < 6; ++row) {
++                for (int col = 0; col < 6; ++col) {
++                    msg.pose.covariance[row * 6 + col] = odometry.pose_covariance(row, col);
++                }
+             }
+-            tf2::Transform tf_lidar_odom_to_lidar_frame;
+-            tf_lidar_odom_to_lidar_frame.setOrigin(tf2::Vector3(odometry.position.x(), odometry.position.y(), odometry.position.z()));
+-            tf_lidar_odom_to_lidar_frame.setRotation(tf2::Quaternion(odometry.orientation.x(), odometry.orientation.y(), odometry.orientation.z(), odometry.orientation.w()));
+-            tf2::Transform tf_base_link_to_lidar_frame;
+-            tf2::fromMsg(base_link_to_lidar_frame_transform.transform, tf_base_link_to_lidar_frame);
+-            tf2::Transform tf_odom_to_base_link = tf_base_link_to_lidar_frame.inverse() * tf_lidar_odom_to_lidar_frame * tf_base_link_to_lidar_frame;
+-            transform_stamped.transform = tf2::toMsg(tf_odom_to_base_link);
+-
+-            nav_msgs::msg::Odometry odometry_msg;
+-            odometry_msg.header.stamp = time_msg;
+-            odometry_msg.header.frame_id = "odom";
+-            odometry_msg.child_frame_id = "base_link";
+-            odometry_msg.pose.pose.position.x = transform_stamped.transform.translation.x;
+-            odometry_msg.pose.pose.position.y = transform_stamped.transform.translation.y;
+-            odometry_msg.pose.pose.position.z = transform_stamped.transform.translation.z;
+-            odometry_msg.pose.pose.orientation.x = transform_stamped.transform.rotation.x;
+-            odometry_msg.pose.pose.orientation.y = transform_stamped.transform.rotation.y;
+-            odometry_msg.pose.pose.orientation.z = transform_stamped.transform.rotation.z;
+-            odometry_msg.pose.pose.orientation.w = transform_stamped.transform.rotation.w;
+-
+-            // TODO it is lidar_odom->lidar_frame, we need to transform it to odom->base_link
+-            // odometry_msg.twist.twist.linear.x = odometry.velocity.x();
+-            // odometry_msg.twist.twist.linear.y = odometry.velocity.y();
+-            // odometry_msg.twist.twist.linear.z = odometry.velocity.z();
+-            // odometry_msg.twist.twist.angular.x = odometry.angular_velocity.x();
+-            // odometry_msg.twist.twist.angular.y = odometry.angular_velocity.y();
+-            // odometry_msg.twist.twist.angular.z = odometry.angular_velocity.z();
+-
+-            tf_broadcaster->sendTransform(transform_stamped);
+-            odometry_publisher->publish(odometry_msg);
++            // The raw velocity is not a chassis velocity. Consumers fuse pose only.
++            odometry_publisher->publish(msg);
++            if (publish_tf) {
++                geometry_msgs::msg::TransformStamped transform;
++                transform.header = msg.header;
++                transform.child_frame_id = state_frame;
++                transform.transform.translation.x = odometry.position.x();
++                transform.transform.translation.y = odometry.position.y();
++                transform.transform.translation.z = odometry.position.z();
++                transform.transform.rotation = msg.pose.pose.orientation;
++                tf_broadcaster->sendTransform(transform);
++            }
+         });
+-        small_point_lio->set_pointcloud_callback([this, save_pcd, lidar_frame](const std::vector<Eigen::Vector3f> &pointcloud) {
++        small_point_lio->set_pointcloud_callback([this, save_pcd, odom_frame](const std::vector<Eigen::Vector3f> &pointcloud) {
+             if (pointcloud_publisher->get_subscription_count() > 0) {
+                 builtin_interfaces::msg::Time time_msg;
+                 time_msg.sec = std::floor(last_odometry.timestamp);
+                 time_msg.nanosec = static_cast<uint32_t>((last_odometry.timestamp - time_msg.sec) * 1e9);
+ 
+-                geometry_msgs::msg::TransformStamped lidar_frame_to_base_link_transform;
+-                try {
+-                    lidar_frame_to_base_link_transform = tf_buffer->lookupTransform("base_link", lidar_frame, time_msg);
+-                } catch (tf2::TransformException &ex) {
+-                    RCLCPP_ERROR(rclcpp::get_logger("small_point_lio"), "Failed to lookup transform from %s to base_link: %s", lidar_frame.c_str(), ex.what());
+-                    return;
+-                }
+-                Eigen::Vector3f lidar_frame_to_base_link_T;
+-                lidar_frame_to_base_link_T << static_cast<float>(lidar_frame_to_base_link_transform.transform.translation.x),
+-                        static_cast<float>(lidar_frame_to_base_link_transform.transform.translation.y),
+-                        static_cast<float>(lidar_frame_to_base_link_transform.transform.translation.z);
+-                Eigen::Matrix3f lidar_frame_to_base_link_R =
+-                        Eigen::Quaternionf(
+-                                static_cast<float>(lidar_frame_to_base_link_transform.transform.rotation.w),
+-                                static_cast<float>(lidar_frame_to_base_link_transform.transform.rotation.x),
+-                                static_cast<float>(lidar_frame_to_base_link_transform.transform.rotation.y),
+-                                static_cast<float>(lidar_frame_to_base_link_transform.transform.rotation.z))
+-                                .toRotationMatrix();
++                // The core has already transformed every point using its own acquisition time.
++                // Applying a second sensor/base extrinsic here would corrupt odom coordinates.
+                 sensor_msgs::msg::PointCloud2 msg;
+                 msg.header.stamp = time_msg;
+-                msg.header.frame_id = "odom";
++                msg.header.frame_id = odom_frame;
+                 msg.width = pointcloud.size();
+                 msg.height = 1;
+                 msg.fields.reserve(4);
+@@ -156,7 +130,7 @@
+                 Eigen::Vector3f transformed_point;
+                 auto pointer = reinterpret_cast<float *>(msg.data.data());
+                 for (const auto &point: pointcloud) {
+-                    transformed_point = lidar_frame_to_base_link_R * point + lidar_frame_to_base_link_T;
++                    transformed_point = point;
+                     *pointer = transformed_point.x();
+                     ++pointer;
+                     *pointer = transformed_point.y();
+--- a/src/common/common.h
++++ b/src/common/common.h
+@@ -11,6 +11,7 @@
+ namespace common {
+ 
+     struct Odometry {
++        Eigen::Matrix<double, 6, 6> pose_covariance; // world-position/world-small-angle covariance
+         double timestamp;                // Unit: s
+         Eigen::Vector3d position;        // Unit: m
+         Eigen::Vector3d velocity;        // Unit: m/s
+--- a/src/small_point_lio/small_point_lio.cpp
++++ b/src/small_point_lio/small_point_lio.cpp
+@@ -172,6 +172,12 @@
+             odometry.velocity = estimator.kf.x.velocity.cast<double>();
+             odometry.orientation = estimator.kf.x.rotation.cast<double>();
+             odometry.angular_velocity = estimator.kf.x.omg.cast<double>();
++            // Publication-only conversion: the filter uses right/body rotation perturbations.
++            // ROS pose covariance expresses small-angle uncertainty in the world axes.
++            Eigen::Matrix<double, 6, 6> axes = Eigen::Matrix<double, 6, 6>::Identity();
++            axes.block<3, 3>(3, 3) = estimator.kf.x.rotation.cast<double>();
++            const Eigen::Matrix<double, 6, 6> pose_cov = estimator.kf.P.block<6, 6>(0, 0).cast<double>();
++            odometry.pose_covariance = axes * pose_cov * axes.transpose();
+             odometry_callback(odometry);
+         }
+     }

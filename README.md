@@ -16,7 +16,7 @@
 | 原版通信 | 26-byte RX / 54-byte TX、原 CRC/符号/yaw/话题兼容、ROS 虚拟串口、平移超时停车 | 实车抓包、断线重连和下位机 watchdog 联调 |
 | Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor；横移导航、障碍/雷达断流/命令超时停车 | 实车定位输入、测量足迹、硬件速度与 yaw 适配 |
 | 配准与恢复 | 真实 GICP/KISS、双候选、受限自动触发、停车/取消/TF/清图、新规划放行 | 真实点云回放与实车稳定性验证 |
-| TF 与定位 | SE(3) resolver、独占 map→odom、健康/许可输出门、任务监管 | small_point_lio、动态云台编码器、EKF、实车反馈 |
+| TF 与定位 | 上游 small_point_lio 构建/合成输入、SE(3) resolver、独占 map→odom、健康/许可门 | 动态云台/EKF 联调、实际传感器与实车反馈 |
 | 优化建图 | 关键帧、回环候选、MapBundle 基础数据结构 | KISS 回环复核、GTSAM 优化、原始关键帧地图重建 |
 | 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
 
@@ -30,6 +30,8 @@ cd /home/asus/nav_2027/rm_nav_v2
 source /opt/ros/jazzy/setup.bash
 RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_small_gicp.sh
 RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_kiss_matcher.sh
+RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_small_point_lio.sh
+source /home/asus/nav_deps/install_lio/setup.bash
 CMAKE_PREFIX_PATH=/home/asus/nav_deps/install:${CMAKE_PREFIX_PATH:-} colcon build
 source install/setup.bash
 colcon test
@@ -74,6 +76,9 @@ ROS_DOMAIN_ID=95 python3 tools/smoke_recovery_transaction_faults.py map_changed
 # 自动受限搜索与真实 Nav2 新任务/恢复许可；仍使用理想底盘反馈。
 ROS_DOMAIN_ID=96 python3 tools/smoke_auto_recovery.py
 ROS_DOMAIN_ID=97 python3 tools/smoke_task_resume.py
+
+# 真实上游 Point-LIO：合成 PointCloud2/IMU 输入，不接物理传感器。
+ROS_DOMAIN_ID=98 python3 tools/smoke_small_point_lio.py
 ```
 
 Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` TF。
@@ -129,6 +134,7 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 - [MPPI 软件基线](docs/mppi_baseline_acceptance.md)
 - [串口协议及 ROS/PTY](docs/serial_acceptance.md)
 - [small_gicp 后端](docs/small_gicp_acceptance.md)
+- [small_point_lio 上游接入](docs/small_point_lio_acceptance.md)
 - [KISS→GICP 后端](docs/kiss_gicp_acceptance.md)
 - [受限 KISS 恢复 ROS 链](docs/kiss_recovery_ros_acceptance.md)
 - [停车与恢复提交事务](docs/recovery_transaction_acceptance.md)

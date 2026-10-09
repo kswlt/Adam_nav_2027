@@ -7,6 +7,7 @@ platform:
   target: ASUS NUC 15 Pro
 profiles:
   stable_baseline:
+    - small_point_lio
     - small_gicp
     - ros-jazzy-nav2-bringup
     - ros-jazzy-nav2-mppi-controller
@@ -21,6 +22,13 @@ profiles:
   enhanced:
     - rog_map
 sources:
+  small_point_lio:
+    url: https://github.com/Yancey2023/small_point_lio.git
+    commit: 688d75cfa780049ae532e5100ca64f46ad8b1a93
+    branch: ros2
+    license: MIT
+    patch: tools/patches/small_point_lio_raw_state.patch
+    patch_scope: raw IMU pose and covariance publication; odom cloud frame; publish_tf switch
   kiss_matcher:
     url: https://github.com/MIT-SPARK/KISS-Matcher.git
     commit: e3440b63340af7414ebd0fdde04e40f02ff4e7d2

@@ -1,4 +1,8 @@
 repositories:
+  small_point_lio:
+    type: git
+    url: https://github.com/Yancey2023/small_point_lio.git
+    version: 688d75cfa780049ae532e5100ca64f46ad8b1a93
   KISS-Matcher:
     type: git
     url: https://github.com/MIT-SPARK/KISS-Matcher.git
