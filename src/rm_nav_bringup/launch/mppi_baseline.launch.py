@@ -20,6 +20,28 @@ def generate_launch_description():
     params = LaunchConfiguration('params_file')
     sim_time = ParameterValue(LaunchConfiguration('use_sim_time'), value_type=bool)
     autostart = ParameterValue(LaunchConfiguration('autostart'), value_type=bool)
+    scan_adapter = Node(
+        package='pointcloud_to_laserscan', executable='pointcloud_to_laserscan_node',
+        name='mid360_pointcloud_to_scan', output='screen',
+        condition=IfCondition(LaunchConfiguration('enable_mid360_scan')),
+        parameters=[{
+            'target_frame': LaunchConfiguration('scan_target_frame'),
+            'transform_tolerance': 0.05,
+            'min_height': -0.25,
+            'max_height': 0.35,
+            'angle_min': -3.141592653589793,
+            'angle_max': 3.141592653589793,
+            'angle_increment': 0.008726646259971648,
+            'scan_time': 0.1,
+            'range_min': 0.15,
+            'range_max': 30.0,
+            'use_inf': True,
+            'inf_epsilon': 1.0,
+        }],
+        remappings=[
+            ('cloud_in', LaunchConfiguration('pointcloud_topic')),
+            ('scan', LaunchConfiguration('scan_topic')),
+        ])
     specs = [
         ('nav2_controller', 'controller_server', [('cmd_vel', '/nav/cmd_vel_raw')]),
         ('nav2_planner', 'planner_server', []),
@@ -50,5 +72,13 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument('autostart', default_value='true'),
         DeclareLaunchArgument('enable_task_supervisor', default_value='true'),
+        DeclareLaunchArgument(
+            'enable_mid360_scan', default_value='false',
+            description='启用 MID-360 PointCloud2 到 LaserScan 适配；需要已验证 TF'),
+        DeclareLaunchArgument(
+            'pointcloud_topic', default_value='/sensors/front_mid360/guarded_points'),
+        DeclareLaunchArgument('scan_topic', default_value='/scan'),
+        DeclareLaunchArgument('scan_target_frame', default_value='base_link'),
+        scan_adapter,
         *nodes,
     ])
