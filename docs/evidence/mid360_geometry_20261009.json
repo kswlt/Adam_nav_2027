@@ -1,0 +1,60 @@
+{
+  "cloud_count": 178,
+  "imu_count": 3372,
+  "tag_counts": {
+    "0": 3378396,
+    "8": 6,
+    "16": 123138,
+    "32": 58331,
+    "4": 1
+  },
+  "imu_mean_xyz_gyro": [
+    0.08109350443275232,
+    0.21768766742372003,
+    -0.9697892680004115,
+    0.011354360329804771,
+    -0.0024717321734287704,
+    -0.010813007953169083
+  ],
+  "imu_std_xyz_gyro": [
+    0.008441203505073575,
+    0.004032720289580939,
+    0.012409197265819006,
+    0.007141520163821135,
+    0.0022553062831641413,
+    0.0029422892828979046
+  ],
+  "accepted_point_range": [
+    0,
+    5
+  ],
+  "first_cloud": {
+    "stamp_ns": 1791533187021503582,
+    "accepted_points": 2,
+    "total": 19968,
+    "below_min_range": 19940,
+    "range_quantiles_m": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      2.396529197692871
+    ],
+    "xyz_cov_eigenvalues": []
+  },
+  "last_cloud": {
+    "stamp_ns": 1791533206021311544,
+    "accepted_points": 3,
+    "total": 20064,
+    "below_min_range": 20042,
+    "range_quantiles_m": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      2.4068007469177246
+    ],
+    "xyz_cov_eigenvalues": []
+  },
+  "scope": "raw diagnostics; geometry covariance is not a localization observability proof"
+}

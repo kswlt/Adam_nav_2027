@@ -22,6 +22,15 @@ profiles:
   enhanced:
     - rog_map
 sources:
+  livox_sdk2:
+    url: https://github.com/Livox-SDK/Livox-SDK2.git
+    commit: c0796f04c143143899c87a773d9f6b7136453c0b
+    build: tools/bootstrap_livox.sh
+  livox_ros_driver2:
+    url: https://github.com/Livox-SDK/livox_ros_driver2.git
+    commit: 21445540f0d100dc86a7e6df312dd70bbdb4afdf
+    build: tools/bootstrap_livox.sh
+    options: Jazzy ROS2; separate overlay; shared SDK in user prefix; PointCloud2 absolute nanoseconds; raw IMU in g
   gtsam:
     url: https://github.com/borglab/gtsam.git
     commit: 4f66a491ffc83cf092d0d818b11dc35135521612

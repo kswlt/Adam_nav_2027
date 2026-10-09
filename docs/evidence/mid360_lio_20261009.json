@@ -1,0 +1,38 @@
+{
+  "passed": false,
+  "transport_passed": true,
+  "motion_envelope_passed": false,
+  "max_displacement_m": 71.57243976428872,
+  "max_step_speed_mps": 13.546230538856479,
+  "motion_limits": {
+    "speed_mps": 5.0,
+    "displacement_m": 10.0
+  },
+  "scope": "real bag -> sensor LIO only; no truth accuracy or chassis/navigation acceptance",
+  "bag": "/home/asus/nav_data/mid360_20261009_b/raw_bag",
+  "internal_extrinsics": "unverified upstream example; not measured robot calibration",
+  "raw_acc_norm": 1.0,
+  "odometry_count": 143,
+  "deskewed_cloud_count": 137,
+  "tf_count": 0,
+  "last_input_to_output_lag_s": -0.040214992,
+  "first_odometry": {
+    "stamp_ns": 1791533190337048292,
+    "position": [
+      1.4551809491656228e-06,
+      5.829031110664814e-08,
+      -1.705260784294049e-06
+    ]
+  },
+  "last_odometry": {
+    "stamp_ns": 1791533206061526536,
+    "position": [
+      31.137009427226058,
+      60.16580627166465,
+      23.09061610925906
+    ]
+  },
+  "errors": [
+    "estimated motion exceeds explicit diagnostic envelope"
+  ]
+}

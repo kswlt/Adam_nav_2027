@@ -1,0 +1,83 @@
+{
+  "passed": true,
+  "scope": "live MID360 driver only; no robot calibration/actuation",
+  "cloud_count": 173,
+  "imu_count": 3379,
+  "cloud_source_hz": 8.82063790032463,
+  "imu_source_hz": 175.8821330465197,
+  "steady_cloud_hz": 9.74057725398299,
+  "steady_imu_hz": 199.99752956998918,
+  "steady_max_wall_skew_s": 0.10289764404296875,
+  "point_count_range": [
+    19872,
+    20160
+  ],
+  "cloud_first": {
+    "stamp_ns": 1791533186521588061,
+    "points": 20064,
+    "span_ms": 100.103936,
+    "frame": "front_mid360",
+    "point_step": 26,
+    "wall_skew_s": 2.803480863571167
+  },
+  "cloud_last": {
+    "stamp_ns": 1791533206021311544,
+    "points": 20064,
+    "span_ms": 100.422656,
+    "frame": "front_mid360",
+    "point_step": 26,
+    "wall_skew_s": 0.1013634204864502
+  },
+  "imu_acc_norm_mean": 0.9972669748294681,
+  "imu_first": {
+    "stamp_ns": 1791533186977842027,
+    "acceleration_norm": 0.9786650285812697,
+    "gyro_norm": 0.013258666009223772,
+    "frame": "livox_frame"
+  },
+  "fields": [
+    {
+      "name": "x",
+      "offset": 0,
+      "datatype": 7,
+      "count": 1
+    },
+    {
+      "name": "y",
+      "offset": 4,
+      "datatype": 7,
+      "count": 1
+    },
+    {
+      "name": "z",
+      "offset": 8,
+      "datatype": 7,
+      "count": 1
+    },
+    {
+      "name": "intensity",
+      "offset": 12,
+      "datatype": 7,
+      "count": 1
+    },
+    {
+      "name": "tag",
+      "offset": 16,
+      "datatype": 2,
+      "count": 1
+    },
+    {
+      "name": "line",
+      "offset": 17,
+      "datatype": 2,
+      "count": 1
+    },
+    {
+      "name": "timestamp",
+      "offset": 18,
+      "datatype": 8,
+      "count": 1
+    }
+  ],
+  "errors": []
+}
