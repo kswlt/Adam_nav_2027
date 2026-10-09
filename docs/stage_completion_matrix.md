@@ -8,7 +8,7 @@
 | P3 | TF 所有权、显式标定模板、绝对编码器时间戳 TF、ObservationBatch | 动态 TF、主 LIO 原生观测/源原点验收通过；真实外参/时钟、多源驱动待接入 |
 | P4 | 固定上游 small_point_lio、完整 SE(3) ROS resolver、协方差传播、真实 robot_localization | 上游至 EKF/Nav2 参考点及健康链已联通；真实驱动/回放及轮速反馈待完成 |
 | P5 | 真实GICP/KISS、双次候选、受限自动触发、停车/取消/TF/清图及新任务放行 | 主 LIO→滚动子地图→GICP 与恢复链已接入；真实回放与实车稳定性待验证 |
-| P6 | 底盘触发关键帧 ROS 节点、原始观测/位姿持久化与故障保持；LoopCandidate/MapBundle 契约 | 采集软件链通过；VGICP 因子、GTSAM/回环/地图重建待接入 |
+| P6 | 原始关键帧采集、真实 VGICP 相邻因子、GTSAM Pose3 优化与原始点云离线重建 | 合成漂移归档验收通过；回环、官方对齐、清理及 MapBundle 发布待接入 |
 | P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch | 理想全向模型导航集成通过；环境查询和过滤层待接入 |
 | P8 | SweptFootprint、CommandSynthesizer、MPPI → smoother → collision monitor | 横移导航及三种停车集成通过；TDT/Omni PID/串口适配待接入 |
 | P9 | 本地/全局健康联锁、许可输出门、任务监管、恢复后新规划、外部抢占与故障保持 | 软件监管已接入；实车反馈、最终控制和运行验收待完成 |

@@ -1,3 +1,4 @@
+#include "rm_nav_mapping/archive_io.hpp"
 #include "rm_nav_mapping/keyframe_manager.hpp"
 #include "rm_nav_sensors/point_cloud.hpp"
 #include <rm_nav_interfaces/msg/observation_batch.hpp>
@@ -16,45 +17,11 @@
 #include <sys/syscall.h>
 #include <linux/fs.h>
 #include <cerrno>
+#include <sys/file.h>
 
 namespace rm_nav_mapping {
 namespace fs=std::filesystem;
 using Clock=std::chrono::steady_clock;
-
-// Linux archive protocol: exclusive files, durable contents, then an atomic no-replace rename.
-void durable_file(const fs::path & path,const void * data,std::size_t size)
-{
-  const int fd=::open(path.c_str(),O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC,0600);
-  if(fd<0)throw std::runtime_error("Cannot exclusively create archive file");
-  const auto * bytes=static_cast<const char *>(data);
-  try {
-    while(size) {
-      const auto count=::write(fd,bytes,size);
-      if(count<0 && errno==EINTR)continue;
-      if(count<=0)throw std::runtime_error("Archive write failed");
-      bytes+=count;size-=count;
-    }
-    if(::fsync(fd)!=0)throw std::runtime_error("Archive file fsync failed");
-  }catch(...){::close(fd);throw;}
-  if(::close(fd)!=0)throw std::runtime_error("Archive file close failed");
-}
-void durable_directory(const fs::path & path)
-{
-  const int fd=::open(path.c_str(),O_RDONLY|O_DIRECTORY|O_CLOEXEC);
-  if(fd<0)throw std::runtime_error("Cannot open archive directory for fsync");
-  const int result=::fsync(fd);::close(fd);
-  if(result!=0)throw std::runtime_error("Archive directory fsync failed");
-}
-std::string json_string(const std::string & value)
-{
-  std::ostringstream out;out<<'"';
-  for(unsigned char c:value) {
-    if(c=='"' || c=='\\')out<<'\\'<<c;
-    else if(c<32)out<<"\\u"<<std::hex<<std::setw(4)<<std::setfill('0')<<static_cast<int>(c)<<std::dec;
-    else out<<c;
-  }
-  out<<'"';return out.str();
-}
 
 class KeyframeRecorder : public rclcpp::Node {
 public:
@@ -85,6 +52,8 @@ public:
       session_.clear();
     }
     if(session_.empty())throw std::runtime_error("Cannot create unique recording session");
+    lock_fd_=::open((session_/"recording.lock").c_str(),O_RDWR|O_CREAT|O_EXCL|O_CLOEXEC,0600);
+    if(lock_fd_<0 || ::flock(lock_fd_,LOCK_EX|LOCK_NB)!=0)throw std::runtime_error("Cannot exclusively lock recording session");
     durable_directory(root_);
     status_pub_=create_publisher<std_msgs::msg::String>("/mapping/recorder_status",10);
     accepted_pub_=create_publisher<std_msgs::msg::String>("/mapping/keyframe_archive",10);
@@ -101,6 +70,7 @@ public:
     timer_=create_wall_timer(std::chrono::milliseconds(50),[this](){tick();});
     RCLCPP_INFO(get_logger(),"New mapping archive: %s",session_.c_str());
   }
+  ~KeyframeRecorder() override {if(lock_fd_>=0)::close(lock_fd_);}
 private:
   double elapsed(Clock::time_point time)const{return std::chrono::duration<double>(Clock::now()-time).count();}
   bool upstream()const{return state_ && source_valid_ && elapsed(state_at_)<=.25 && elapsed(source_at_)<=.3;}
@@ -201,6 +171,7 @@ private:
   tf2_ros::Buffer buffer_;
   tf2_ros::TransformListener listener_;
   KeyframeManager manager_;
+  int lock_fd_{-1};
   fs::path root_,session_;
   std::string calibration_,body_,source_,sensor_,reason_{"no valid mapping observation"};
   double max_age_;

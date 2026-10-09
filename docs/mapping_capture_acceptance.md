@@ -1,7 +1,8 @@
 # 原始关键帧采集与持久化
 
 本步对应技术方案的 Keyframe Manager 与 original keyframe clouds 保存要求。
-运行节点已实现，GTSAM、VGICP 相邻帧因子、回环和最终地图发布仍待后续接入。
+运行节点已实现；VGICP 相邻因子、GTSAM 与原始点云重建已接入离线工具，
+见 [离线验收](offline_mapping_acceptance.md)。回环和最终地图发布仍待后续接入。
 
 ## 启动与数据
 
@@ -63,6 +64,7 @@ metadata.json 记录 schema=1、关键帧 ID、源纳秒时间、标定、来源
 成功才发布 `/mapping/keyframe_archive` 路径；已有目录不能覆盖。
 写入、配额、空间、提交失败锁存 fault，撤销 `/mapping/recorder_healthy`，不自动继续写入。
 .partial 留作诊断，不能作为完整帧消费；启动新进程不会把它视为成功归档。
+新 session 的 recording.lock 在进程运行期间保持独占 flock；离线优化器不能读取活动会话。
 若 rename 已成功但后续 fsync 失败，可能存在未通知的完整目录，需人工检查后恢复。
 本步没有模拟突然断电，持久化保证依赖本地 Linux 文件系统及存储设备的 fsync 语义。
 录制健康仅说明此进程接受数据，不是运动许可或实测停车反馈。
@@ -87,5 +89,4 @@ colcon test --packages-select rm_nav_mapping
 输入仍是合成静态三平面、IMU 和编码器，不等于实车建图精度验收。
 日志与实际归档样例保存在 asus 工程 log 目录，生成内容不提交到 Git。
 
-后续：相邻关键帧 VGICP、固定稳定版 GTSAM 图优化、KISS 回环验证、
-按原始关键帧重建/清理地图、官方坐标对齐与 MapBundle 原子发布。
+后续：KISS 回环验证、原始关键帧地图清理、官方坐标对齐与 MapBundle 原子发布。

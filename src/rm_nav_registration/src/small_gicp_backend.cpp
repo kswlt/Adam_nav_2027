@@ -15,7 +15,7 @@ namespace rm_nav_registration {
 SmallGicpBackend::SmallGicpBackend(const SmallGicpConfig & config) : config_(config)
 {
   for (double value : {config.voxel_resolution, config.max_correspondence_distance,
-                       config.translation_epsilon, config.rotation_epsilon}) {
+                       config.translation_epsilon, config.rotation_epsilon, config.gaussian_voxel_resolution}) {
     if (!std::isfinite(value) || value <= 0) throw std::invalid_argument("GICP limits must be finite and positive");
   }
   if (config.num_threads < 1 || config.max_iterations < 1 || config.min_points < 10 ||
@@ -25,7 +25,7 @@ SmallGicpBackend::SmallGicpBackend(const SmallGicpConfig & config) : config_(con
 RegistrationResult SmallGicpBackend::register_clouds(const RegistrationRequest & request)
 {
   RegistrationResult result;
-  result.method = RegistrationMethod::LOCAL_GICP;
+  result.method = config_.use_voxelized_target ? RegistrationMethod::MAPPING_VGICP : RegistrationMethod::LOCAL_GICP;
   result.residual = result.fitness = std::numeric_limits<double>::infinity();
   const auto started = std::chrono::steady_clock::now();
   const auto finish = [&]() {
@@ -48,14 +48,17 @@ RegistrationResult SmallGicpBackend::register_clouds(const RegistrationRequest &
   result.source_point_count = source->size();
   if (target->size() < config_.min_points || source->size() < config_.min_points) return finish();
   small_gicp::RegistrationSetting settings;
-  settings.type = small_gicp::RegistrationSetting::GICP;
+  settings.type = config_.use_voxelized_target ? small_gicp::RegistrationSetting::VGICP : small_gicp::RegistrationSetting::GICP;
+  settings.voxel_resolution = config_.gaussian_voxel_resolution;
   settings.num_threads = config_.num_threads;
   settings.max_iterations = config_.max_iterations;
   settings.max_correspondence_distance = config_.max_correspondence_distance;
   settings.translation_eps = config_.translation_epsilon;
   settings.rotation_eps = config_.rotation_epsilon;
-  auto raw = small_gicp::align(*target, *source, *tree,
-                                    request.initial_target_T_source, settings);
+  const auto voxelmap=config_.use_voxelized_target ? small_gicp::create_gaussian_voxelmap(*target,settings.voxel_resolution) :
+    small_gicp::GaussianVoxelMap::Ptr{};
+  auto raw = voxelmap ? small_gicp::align(*voxelmap,*source,request.initial_target_T_source,settings) :
+    small_gicp::align(*target,*source,*tree,request.initial_target_T_source,settings);
   // LM can reject every trial at an already stationary warm start because
   // roundoff makes new_e > e. Never infer convergence from low RMSE alone.
   // Only for a finite, observable stationary system, run one genuine upstream
@@ -75,7 +78,8 @@ RegistrationResult SmallGicpBackend::register_clouds(const RegistrationRequest &
         check.criteria.rotation_eps = config_.rotation_epsilon;
         check.criteria.translation_eps = config_.translation_epsilon;
         check.optimizer.max_iterations = 1;
-        const auto checked = check.align(*target, *source, *tree, raw.T_target_source);
+        const auto checked = voxelmap ? check.align(*voxelmap,*source,*voxelmap,raw.T_target_source) :
+          check.align(*target,*source,*tree,raw.T_target_source);
         if (checked.converged && std::isfinite(checked.error) &&
             checked.error <= raw.error + 1e-9 * std::max(1.0, std::abs(raw.error))) raw = checked;
       }

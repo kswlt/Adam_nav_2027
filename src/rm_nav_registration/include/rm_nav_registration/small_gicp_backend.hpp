@@ -12,6 +12,8 @@ struct SmallGicpConfig {
   int max_iterations{40};
   std::size_t min_points{20};
   std::size_t max_input_points{1000000};
+  bool use_voxelized_target{false};
+  double gaussian_voxel_resolution{0.25};
 };
 
 class SmallGicpBackend final : public RegistrationBackend {

@@ -22,6 +22,13 @@ profiles:
   enhanced:
     - rog_map
 sources:
+  gtsam:
+    url: https://github.com/borglab/gtsam.git
+    commit: 4f66a491ffc83cf092d0d818b11dc35135521612
+    upstream_tag: 4.2.0
+    license: BSD-3-Clause
+    build: tools/bootstrap_gtsam.sh
+    options: system Eigen; no unstable/Python/TBB; Release -O1; one compiler; user-prefix RPATH
   small_point_lio:
     url: https://github.com/Yancey2023/small_point_lio.git
     commit: 688d75cfa780049ae532e5100ca64f46ad8b1a93

@@ -10,6 +10,12 @@ This package is part of the RM Nav V2 staged implementation.
 独立启动 `mapping_capture.launch.py`；不修改 match 模式 TF。
 见 [采集验收](../../docs/mapping_capture_acceptance.md)。
 
+`offline_graph_optimizer <session> <新输出目录>` 读取停止录制的归档，使用真实 VGICP
+生成相邻 Pose3 因子，由固定版 GTSAM 优化，并从原始关键帧重新拼接点云。
+归档 SHA256 与录制锁用于一致性检查，拒绝不合格边和已有输出。
+输出 mapping_odom 坐标；未接入回环、官方对齐或 MapBundle 发布。
+见 [离线建图验收](../../docs/offline_mapping_acceptance.md)。
+
 `KeyframeManager` triggers from chassis translation/yaw. LiDAR yaw is deliberately not used because the main sensor may be mounted on the moving big gimbal.
 
 `LoopCandidateManager` first filters by time separation and rough spatial proximity. It only produces candidates; KISS, GICP and LoopValidator must approve a loop before GTSAM receives a factor.

@@ -8,7 +8,7 @@
 ## 当前进度
 
 截至 2026-10-09，工程含 14 个 ROS 包，远端全量构建通过。
-最近一次测试汇总为 34 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
+最近一次测试汇总为 36 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
 单独加载 libscrc 1.8.1 后全部 13 项串口协议测试通过。
 
 | 功能 | 已验证内容 | 尚未完成 |
@@ -18,7 +18,7 @@
 | 配准与恢复 | 真实 GICP/KISS、双候选、受限自动触发、停车/取消/TF/清图、新规划放行 | 真实点云回放与实车稳定性验证 |
 | TF 与定位 | 上游 small_point_lio、时间对齐云台 TF/SE(3) resolver、真实 EKF、独占 map→odom | 实测标定、硬件同步与真实回放 |
 | Sensor Hub | 主 LIO 原生观测、源原点、角色约束、有界定位子地图 | 原始驱动、多雷达、逐点时间与感知适配 |
-| 优化建图 | 底盘触发关键帧、原始观测持久化、回环候选与 MapBundle 契约 | VGICP 因子、KISS 回环复核、GTSAM 优化、地图重建 |
+| 优化建图 | 原始关键帧采集、真实 VGICP 相邻因子、GTSAM 位姿链与原始点云重建 | KISS 回环复核、官方对齐、地图清理与 MapBundle 发布 |
 | 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
 
 **P0–P10 尚未全部完成。** 数据结构和单元测试不等于完整导航功能。
@@ -32,6 +32,7 @@ source /opt/ros/jazzy/setup.bash
 RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_small_gicp.sh
 RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_kiss_matcher.sh
 RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_small_point_lio.sh
+RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_gtsam.sh
 source /home/asus/nav_deps/install_lio/setup.bash
 MAKEFLAGS=-j2 CMAKE_PREFIX_PATH=/home/asus/nav_deps/install:${CMAKE_PREFIX_PATH:-} colcon build
 source install/setup.bash
@@ -91,6 +92,9 @@ ROS_DOMAIN_ID=101 python3 tools/smoke_observation_submap.py
 # 建图原始关键帧归档：故障/配额边界与实际 LIO 软件链。
 ROS_DOMAIN_ID=102 python3 tools/smoke_mapping_capture.py
 ROS_DOMAIN_ID=103 python3 tools/smoke_small_point_lio.py --with-state --with-mapping
+
+# 离线归档→真实 VGICP→GTSAM→原始关键帧重建；显式合成漂移初值。
+python3 tools/smoke_offline_mapping.py
 ```
 
 Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` TF。
@@ -161,6 +165,7 @@ EKF 估计速度不等于硬件实测停车反馈，输出仍未连接物理底�
 - [动态云台与真实 EKF](docs/local_state_acceptance.md)
 - [状态桥与原生观测子地图](docs/state_observation_acceptance.md)
 - [原始关键帧采集与持久化](docs/mapping_capture_acceptance.md)
+- [VGICP 相邻因子与 GTSAM 离线重建](docs/offline_mapping_acceptance.md)
 - [KISS→GICP 后端](docs/kiss_gicp_acceptance.md)
 - [受限 KISS 恢复 ROS 链](docs/kiss_recovery_ros_acceptance.md)
 - [停车与恢复提交事务](docs/recovery_transaction_acceptance.md)
@@ -173,6 +178,8 @@ EKF 估计速度不等于硬件实测停车反馈，输出仍未连接物理底�
 下一步完成原始驱动、多雷达独立观测、实测标定、硬件时间同步与真实回放；
 实车速度反馈仍需独立适配。
 建图记录入口为 `mapping_capture.launch.py`，显式指定存储根目录与同一标定 ID；
-保存原始关键帧供优化后重建，尚未生成最终 MapBundle。
-之后完成 VGICP/GTSAM/回环与地图重建、TDT 和最终控制链。
+停止记录后可运行 `ros2 run rm_nav_mapping offline_graph_optimizer <session目录> <新输出目录>`。
+已接通 VGICP/GTSAM 与原始点云重建，输出为尚未官方对齐的 mapping_odom 坐标，
+不会自动进入运行时地图；仍未生成最终 MapBundle。
+之后接入 KISS 回环、官方对齐与地图清理/发布，再完成 TDT 和最终控制链。
 每个独立步骤先在 asus 验证，再以中文 commit 推送。提交身份统一为 `kswlt`。

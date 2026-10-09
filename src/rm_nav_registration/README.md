@@ -1,5 +1,9 @@
 # rm_nav_registration
 
+建图可显式启用 `SmallGicpConfig.use_voxelized_target`，使用上游 GaussianVoxelMap VGICP。
+默认运行时 GICP 配置仍为 false；建图内部方法 MAPPING_VGICP 不作为运行时定位 ROS 消息发布。
+两个路径都使用上游优化器与同一组质量度量，见 [建图验收](../../docs/offline_mapping_acceptance.md)。
+
 Unified small_gicp and KISS registration adapters.
 
 `SmallGicpBackend` 已调用真实上游 helper 库，并通过已知变换与异常点云测试。

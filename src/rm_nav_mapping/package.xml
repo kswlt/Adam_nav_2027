@@ -12,5 +12,10 @@
   <depend>tf2_ros</depend>
   <depend>rm_nav_interfaces</depend>
   <depend>rm_nav_sensors</depend>
+  <depend>rm_nav_registration</depend>
+  <depend>boost</depend>
+  <depend>openssl</depend>
+  <!-- Fixed user-space GTSAM is installed by tools/bootstrap_gtsam.sh. -->
+  <depend>gtsam</depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>

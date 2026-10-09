@@ -7,7 +7,8 @@
 namespace rm_nav_registration {
 
 enum class RegistrationMethod : std::uint8_t {
-  LOCAL_GICP, GLOBAL_KISS, KISS_GICP, AMCL_GICP, MANUAL_GICP, LOOP_KISS, LOOP_GICP
+  LOCAL_GICP, GLOBAL_KISS, KISS_GICP, AMCL_GICP, MANUAL_GICP, LOOP_KISS, LOOP_GICP,
+  MAPPING_VGICP  // Internal mapping result; not a runtime localization ROS method.
 };
 
 struct RegistrationResult {
