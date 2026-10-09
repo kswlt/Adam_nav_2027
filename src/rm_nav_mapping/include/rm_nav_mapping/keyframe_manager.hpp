@@ -27,6 +27,7 @@ public:
 private:
   KeyframeTriggerConfig config_;
   std::vector<Keyframe> keyframes_;
+  std::int64_t last_seen_stamp_{-1};
 };
 
 }  // namespace rm_nav_mapping

@@ -17,3 +17,7 @@ This package is part of the RM Nav V2 staged implementation.
 [动态云台状态链验收](../../docs/local_state_acceptance.md)。
 
 `config/profiles.yaml` keeps `stable_baseline` as the default. Enhanced modules are explicit opt-in and must pass the same replay and real-robot checks before activation.
+
+`mapping_capture.launch.py` 单独启动原始关键帧记录进程，要求绝对 archive_root
+与匹配的 calibration_id；每次运行新建 session，故障锁存停止，不修改运行时冻结地图。
+见 [采集验收](../../docs/mapping_capture_acceptance.md)。

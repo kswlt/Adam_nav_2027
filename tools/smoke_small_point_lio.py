@@ -8,15 +8,17 @@ import struct
 import subprocess
 import time
 import sys
+import json
 
 import rclpy
 from rclpy.node import Node
+from rclpy.serialization import deserialize_message
 from rclpy.qos import qos_profile_sensor_data
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu, PointCloud2, PointField, JointState
 from std_msgs.msg import Bool,String
 from rclpy.qos import QoSProfile,DurabilityPolicy
-from rm_nav_interfaces.msg import ObservationBatch
+from rm_nav_interfaces.msg import ObservationBatch,ObservationFrame
 from smoke_frozen_map_localization import cloud
 from tf2_msgs.msg import TFMessage
 import yaml
@@ -29,6 +31,8 @@ def require(value,message):
 def main():
     require(os.environ.get('ROS_DOMAIN_ID') not in (None,'','0'),'Use isolated Domain')
     pipeline='--with-state' in sys.argv
+    mapping='--with-mapping' in sys.argv
+    require(not mapping or pipeline,'--with-mapping requires --with-state')
     rclpy.init()
     node = Node('small_point_lio_fixture')
     imu_pub = node.create_publisher(Imu,'/fixture/imu',qos_profile_sensor_data)
@@ -41,6 +45,10 @@ def main():
     submaps,batches,odom=[],[],[]
     health={'chassis':False,'global':False}
     diagnostics={}
+    archives=[]
+    if mapping:
+        node.create_subscription(String,'/mapping/keyframe_archive',lambda m:archives.append(m.data),10)
+        node.create_subscription(Bool,'/mapping/recorder_healthy',lambda m:health.update(mapping=m.data),10)
     if pipeline:
         for topic in ['/state/lio_reason','/state/chassis_reason','/sensors/localization_reason',
                       '/localization/submap_reason','/localization/status_reason']:
@@ -93,6 +101,10 @@ def main():
                          'calibration_file:='+str(calibration),'lio_params_file:='+str(config)]
                 processes.append(subprocess.Popen(['ros2','launch','rm_nav_bringup','frozen_map_localization.launch.py',
                     'map_version:=synthetic-lio-pipeline'],stdout=log,stderr=subprocess.STDOUT,start_new_session=True))
+                if mapping:
+                    processes.append(subprocess.Popen(['ros2','launch','rm_nav_bringup','mapping_capture.launch.py',
+                        'archive_root:='+str(Path('log/lio_mapping_capture').resolve()),
+                        'calibration_id:=synthetic-lio-pipeline'],stdout=log,stderr=subprocess.STDOUT,start_new_session=True))
             process = subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
             processes.append(process)
             while cloud_pub.get_subscription_count()==0 and time.monotonic()-started<10: spin(0.05)
@@ -151,12 +163,27 @@ def main():
                 require(all(s.header.frame_id=='odom' and 20<=s.width<=50000 for s in submaps),'Submap frame/point bound wrong')
                 require(all(s.header.stamp.sec*10**9+s.header.stamp.nanosec <= observations[-1].header.stamp.sec*10**9+
                             observations[-1].header.stamp.nanosec for s in submaps),'Submap fabricated a future source stamp')
+                if mapping:
+                    require(archives and health.get('mapping',False),'Actual upstream stream did not reach mapping archive')
+                    originals={f.sequence:f for b in batches for f in b.frames}
+                    for path in archives:
+                        directory=Path(path)
+                        metadata=json.loads((directory/'metadata.json').read_text())
+                        saved=deserialize_message((directory/'observation.cdr').read_bytes(),ObservationFrame)
+                        require(saved.sequence in originals and saved==originals[saved.sequence],
+                                'Actual upstream observation not archived unchanged')
+                        require(metadata['calibration_id']=='synthetic-lio-pipeline' and
+                                metadata['body_frame']=='base_footprint','Mapping archive mixed source calibration/body')
                 spin(.7)
                 require(not health['chassis'],'Input dropout did not invalidate chassis state')
                 settled=len(submaps)
+                archive_count=len(archives)
                 spin(.5)
                 require(not health['global'],'Input dropout did not expire global registration health')
                 require(len(submaps)==settled,'Submap refreshed cached geometry without new sensor observations')
+                if mapping:
+                    require(not health.get('mapping',True) and len(archives)==archive_count,
+                            'Mapping dropout stayed healthy or replayed cached observation')
                 owners={tf.child_frame_id for group in transforms for tf in group.transforms}
                 require(owners=={'base_footprint','big_gimbal_yaw','odom'},'Unexpected duplicate/raw LIO TF '+str(owners))
             # Core output is already odom XYZ: do not apply a second body extrinsic.
@@ -169,6 +196,7 @@ def main():
                   'raw IMU pose/covariance, stationary geometry, correct cloud frame and no LIO-owned TF',flush=True)
             if pipeline: print('PASS actual LIO -> time-aligned resolver -> EKF -> body odometry -> observation contract -> '
                                'bounded submap -> real GICP/sole map TF; dropout does not replay cached observations',flush=True)
+            if mapping:print(f'PASS actual upstream mapping archive: {len(archives)} original keyframes, calibrated source and chassis pose; dropout hold',flush=True)
     finally:
         for item in processes: os.killpg(item.pid,signal.SIGINT)
         for item in processes:
