@@ -24,5 +24,16 @@ int main()
   try{optimize_pose_graph(initial,bad);require(false,"Nonrigid factor accepted");}catch(const std::invalid_argument &){}
   const auto single=optimize_pose_graph({initial[0]},{});
   require(single.poses.size()==1 && single.final_error==0,"Single-frame anchor failed");
+  GraphEdge loop;loop.from=0;loop.to=4;loop.loop=true;loop.validated=true;loop.huber_k=1.0;
+  loop.from_T_to.translation().x()=4;
+  const auto with_loop=optimize_pose_graph(initial,edges,{loop});
+  require(with_loop.loop_count==1 && with_loop.final_error<=with_loop.initial_error,
+          "Validated loop graph did not optimize");
+  auto unvalidated=loop;unvalidated.validated=false;
+  try{optimize_pose_graph(initial,edges,{unvalidated});require(false,"Unvalidated loop accepted");}
+  catch(const std::invalid_argument &){}
+  auto adjacent_marked=edges;adjacent_marked[0].loop=true;
+  try{optimize_pose_graph(initial,adjacent_marked);require(false,"Marked adjacent edge accepted");}
+  catch(const std::invalid_argument &){}
   std::cout<<"PASS actual GTSAM Pose3 adjacent graph, error reduction, direction and invalid factor refusal\n";
 }

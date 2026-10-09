@@ -69,7 +69,10 @@ GTSAM 切空间顺序为旋转 xyz、平移 xyz；相邻因子固定 sigma 为 0
 `loop_validator.hpp` 只接受真实 `RegistrationResult`，正反向都必须收敛并达到 inlier/比例、RMSE、Hessian 条件、
 双向重叠和三维几何阈值；修正不能超过轨迹先验，并检查正反向变换往返误差。任一条件失败即拒绝，
 避免把重复结构或单平面匹配直接写入图。当前接口还没有把 LoopConstraint 添加到 `pose_graph.cpp`；
-后续接入时必须保持“仅接受已验收回环边”。
+当前 `pose_graph.cpp` 已支持单独的 validated loop edge 输入：回环边必须显式设置
+`loop=true`、`validated=true`，拥有有限的正定噪声和 Huber 参数；未验收或被伪装成相邻边的输入会拒绝。
+回环因子使用 GTSAM Huber 鲁棒核，优化后至少要求目标函数有限且不增加；含回环图不再错误地要求相邻链的近零残差。
+当前离线优化器还没有从关键帧中生成这些 validated loop edge，仍需完成真实候选配准和接线。
 
 回归覆盖候选排序/预算、非法配置、正确双向回环、残差过大、重叠不足、几何退化、正反向不一致和未收敛输入。
 该测试证明的是门逻辑，不证明真实场地回环率。
