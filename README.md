@@ -24,7 +24,7 @@
 **P0–P10 尚未全部完成。** 数据结构和单元测试不等于完整导航功能。
 详细进度见 [阶段验收矩阵](docs/stage_completion_matrix.md)。
 接手开发见 [交接文档](docs/HANDOFF.md)，包含部署、真实数据证据、未完成工作和重现命令。
-Foxglove 查看地图、TF、原始点云及实时建图请看 [Foxglove 可视化说明](docs/foxglove_visualization.md)。
+Foxglove 查看地图、TF、原始点云、LaserScan 及实时建图请看 [Foxglove 可视化说明](docs/foxglove_visualization.md)。
 
 MPPI 基线已提供官方 `pointcloud_to_laserscan` 适配器，可将质量门后的 MID-360 点云转换为
 Nav2 使用的 `/scan`；默认关闭，必须先完成实测 TF、传感器高度和 footprint 验收后再启用，

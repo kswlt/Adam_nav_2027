@@ -37,6 +37,10 @@ ws://192.168.1.145:8765
 | 原始 LIO 位姿 | `/lio/sensor_odometry` | `odom → front_mid360_imu` |
 | 底盘状态 | `/state/chassis` | `odom → base_footprint` |
 | Nav2 输出 | `/odom` | `odom → base_link` |
+| LaserScan 障碍物输入 | `/scan` | `base_link`，由 guarded MID-360 点云转换 |
+| 局部 Costmap | `/local_costmap/costmap` | `odom`，检查实时障碍物层和膨胀层 |
+| 全局 Costmap | `/global_costmap/costmap` | `map`，检查地图层、障碍物层和膨胀层 |
+| Costmap footprint | `/local_costmap/published_footprint` | 检查机器人足迹是否覆盖真实底盘 |
 | LIO 轨迹 | `/visualization/lio_path` | `nav_msgs/Path`，有界 5000 点 |
 | 底盘轨迹 | `/visualization/chassis_path` | `nav_msgs/Path`，有界 5000 点 |
 | Nav2 轨迹 | `/visualization/nav_path` | `nav_msgs/Path`，有界 5000 点 |
@@ -59,6 +63,9 @@ ws://192.168.1.145:8765
 
 1. `MID360 实时输入`：原始点云、质量门点云、IMU/健康状态、TF。
 2. `建图与定位`：PCD 地图、局部子地图、去畸变点云、`map→odom→base_link` TF、状态原因。
+3. `Costmap 与规划`：固定 Frame 设为 `map`，加入 `/global_costmap/costmap`；另加一个 3D
+   面板固定 Frame 为 `odom`，加入 `/local_costmap/costmap`、`/scan` 和 TF。规划调试时再加入
+   `/plan`、`/local_plan` 或 MPPI 的 `/optimal_trajectory`，不要同时显示多个高带宽点云。
 
 ## 3. 查看已生成地图
 
