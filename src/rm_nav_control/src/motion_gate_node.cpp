@@ -17,6 +17,7 @@ public:
     command_timeout_ = declare_parameter("command_timeout", 0.25);
     max_linear_ = declare_parameter("max_linear_speed", 0.5);
     max_angular_ = declare_parameter("max_angular_speed", 1.0);
+    require_chassis_ = declare_parameter("require_chassis_health", true);
     for (double v : {heartbeat_timeout_, command_timeout_, max_linear_, max_angular_}) {
       if (!std::isfinite(v) || v <= 0) throw std::invalid_argument("Motion gate limits must be positive and finite");
     }
@@ -34,6 +35,11 @@ public:
       });
     command_sub_ = create_subscription<geometry_msgs::msg::TwistStamped>("/nav/cmd_vel_checked", 10,
       [this](geometry_msgs::msg::TwistStamped::ConstSharedPtr msg) { receive(*msg); });
+    chassis_sub_ = create_subscription<std_msgs::msg::Bool>("/state/chassis_healthy", 10,
+      [this](std_msgs::msg::Bool::ConstSharedPtr msg) {
+        chassis_healthy_=msg->data; chassis_time_=Clock::now();
+        if (!chassis_healthy_) command_.reset();
+      });
     output_ = create_publisher<geometry_msgs::msg::TwistStamped>("/nav/cmd_vel_safe", 10);
     allowed_pub_ = create_publisher<std_msgs::msg::Bool>("/nav/motion_allowed", 10);
     reason_pub_ = create_publisher<std_msgs::msg::String>("/nav/motion_gate_reason", 10);
@@ -43,6 +49,10 @@ private:
   using Clock = std::chrono::steady_clock;
   bool permissions(Clock::time_point current)
   {
+    if (require_chassis_ && (!chassis_healthy_ || chassis_time_==Clock::time_point{} ||
+        std::chrono::duration<double>(current-chassis_time_).count()>heartbeat_timeout_)) {
+      reason_="chassis state unhealthy or heartbeat stale"; return false;
+    }
     if (!healthy_ || health_time_ == Clock::time_point{} ||
         std::chrono::duration<double>(current - health_time_).count() > heartbeat_timeout_) {
       reason_ = "localization unhealthy or heartbeat stale"; return false;
@@ -96,9 +106,11 @@ private:
   std::string base_frame_, reason_{"not initialized"};
   double heartbeat_timeout_, command_timeout_, max_linear_, max_angular_;
   bool healthy_{false}, enabled_{false};
+  bool require_chassis_{true}, chassis_healthy_{false};
+  Clock::time_point chassis_time_{};
   Clock::time_point health_time_{}, enable_time_{}, command_time_{};
   std::optional<geometry_msgs::msg::TwistStamped> command_;
-  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr healthy_sub_, enable_sub_;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr healthy_sub_, enable_sub_, chassis_sub_;
   rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr command_sub_;
   rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr output_;
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr allowed_pub_;

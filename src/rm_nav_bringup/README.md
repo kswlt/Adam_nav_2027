@@ -12,7 +12,8 @@ This package is part of the RM Nav V2 staged implementation.
 
 `local_state.launch.py` 从同一份显式 verified CalibrationBundle 启动绝对编码器 TF、
 关闭 TF 的上游 LIO、时间对齐 resolver 与真实 EKF。未测量模板默认拒绝启动。
-当前 `/state/chassis` 与 Nav2 `/odom` 尚未自动相连，见
+状态桥已连接 `/state/chassis` 与 Nav2 `/odom`，并启动主 LIO 观测适配与子地图；
+本地健康约束任务与输出门，见
 [动态云台状态链验收](../../docs/local_state_acceptance.md)。
 
 `config/profiles.yaml` keeps `stable_baseline` as the default. Enhanced modules are explicit opt-in and must pass the same replay and real-robot checks before activation.

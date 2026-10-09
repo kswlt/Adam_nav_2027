@@ -178,6 +178,16 @@ def main():
             report.append('true Nav2 preflight path and new goal UUID release hold; owned task reaches map goal')
 
             goal.goal.pose.position.y = 3.0
+            require(call('submit',goal).accepted,'Local-state fault fixture task refused')
+            require(node.wait(lambda:node.permission is True,5),'Local-state fixture task not active')
+            node.chassis_healthy = False
+            require(node.wait(lambda:node.permission is False and ':FAULT:' in node.task_status,3),
+                    'Fresh global localization hid loss of chassis health')
+            require(node.healthy is True,'Local-state failure fixture unexpectedly lost global localization')
+            node.chassis_healthy = True
+            node.wait(lambda:False,.6)
+            require(node.permission is False,'Local health recovery replayed old owned task')
+            report.append('local chassis loss cancels owned task despite fresh global localization; no replay on recovery')
             require(call('submit',goal).accepted,'Second owned task refused')
             require(node.wait(lambda: node.permission is True,5),'Second task not active')
             foreign = NavigateToPose.Goal()

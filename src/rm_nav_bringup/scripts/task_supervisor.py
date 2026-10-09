@@ -24,6 +24,8 @@ class TaskSupervisor(Node):
         self.navigation_handle = self.planner_handle = None
         self.healthy = False
         self.health_received = 0.0
+        self.require_chassis = self.declare_parameter('require_chassis_health',True).value
+        self.chassis_healthy,self.chassis_received = False,0.0
         self.recovery = None
         self.recovery_received = 0.0
         self.started = time.monotonic()
@@ -34,6 +36,7 @@ class TaskSupervisor(Node):
         self.permission = self.create_publisher(Bool, '/nav/motion_enable', 10)
         self.status = self.create_publisher(String, '/nav/task_status', 10)
         self.create_subscription(Bool, '/localization/healthy', self.health, 10)
+        self.create_subscription(Bool, '/state/chassis_healthy', self.chassis_health, 10)
         self.create_subscription(RecoveryState, '/localization/recovery_state', self.recovery_state,
                                  QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.create_subscription(GoalStatusArray, '/navigate_to_pose/_action/status', self.goal_status,
@@ -43,6 +46,12 @@ class TaskSupervisor(Node):
 
     def health(self, msg):
         self.healthy, self.health_received = msg.data, time.monotonic()
+
+    def chassis_health(self,msg):
+        self.chassis_healthy,self.chassis_received = msg.data,time.monotonic()
+
+    def chassis_ready(self):
+        return not self.require_chassis or (self.chassis_healthy and time.monotonic()-self.chassis_received<=.25)
 
     def recovery_state(self, msg):
         self.recovery, self.recovery_received = msg, time.monotonic()
@@ -54,6 +63,7 @@ class TaskSupervisor(Node):
         return self.navigation_handle is not None and self.active_ids == {bytes(self.navigation_handle.goal_id.uuid)}
 
     def mode(self):
+        if not self.chassis_ready(): return 'STOP'
         if self.recovery is not None:
             if time.monotonic() - self.recovery_received > 0.25: return 'STOP'
             if self.recovery.phase == RecoveryState.WAIT_REPLAN: return 'REPLAN'
@@ -171,6 +181,8 @@ class TaskSupervisor(Node):
 
     def tick(self):
         mode = self.mode()
+        if self.phase in ('PLANNING','STARTING','RESUMING') and not self.chassis_ready():
+            self.fail('chassis state health lost during task startup')
         if self.phase == 'NAVIGATING' and (mode != 'NORMAL' or not self.owns_active_goal() or not self.navigator.server_is_ready()):
             if time.monotonic() - self.started > 0.3:
                 self.fail(f'localization/recovery/action health lost: mode={mode}, healthy={self.healthy}, '

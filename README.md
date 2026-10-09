@@ -8,7 +8,7 @@
 ## 当前进度
 
 截至 2026-10-09，工程含 14 个 ROS 包，远端全量构建通过。
-最近一次测试汇总为 33 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
+最近一次测试汇总为 34 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
 单独加载 libscrc 1.8.1 后全部 13 项串口协议测试通过。
 
 | 功能 | 已验证内容 | 尚未完成 |
@@ -16,7 +16,8 @@
 | 原版通信 | 26-byte RX / 54-byte TX、原 CRC/符号/yaw/话题兼容、ROS 虚拟串口、平移超时停车 | 实车抓包、断线重连和下位机 watchdog 联调 |
 | Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor；横移导航、障碍/雷达断流/命令超时停车 | 实车定位输入、测量足迹、硬件速度与 yaw 适配 |
 | 配准与恢复 | 真实 GICP/KISS、双候选、受限自动触发、停车/取消/TF/清图、新规划放行 | 真实点云回放与实车稳定性验证 |
-| TF 与定位 | 上游 small_point_lio、时间对齐云台 TF/SE(3) resolver、真实 EKF、独占 map→odom | 实测标定、硬件同步、真实回放与状态/导航联锁 |
+| TF 与定位 | 上游 small_point_lio、时间对齐云台 TF/SE(3) resolver、真实 EKF、独占 map→odom | 实测标定、硬件同步与真实回放 |
+| Sensor Hub | 主 LIO 原生观测、源原点、角色约束、有界定位子地图 | 原始驱动、多雷达、逐点时间与感知适配 |
 | 优化建图 | 关键帧、回环候选、MapBundle 基础数据结构 | KISS 回环复核、GTSAM 优化、原始关键帧地图重建 |
 | 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
 
@@ -32,7 +33,7 @@ RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_small_gicp.sh
 RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_kiss_matcher.sh
 RM_NAV_DEPS_ROOT=/home/asus/nav_deps bash tools/bootstrap_small_point_lio.sh
 source /home/asus/nav_deps/install_lio/setup.bash
-CMAKE_PREFIX_PATH=/home/asus/nav_deps/install:${CMAKE_PREFIX_PATH:-} colcon build
+MAKEFLAGS=-j2 CMAKE_PREFIX_PATH=/home/asus/nav_deps/install:${CMAKE_PREFIX_PATH:-} colcon build
 source install/setup.bash
 colcon test
 colcon test-result --verbose
@@ -82,6 +83,10 @@ ROS_DOMAIN_ID=98 python3 tools/smoke_small_point_lio.py
 
 # 真实云台 TF、resolver 和 EKF；编码器/原始位姿为明确的合成测试输入。
 ROS_DOMAIN_ID=99 python3 tools/smoke_local_state.py
+
+# 实际 LIO / EKF / 原生观测 / 子地图 / GICP；输入仍是合成数据。
+ROS_DOMAIN_ID=100 python3 tools/smoke_small_point_lio.py --with-state
+ROS_DOMAIN_ID=101 python3 tools/smoke_observation_submap.py
 ```
 
 Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` TF。
@@ -89,7 +94,7 @@ Nav2 外部输入：`/map`、`/odom`、`/scan` 和 `map → odom → base_link` 
 输出链 `/nav/cmd_vel_raw → /nav/cmd_vel_smoothed → /nav/cmd_vel_checked → /nav/cmd_vel_safe`
 均为 `TwistStamped`、底盘坐标速度。当前输出隔离，尚未自动接到串口。
 footprint、停止区和速度约束目前为调试初值，需要实际尺寸与制动数据。
-最终输出门要求新鲜的 `/localization/healthy` 和 `/nav/motion_enable` true 心跳，
+最终输出门要求新鲜的 `/state/chassis_healthy`、`/localization/healthy` 和 `/nav/motion_enable` true 心跳，
 以及新鲜有效的底盘坐标速度；默认零输出。launch 默认启动 task_supervisor，
 通过 `/nav/submit_goal` 提交任务；只有监管拥有的唯一活动目标能够获得许可。
 直接向 Nav2 提交目标不会自动获得运动许可。
@@ -124,7 +129,10 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 模板未测量并默认拒绝启动；绝对云台反馈来自 `/hardware/gimbal_joint_states`，不使用
 `/contact_angle`。LIO 发布原始 IMU 位姿，resolver 按源时刻查询外参并保留完整 SE(3)，
 EKF 唯一发布 odom→base_footprint，状态输出 `/state/chassis`。
-当前没有自动把该状态转换为 Nav2 `/odom` 或接物理底盘；还需参考点适配与本地健康联锁。
+状态桥按完整参考点变换输出 Nav2 `/odom`，本地健康同时约束输出门与任务监管。
+EKF 估计速度不等于硬件实测停车反馈，输出仍未连接物理底盘。
+主 LIO 经原生观测适配与滚动窗口输出 `/localization/odom_submap`。
+见 [状态桥与观测链验收](docs/state_observation_acceptance.md)。
 见 [动态云台状态链验收](docs/local_state_acceptance.md)。
 
 ## 包结构
@@ -147,6 +155,7 @@ EKF 唯一发布 odom→base_footprint，状态输出 `/state/chassis`。
 - [small_gicp 后端](docs/small_gicp_acceptance.md)
 - [small_point_lio 上游接入](docs/small_point_lio_acceptance.md)
 - [动态云台与真实 EKF](docs/local_state_acceptance.md)
+- [状态桥与原生观测子地图](docs/state_observation_acceptance.md)
 - [KISS→GICP 后端](docs/kiss_gicp_acceptance.md)
 - [受限 KISS 恢复 ROS 链](docs/kiss_recovery_ros_acceptance.md)
 - [停车与恢复提交事务](docs/recovery_transaction_acceptance.md)
@@ -156,7 +165,7 @@ EKF 唯一发布 odom→base_footprint，状态输出 `/state/chassis`。
 - [串口字段说明](docs/my_serial_py_interface.md)
 - [架构与 TF 契约](docs/architecture_contract.md)
 
-下一步接入 Sensor Hub、状态/导航参考点和健康联锁，并完成真实驱动、实测标定、
-硬件时间同步与回放；实车速度反馈仍需独立适配。
+下一步完成原始驱动、多雷达独立观测、实测标定、硬件时间同步与真实回放；
+实车速度反馈仍需独立适配。
 之后完成优化建图、TDT 和最终控制链。
 每个独立步骤先在 asus 验证，再以中文 commit 推送。提交身份统一为 `kswlt`。

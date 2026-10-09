@@ -28,6 +28,12 @@ public:
   void add_frame(LocalSubmapFrame frame);
   LocalSubmap build() const;
   std::size_t frame_count() const { return frames_.size(); }
+  void clear() { frames_.clear(); }
+  std::size_t stored_point_count() const {
+    std::size_t result=0;
+    for (const auto & frame:frames_) result+=frame.points.size();
+    return result;
+  }
 
 private:
   std::int64_t window_ns_;

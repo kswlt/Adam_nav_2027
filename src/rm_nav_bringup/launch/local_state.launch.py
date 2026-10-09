@@ -59,7 +59,14 @@ def nodes(context):
             'use_sim_time':sim,'calibration_id':bundle['bundle_id'],'sensor_frame':frames['imu'],
             'body_frame':frames['base_footprint'],'require_encoder_health':True}],output='screen'),
         Node(package='robot_localization',executable='ekf_node',name='chassis_ekf',parameters=[ekf],
-             remappings=[('odometry/filtered','/state/chassis')],output='screen')]
+             remappings=[('odometry/filtered','/state/chassis')],output='screen'),
+        Node(package='rm_nav_localization',executable='chassis_state_bridge',parameters=[{
+            'use_sim_time':sim,'calibration_id':bundle['bundle_id'],
+            'state_reference_frame':frames['base_footprint']}],output='screen'),
+        Node(package='rm_nav_sensors',executable='lio_observation_adapter',parameters=[{
+            'use_sim_time':sim,'calibration_id':bundle['bundle_id'],'sensor_frame':frames['lidar']}],output='screen'),
+        Node(package='rm_nav_localization',executable='observation_submap',parameters=[{
+            'use_sim_time':sim,'calibration_id':bundle['bundle_id'],'sensor_frame':frames['lidar']}],output='screen')]
 
 
 def generate_launch_description():

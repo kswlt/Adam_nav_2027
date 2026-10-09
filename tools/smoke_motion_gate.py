@@ -28,13 +28,15 @@ def main():
     command = node.create_publisher(TwistStamped, '/nav/cmd_vel_checked', 10)
     health = node.create_publisher(Bool, '/localization/healthy', 10)
     enable = node.create_publisher(Bool, '/nav/motion_enable', 10)
+    chassis = node.create_publisher(Bool, '/state/chassis_healthy', 10)
     process = None
     logfile = Path('log/motion_gate_smoke.log')
     logfile.parent.mkdir(exist_ok=True)
 
-    def pump(seconds, healthy=True, enabled=True, send=True, mutate=None):
+    def pump(seconds, healthy=True, enabled=True, send=True, mutate=None, chassis_healthy=True):
         end = time.monotonic() + seconds
         while time.monotonic() < end:
+            if chassis_healthy is not None: chassis.publish(Bool(data=chassis_healthy))
             if healthy is not None:
                 health.publish(Bool(data=healthy))
             if enabled is not None:
@@ -71,6 +73,14 @@ def main():
             require(stopped(), 'Cached motion resumed after health recovery')
             pump(0.4)
             require(not stopped(), 'Fresh command failed to recover')
+            pump(0.15,chassis_healthy=False)
+            require(stopped(),'Chassis state loss did not stop')
+            pump(0.15,send=False)
+            require(stopped(),'Cached motion replayed after chassis health recovery')
+            pump(0.4)
+            pump(0.4,chassis_healthy=None)
+            require(stopped(),'Chassis heartbeat timeout did not stop')
+            pump(0.4)
             pump(0.4, healthy=None)
             require(stopped(), 'Health heartbeat timeout did not stop')
             pump(0.4)

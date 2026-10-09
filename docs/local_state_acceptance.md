@@ -23,8 +23,8 @@ verified 只是显式配置声明，需要实际测量与审核，不是程序�
 TF：base_footprint→chassis（静态）→big_gimbal_yaw（编码器动态）→IMU→LiDAR（静态）；
 base_link 是 chassis 参考点的静态别名。
 上游 LIO 不发布 TF，resolver 也不发布 TF，唯一 odom→base_footprint 来自 EKF。
-输出 `/state/chassis` 是完整位姿/速度/covariance 的 Odometry，当前未自动转换成
-现有 Nav2 输入 `/odom`；下一步需要底盘参考点与新鲜度适配及导航健康联锁。
+输出 `/state/chassis` 是完整位姿/速度/covariance 的 Odometry；参考点桥已接入
+Nav2 `/odom`，本地健康约束任务与输出门，见 [状态桥验收](state_observation_acceptance.md)。
 不能直接用 EKF 持续预测的输出时间戳证明传感器仍健康。
 
 ## 编码器和解算规则
@@ -36,6 +36,7 @@ base_link 是 chassis 参考点的静态别名。
 无编码器不发布假零角动态 TF，非法或断流使健康 false。
 
 resolver 按原始位姿的精确时间查询 TF，由 tf2 插值，不使用 latest-time 退路：
+精确时刻 TF 最多等待 50 ms 到达，等待后重新检查源时间与编码器新鲜度。
 `odom_T_body = odom_T_imu * inverse(body_T_imu(t))`。
 保留完整 SE(3)、平移杠杆臂、pitch/roll 与源时间；拒绝过期、重复、错 frame、
 非有限或非正定 covariance。通过杠杆臂 Jacobian 传播位姿协方差。
@@ -59,4 +60,4 @@ resolver 和 robot_localization。真实 Point-LIO 本身另见上游验收，�
 实际 EKF 的输出 frame/位置、无重复 TF，以及错误年龄/frame/NaN/covariance、
 编码器和位姿断流拒绝。日志为 `log/local_state_smoke.log`。
 2026-10-09 在 asus/Jazzy 完整通过上述软件验收。
-后续仍需实车标定、硬件时钟同步、真实 LIO/编码器回放与 `/odom`/健康适配。
+后续仍需实车标定、硬件时钟同步与真实 LIO/编码器回放。

@@ -26,10 +26,12 @@ def main():
                              lambda m: setattr(node, 'confirmed', m.data), 10)
     node.create_subscription(TwistStamped, '/nav/cmd_vel_safe', lambda m: setattr(node, 'safe', m), 10)
     enable = node.create_publisher(Bool, '/nav/motion_enable', 10)
+    chassis = node.create_publisher(Bool,'/state/chassis_healthy',10)
     raw = node.create_publisher(TwistStamped, '/nav/cmd_vel_checked', 10)
     client = node.create_client(RequestRecovery, '/localization/request_recovery')
 
     def ongoing_command():
+        chassis.publish(Bool(data=True))  # Explicit commissioning health fixture.
         enable.publish(Bool(data=True))
         cmd = TwistStamped()
         cmd.header.frame_id = 'base_link'

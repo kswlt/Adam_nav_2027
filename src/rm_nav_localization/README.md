@@ -33,3 +33,5 @@ matcher 在场地范围内保留候选位置周围的目标特征，并限制点
 `LocalSubmapBuilder` maintains the configured rolling time window and transforms each input frame into `odom`. It reports timestamps and point count for registration quality checks.
 
 `RelocalizationStateMachine` 当前仅提供状态/许可辅助接口；尚未驱动真实恢复流程或控制输出。
+
+chassis_state_bridge 转换 EKF 参考点并约束本地健康；observation_submap 构建有界子地图。见 [验收](../../docs/state_observation_acceptance.md)。

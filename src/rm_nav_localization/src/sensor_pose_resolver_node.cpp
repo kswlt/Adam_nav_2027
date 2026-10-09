@@ -19,10 +19,12 @@ public:
     sensor_ = declare_parameter("sensor_frame", "front_mid360_imu");
     calibration_ = declare_parameter<std::string>("calibration_id", "");
     max_age_ = declare_parameter("max_age", 0.2);
+    tf_wait_ = declare_parameter("tf_wait", 0.05);
     require_encoder_ = declare_parameter("require_encoder_health", true);
     if (calibration_.empty() || world_.empty() || body_.empty() || sensor_.empty() ||
         world_ == body_ || world_ == sensor_ || body_ == sensor_ ||
-        !std::isfinite(max_age_) || max_age_ <= 0) throw std::invalid_argument("Explicit calibration and distinct frames required");
+        !std::isfinite(max_age_) || max_age_ <= 0 || !std::isfinite(tf_wait_) ||
+        tf_wait_ < 0 || tf_wait_ > max_age_) throw std::invalid_argument("Explicit calibration and distinct frames required");
     pose_pub_ = create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("/state/lio_pose", 10);
     health_pub_ = create_publisher<std_msgs::msg::Bool>("/state/lio_healthy", 10);
     reason_pub_ = create_publisher<std_msgs::msg::String>("/state/lio_reason", 10);
@@ -72,7 +74,12 @@ private:
       if (eig.info() != Eigen::Success || eig.eigenvalues().minCoeff() <= 0)
         throw std::invalid_argument("LIO covariance must be positive definite; zero covariance is not certainty");
       // Exact source timestamp only. TF performs interpolation; no latest-time fallback.
-      const auto extrinsic = buffer_.lookupTransform(body_, sensor_, stamp);
+      const auto extrinsic = buffer_.lookupTransform(body_, sensor_, stamp, rclcpp::Duration::from_seconds(tf_wait_));
+      const double age_after_wait = (now() - stamp).seconds();
+      if (age_after_wait < -0.05 || age_after_wait > max_age_ ||
+          (require_encoder_ && (!encoder_valid_ ||
+           std::chrono::duration<double>(std::chrono::steady_clock::now() - encoder_received_).count() > max_age_)))
+        throw std::invalid_argument("LIO pose or encoder became stale while waiting for exact-time TF");
       const auto body_T_sensor = from_ros_transform(extrinsic.transform);
       const auto world_T_body = ChassisResolver::resolve(world_T_sensor, body_T_sensor);
       const Eigen::Vector3d lever = world_T_body.translation() - world_T_sensor.translation();
@@ -97,7 +104,7 @@ private:
   tf2_ros::Buffer buffer_;
   tf2_ros::TransformListener listener_;
   std::string world_, body_, sensor_, calibration_, reason_{"no verified sensor pose"};
-  double max_age_;
+  double max_age_, tf_wait_;
   bool healthy_{false};
   bool require_encoder_{true}, encoder_valid_{false};
   std::chrono::steady_clock::time_point encoder_received_{};

@@ -7,12 +7,17 @@ import signal
 import struct
 import subprocess
 import time
+import sys
 
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import Imu, PointCloud2, PointField
+from sensor_msgs.msg import Imu, PointCloud2, PointField, JointState
+from std_msgs.msg import Bool,String
+from rclpy.qos import QoSProfile,DurabilityPolicy
+from rm_nav_interfaces.msg import ObservationBatch
+from smoke_frozen_map_localization import cloud
 from tf2_msgs.msg import TFMessage
 import yaml
 
@@ -23,6 +28,7 @@ def require(value,message):
 
 def main():
     require(os.environ.get('ROS_DOMAIN_ID') not in (None,'','0'),'Use isolated Domain')
+    pipeline='--with-state' in sys.argv
     rclpy.init()
     node = Node('small_point_lio_fixture')
     imu_pub = node.create_publisher(Imu,'/fixture/imu',qos_profile_sensor_data)
@@ -31,6 +37,20 @@ def main():
     node.create_subscription(Odometry,'/lio/sensor_odometry',observations.append,10)
     node.create_subscription(PointCloud2,'/lio/deskewed_odom_cloud',clouds.append,10)
     node.create_subscription(TFMessage,'/tf',transforms.append,10)
+    encoder=node.create_publisher(JointState,'/hardware/gimbal_joint_states',qos_profile_sensor_data)
+    submaps,batches,odom=[],[],[]
+    health={'chassis':False,'global':False}
+    diagnostics={}
+    if pipeline:
+        for topic in ['/state/lio_reason','/state/chassis_reason','/sensors/localization_reason',
+                      '/localization/submap_reason','/localization/status_reason']:
+            node.create_subscription(String,topic,lambda msg,key=topic:diagnostics.update({key:msg.data}),10)
+        node.create_subscription(PointCloud2,'/localization/odom_submap',submaps.append,qos_profile_sensor_data)
+        node.create_subscription(ObservationBatch,'/sensors/localization_observations',batches.append,10)
+        node.create_subscription(Odometry,'/odom',odom.append,10)
+        node.create_subscription(Bool,'/state/chassis_healthy',lambda m:health.update(chassis=m.data),10)
+        node.create_subscription(Bool,'/localization/healthy',lambda m:health.update({'global':m.data}),10)
+    frozen=node.create_publisher(PointCloud2,'/localization/frozen_map',QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
     params = yaml.safe_load(Path('/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml').read_text())
     params['small_point_lio']['ros__parameters'].update({
         'lidar_topic':'/fixture/lidar','imu_topic':'/fixture/imu','lidar_type':'livox_pointcloud2',
@@ -41,6 +61,14 @@ def main():
     Path('log').mkdir(exist_ok=True)
     config = Path('log/lio_fixture.yaml')
     config.write_text(yaml.safe_dump(params))
+    bundle={'bundle_id':'synthetic-lio-pipeline','status':'verified',
+            'frames':{'base_footprint':'base_footprint','chassis':'chassis','big_gimbal_yaw':'big_gimbal_yaw',
+                      'imu':'front_mid360_imu','lidar':'front_mid360'},
+            'encoder':{'joint':'big_gimbal_yaw','sign':1.,'zero_offset':0.},
+            'transforms':{name:{'translation':[0.,0.,0.],'quaternion_xyzw':[0.,0.,0.,1.]} for name in
+                          ['footprint_to_chassis','chassis_to_yaw_zero','yaw_to_imu','imu_to_lidar']}}
+    calibration=Path('log/lio_pipeline_fixture.yaml')
+    calibration.write_text(yaml.safe_dump(bundle))
     points = []
     # Three mutually orthogonal surfaces give the genuine filter geometric constraints.
     for i in range(30):
@@ -54,16 +82,24 @@ def main():
         end = time.monotonic()+duration
         while time.monotonic()<end: rclpy.spin_once(node,timeout_sec=0.01)
     process = None
+    processes=[]
     try:
         with Path('log/small_point_lio_smoke.log').open('w') as log:
-            process = subprocess.Popen(['ros2','run','small_point_lio','small_point_lio_node',
+            command=['ros2','run','small_point_lio','small_point_lio_node',
                 '--ros-args','--params-file',str(config),'-r','/Odometry:=/lio/sensor_odometry',
-                '-r','/cloud_registered:=/lio/deskewed_odom_cloud'],stdout=log,stderr=subprocess.STDOUT,
-                start_new_session=True)
+                '-r','/cloud_registered:=/lio/deskewed_odom_cloud']
+            if pipeline:
+                command=['ros2','launch','rm_nav_bringup','local_state.launch.py',
+                         'calibration_file:='+str(calibration),'lio_params_file:='+str(config)]
+                processes.append(subprocess.Popen(['ros2','launch','rm_nav_bringup','frozen_map_localization.launch.py',
+                    'map_version:=synthetic-lio-pipeline'],stdout=log,stderr=subprocess.STDOUT,start_new_session=True))
+            process = subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
+            processes.append(process)
             while cloud_pub.get_subscription_count()==0 and time.monotonic()-started<10: spin(0.05)
             require(cloud_pub.get_subscription_count()>0,'Real LIO did not start')
             spin(0.3)
             require(not observations and not clouds,'LIO produced pose without sensor data')
+            if pipeline: frozen.publish(cloud(points,'map',node.get_clock().now().to_msg()))
             last_cloud = time.monotonic()
             end = time.monotonic()+7.0
             while time.monotonic()<end:
@@ -72,6 +108,12 @@ def main():
                 imu.linear_acceleration.z = 9.81
                 imu.orientation_covariance[0] = -1.0
                 imu_pub.publish(imu)
+                if pipeline:
+                    joint=JointState()
+                    joint.header=imu.header
+                    joint.header.frame_id='chassis'
+                    joint.name,joint.position=['big_gimbal_yaw'],[0.]
+                    encoder.publish(joint)
                 if time.monotonic()-last_cloud >= 0.1:
                     last_cloud = time.monotonic()
                     stamp = node.get_clock().now()
@@ -86,7 +128,7 @@ def main():
                     cloud_pub.publish(msg)
                 spin(0.005)
                 require(process.poll() is None,'Point-LIO crashed; inspect log')
-            spin(0.1)
+            spin(0.02)
             require(len(observations)>10 and len(clouds)>5,'Actual filter did not produce enough outputs')
             latest = observations[-1]
             require(latest.header.frame_id=='odom' and latest.child_frame_id=='front_mid360_imu','Raw pose frame corrupted')
@@ -97,7 +139,26 @@ def main():
             require(all(math.isfinite(x) for x in latest.pose.covariance) and
                     all(latest.pose.covariance[i*7]>0 for i in range(6)),'Filter covariance missing')
             require(all(c.header.frame_id=='odom' for c in clouds),'Odom cloud frame mismatch')
-            require(not transforms,'LIO published TF despite publish_tf=false')
+            if not pipeline: require(not transforms,'LIO published TF despite publish_tf=false')
+            else:
+                require(len(submaps)>5 and len(batches)>5 and len(odom)>10 and health['chassis'] and health['global'],
+                        f'Real LIO/state/observation/submap/GICP chain did not become healthy: '
+                        f'odom={len(odom)} batches={len(batches)} submaps={len(submaps)} health={health} reasons={diagnostics}')
+                frame=batches[-1].frames[0]
+                require(frame.source_id=='mid360_main' and frame.sensor_frame=='front_mid360' and
+                        frame.calibration_id=='synthetic-lio-pipeline' and frame.roles==17 and
+                        frame.reference_origin_only and not frame.per_point_time,'Observation provenance or raycast limits lost')
+                require(all(s.header.frame_id=='odom' and 20<=s.width<=50000 for s in submaps),'Submap frame/point bound wrong')
+                require(all(s.header.stamp.sec*10**9+s.header.stamp.nanosec <= observations[-1].header.stamp.sec*10**9+
+                            observations[-1].header.stamp.nanosec for s in submaps),'Submap fabricated a future source stamp')
+                spin(.7)
+                require(not health['chassis'],'Input dropout did not invalidate chassis state')
+                settled=len(submaps)
+                spin(.5)
+                require(not health['global'],'Input dropout did not expire global registration health')
+                require(len(submaps)==settled,'Submap refreshed cached geometry without new sensor observations')
+                owners={tf.child_frame_id for group in transforms for tf in group.transforms}
+                require(owners=={'base_footprint','big_gimbal_yaw','odom'},'Unexpected duplicate/raw LIO TF '+str(owners))
             # Core output is already odom XYZ: do not apply a second body extrinsic.
             last = clouds[-1]
             xyz = [struct.unpack_from('<fff',last.data,i*last.point_step) for i in range(last.width)]
@@ -105,13 +166,16 @@ def main():
             require(sum(min(abs(x-4),abs(y-4),abs(z+2))<0.1 for x,y,z in xyz)/len(xyz)>0.95,
                     'Core odom cloud was transformed a second time')
             print(f'PASS actual pinned Point-LIO: {len(observations)} poses, {len(clouds)} clouds; '
-                  'raw IMU pose/covariance, stationary geometry, correct cloud frame and no TF',flush=True)
+                  'raw IMU pose/covariance, stationary geometry, correct cloud frame and no LIO-owned TF',flush=True)
+            if pipeline: print('PASS actual LIO -> time-aligned resolver -> EKF -> body odometry -> observation contract -> '
+                               'bounded submap -> real GICP/sole map TF; dropout does not replay cached observations',flush=True)
     finally:
-        if process is not None:
-            os.killpg(process.pid,signal.SIGINT)
-            try: process.wait(timeout=5)
-            except subprocess.TimeoutExpired: os.killpg(process.pid,signal.SIGKILL);process.wait()
+        for item in processes: os.killpg(item.pid,signal.SIGINT)
+        for item in processes:
+            try: item.wait(timeout=5)
+            except subprocess.TimeoutExpired: os.killpg(item.pid,signal.SIGKILL);item.wait()
         node.destroy_node();rclpy.shutdown()
+        if pipeline: Path('log/lio_pipeline_diagnostics.txt').write_text(str(diagnostics))
 
 
 if __name__=='__main__': main()

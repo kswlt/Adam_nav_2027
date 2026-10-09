@@ -17,5 +17,6 @@
   <depend>action_msgs</depend>
   <depend>nav2_msgs</depend>
   <depend>nav_msgs</depend>
+  <depend>rm_nav_sensors</depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>

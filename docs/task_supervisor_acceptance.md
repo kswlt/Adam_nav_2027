@@ -22,7 +22,8 @@
 监管先调用真实 ComputePathToPose（GridBased），取得有效新路径，再创建新的
 NavigateToPose 目标。仅当前任务拥有的唯一活动 UUID 可以获得运动许可。
 直接提交外部 NavigateToPose 目标不会获得许可；外部目标抢占会撤销当前许可。
-健康与恢复状态心跳期限为 0.25 s。失健康、服务消失、目标结束或规划超时均保持零许可；
+本地 `/state/chassis_healthy`、全局健康与恢复状态心跳期限为 0.25 s。
+本地失效优先 STOP，取消任务，禁止以 WAIT_REPLAN 继续规划；恢复不重放旧任务。失健康、服务消失、目标结束或规划超时均保持零许可；
 失健康取消当前任务，健康恢复不会自动重放它。
 
 此处路径是 Nav2 预规划证明，Nav2 行为树仍可重新规划；并非 TDT TimedTrajectory
@@ -61,4 +62,4 @@ ROS_DOMAIN_ID=97 python3 tools/smoke_task_resume.py
 
 底盘与实测停车反馈仍为明确的理想模型；合成云的算法收敛不证明实车定位稳定性。
 原串口没有速度反馈，yaw 报文也不发送 angular.z；本步骤不自动连接物理串口。
-真实传感器、LIO/编码器/EKF、反馈适配器、TDT 执行失效与实车回放仍需完成。
+LIO/编码器/EKF 软件链已接入；真实传感器、反馈适配器、TDT 执行失效与实车回放仍需完成。

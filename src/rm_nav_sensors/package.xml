@@ -7,5 +7,10 @@
   <license>Apache-2.0</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>eigen3_cmake_module</depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>rm_nav_interfaces</depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>

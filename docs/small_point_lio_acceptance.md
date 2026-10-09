@@ -49,3 +49,5 @@ PointCloud2 的 Livox 模式需要 FLOAT32 XYZ、UINT8 tag、FLOAT64 timestamp�
 这证明真实算法与发布接口可运行，不证明实际传感器去畸变、动态云台运动或定位精度。
 合成测试的单位外参只能用于测试，不能复制为实车标定。
 真实传感器字段/时间检查、Sensor Hub、回放、标定和长期运行仍需接入。
+
+ROS_DOMAIN_ID=100 python3 tools/smoke_small_point_lio.py --with-state 验收上游→resolver→EKF→状态桥→观测→子地图→GICP，输入仍是合成静态三平面/IMU/编码器，不代替实车动态回放。见 [集成说明](state_observation_acceptance.md)。

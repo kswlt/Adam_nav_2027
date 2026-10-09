@@ -41,12 +41,13 @@ def main():
     node=Node('local_state_fixture')
     encoder=node.create_publisher(JointState,'/hardware/gimbal_joint_states',qos_profile_sensor_data)
     pose=node.create_publisher(Odometry,'/lio/sensor_odometry',qos_profile_sensor_data)
-    resolved,filtered,transforms=[],[],[]
-    health={'lio':False,'encoder':False}
+    resolved,filtered,transforms,nav_odom=[],[],[],[]
+    health={'lio':False,'encoder':False,'chassis':False}
     node.create_subscription(PoseWithCovarianceStamped,'/state/lio_pose',resolved.append,10)
     node.create_subscription(Odometry,'/state/chassis',filtered.append,10)
+    node.create_subscription(Odometry,'/odom',nav_odom.append,10)
     node.create_subscription(TFMessage,'/tf',transforms.append,10)
-    for kind,topic in [('lio','/state/lio_healthy'),('encoder','/state/gimbal_healthy')]:
+    for kind,topic in [('lio','/state/lio_healthy'),('encoder','/state/gimbal_healthy'),('chassis','/state/chassis_healthy')]:
         node.create_subscription(Bool,topic,lambda msg,k=kind:health.update({k:msg.data}),10)
     Path('log').mkdir(exist_ok=True)
     identity=[0.,0.,0.,1.]
@@ -119,6 +120,7 @@ def main():
                 'calibration_file:='+str(bundle_path),'lio_params_file:='+str(profile),'enable_lio:=false'],
                 stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
             require(wait(lambda:len(resolved)>30 and len(filtered)>30 and health['lio'],12),'State chain did not become ready')
+            require(wait(lambda:len(nav_odom)>10 and health['chassis'],3),'Nav2 state reference bridge did not become healthy')
             require(wait(lambda:False,1.0) is False,'Unexpected fixture wait')
             for out in resolved[-30:]:
                 p=out.pose.pose.position
@@ -131,6 +133,10 @@ def main():
             p=out.pose.pose.position
             require(out.header.frame_id=='odom' and out.child_frame_id=='base_footprint','EKF frame ownership wrong')
             require(np.linalg.norm(np.array([p.x,p.y,p.z])-body_position)<.03,'Actual EKF did not track resolved pose')
+            p=nav_odom[-1].pose.pose.position
+            require(nav_odom[-1].child_frame_id=='base_link' and np.linalg.norm(
+                    np.array([p.x,p.y,p.z])-(body_position+world_R_body@np.array([0.,0.,.1])))<.03,
+                    'Nav2 odometry used footprint reference instead of chassis reference')
             covariance=np.array(resolved[-1].pose.covariance).reshape(6,6)
             require(np.linalg.eigvalsh(covariance).min()>0 and np.linalg.norm(covariance[:3,3:])>1e-5,
                     'Lever-arm pose covariance was not propagated')
@@ -147,14 +153,21 @@ def main():
                 require(wait(lambda:health['lio'],.6),'Valid stream did not recover: '+mode)
             enabled['encoder']=False
             require(wait(lambda:not health['encoder'] and not health['lio'],.5),'Encoder loss did not invalidate resolver')
+            require(wait(lambda:not health['chassis'],.3),'Encoder loss did not invalidate Nav2 state')
             wait(lambda:False,.1)
             count=len(resolved)
             wait(lambda:False,.2)
             require(len(resolved)==count,'Latest-time/static yaw fallback released pose')
+            count=len(nav_odom)
+            before_prediction=len(filtered)
+            wait(lambda:False,.25)
+            require(len(filtered)>before_prediction and len(nav_odom)==count,
+                    'Fresh EKF predictions hid encoder loss or continued Nav2 odometry')
             enabled['encoder']=True
             require(wait(lambda:health['lio'],.8),'Encoder stream did not recover time coverage')
             enabled['pose']=False
             require(wait(lambda:not health['lio'],.5),'Raw pose loss did not invalidate resolver')
+            require(wait(lambda:not health['chassis'],.3),'Raw pose loss did not invalidate Nav2 state')
             print('PASS real encoder TF/interpolation + SE3 resolver + robot_localization; '
                   'rotating-offset sensor preserves fixed chassis, full pose/covariance; '
                   'bad frame/age/NaN/covariance and encoder/pose loss refused; sole EKF odom TF',flush=True)

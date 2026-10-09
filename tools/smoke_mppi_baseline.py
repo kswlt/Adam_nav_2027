@@ -41,6 +41,8 @@ class IdealPlant(Node):
         self.motion_enabled = True
         self.publish_motion_permission = publish_motion_permission
         self.health = self.create_publisher(Bool, '/localization/healthy', 10) if publish_localization_health else None
+        self.chassis_health = self.create_publisher(Bool,'/state/chassis_healthy',10)
+        self.chassis_healthy = True
         self.enable = self.create_publisher(Bool, '/nav/motion_enable', 10)
         self.raw = self.create_publisher(TwistStamped, '/nav/cmd_vel_raw', 10)
         self.create_subscription(TwistStamped, '/nav/cmd_vel_safe', self.command, 10)
@@ -85,6 +87,7 @@ class IdealPlant(Node):
         self.yaw += twist.angular.z * dt
         stamp = self.get_clock().now().to_msg()
         # Ideal-plant commissioning inputs; no measured hardware health is implied.
+        self.chassis_health.publish(Bool(data=self.chassis_healthy))
         if self.publish_health:
             self.health.publish(Bool(data=self.localization_healthy))
         if self.publish_motion_permission:

@@ -14,6 +14,7 @@ MPPI/behavior → /nav/cmd_vel_raw → velocity_smoother
 
 ## 放行条件
 
+- `/state/chassis_healthy` 为 true，心跳不超过 0.25 s（默认必须）。
 - `/localization/healthy` 为 true，接收心跳不超过 0.25 s。
 - `/nav/motion_enable` 为 true，接收心跳不超过 0.25 s。
 - checked 命令接收时间和源时间戳不超过 0.25 s，未来时间不超过 0.1 s。
@@ -25,12 +26,12 @@ MPPI/behavior → /nav/cmd_vel_raw → velocity_smoother
 健康/许可订阅采用 volatile QoS，避免读取失效发布者留下的历史 true。
 输出 `/nav/motion_allowed` 和 `/nav/motion_gate_reason` 用于诊断。
 
-实际定位链的健康发布者是 `map_odom_manager`。
+本地健康发布者是 `chassis_state_bridge`，全局健康发布者是 `map_odom_manager`。
 运动许可由后续接入的 `task_supervisor` 唯一周期发布，见
 [任务监管验收](task_supervisor_acceptance.md)。独立门验收关闭该节点并使用明确的许可替身；
 生产启动不要同时发布第二路许可。
 没有该许可源时保持零输出，不在启动文件中自动造一个恒 true 许可。
-理想模型测试会显式模拟健康与许可心跳。
+理想模型显式模拟本地/全局健康与许可；生产不提供恒 true 本地健康。
 
 ## 验收
 
@@ -51,4 +52,4 @@ ROS_DOMAIN_ID=87 python3 tools/smoke_mppi_baseline.py
 
 本次还将生命周期验收客户端改为复用，避免频繁创建/销毁服务客户端造成通信扰动。
 日志保存在 `log/motion_gate_smoke.log` 与 `log/mppi_baseline_smoke*`。
-大修正确认、停车状态确认、Nav2 目标取消/轨迹作废和重规划事务仍待后续实现。
+本地健康失效、心跳中断与缓存不重放已验收；恢复事务见 recovery_transaction_acceptance.md。
