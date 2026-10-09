@@ -42,6 +42,17 @@ ROS_DOMAIN_ID=105 python3 tools/smoke_mid360_bag.py \
 
 ## 网络修复
 
+## 原始质量门与 LIO 联锁
+
+启用 `local_state.launch.py enable_mid360_guard:=true` 后，
+`rm_nav_sensors/mid360_cloud_guard` 对 `/livox/lidar` 做保守检查：必须是
+`front_mid360`、单调/绝对源时间、合法 Livox 字段、至少 500 个有效回波、有效比例至少 10%，
+且三维协方差最小特征值和特征值比满足阈值。通过的原始消息只做转发，不修改字段和时间。
+resolver 的 `require_raw_cloud_health` 同步要求新鲜质量心跳，质量拒绝/断流时不接受新底盘位姿。
+
+真实回归：遮挡 bag 转发 0 帧，无遮挡 bag 转发 217 帧；两种 bag 均验证断流后没有缓存重放、
+健康状态保持 false。质量门单测纳入全量 37 项测试。详细报告在 `docs/evidence/`。
+
 ASUS 的 Wi-Fi 为 `192.168.1.145/23`，有线 `enp86s0` 接 MID-360。
 被动抓包发现设备 `192.168.1.3` 正在 ARP 查询主机 `192.168.1.50`。
 有线配置为 `.50/24` 后，重叠网段使 SSH 回包错误地走向雷达网口。

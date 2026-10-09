@@ -95,7 +95,7 @@ SDK 安装在用户前缀。不要直接运行上游 `build.sh`：它会删除�
 | 优化建图 | 原始关键帧持久化；真实 VGICP 相邻约束；GTSAM Pose3 图与原始云重建 | 建图回环、官方坐标对齐、动态清理、MapBundle 发布 |
 | Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor → gate，理想全向模型横移及故障停车 | 实际定位/地图/足迹与最终 TDT、Omni PID、yaw、串口适配 |
 | 监管 | 本地/全局健康、运动许可、唯一任务、旧任务取消与恢复后重新规划 | 最终控制与整车运行验收 |
-| 实机输入 | MID-360 官方驱动和真实静止 bag 回放通过 | 不等于动态精度或端到端整车验收 |
+| 实机输入 | MID-360 官方驱动和真实静止 bag 回放通过；原始点云质量门可拒绝退化扫描并联锁 LIO 状态 | 不等于动态精度或端到端整车验收 |
 
 MPPI Omni 是技术路线的早期可运行基线，不替代最终 TDT/Omni PID 方案。
 详细状态以 [阶段矩阵](stage_completion_matrix.md) 和各模块验收报告为准。
@@ -116,6 +116,21 @@ MPPI Omni 是技术路线的早期可运行基线，不替代最终 TDT/Omni PID
 这些是相对首个估计的变化，不是有轨迹真值的定位精度。
 遮挡消除后有效点恢复、异常不再复现；保留失败样本，不删改或伪造通过结果。
 报告和哈希见 [实机接入记录](mid360_hardware_acceptance.md) 及 `docs/evidence/`。
+
+### 原始点云质量门（最新）
+
+`rm_nav_sensors/mid360_cloud_guard` 检查原始 Livox PointCloud2 的 frame、源时间、
+字段布局、有效回波数量、有效比例和三维协方差几何；通过时逐字节保留原始 `data`、
+字段、frame 和源时间发布到 `/sensors/front_mid360/guarded_points`，不重采样、不重打时间。
+质量状态发布到 `/sensors/front_mid360/cloud_healthy`；`local_state.launch.py` 的
+`enable_mid360_guard:=true` 会将 Point-LIO 输入切换到 guarded 话题，并要求 resolver
+同时收到新鲜质量心跳。拒绝或断流会停止新的底盘位姿健康输出，不会重放缓存。
+
+真实回归结果：遮挡样本 0 个点云被转发，原因为 `Insufficient valid returns for LIO`；
+无遮挡样本 217 个点云被转发，原始 payload/时间/步长保持一致；两者断流后均保持不健康。
+质量门单测和完整工程回归为 37 tests、0 errors、0 failures、1 skipped。
+报告见 `docs/evidence/mid360_guard_bad_20261009.json`、
+`mid360_guard_good_20261009.json`、`raw_quality_interlock_20261009.json`。
 
 ## 5. 必须保持的接口与架构约束
 

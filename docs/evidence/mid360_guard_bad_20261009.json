@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "scope": "real recorded native scans; gate only, no robot actuation",
+  "bag": "/home/asus/nav_data/mid360_20261009_b/raw_bag",
+  "expected": "reject",
+  "input_count": 163,
+  "forwarded_count": 0,
+  "all_outputs_byte_identical_inputs": true,
+  "dropout_health_false": true,
+  "reason_counts": {
+    "no accepted native scan": 81,
+    "Raw scan frame/order/source age invalid": 3,
+    "Insufficient valid returns for LIO": 532
+  },
+  "errors": []
+}

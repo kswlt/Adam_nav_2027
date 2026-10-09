@@ -29,6 +29,9 @@ def nodes(context):
               2*(x*y+z*w),1-2*(x*x+z*z),2*(y*z-x*w),
               2*(x*z-y*w),2*(y*z+x*w),1-2*(x*x+y*y)]
     sim=ParameterValue(LaunchConfiguration('use_sim_time'),value_type=bool)
+    raw_guard = LaunchConfiguration('enable_mid360_guard').perform(context)=='true'
+    lio_input = {'lidar_type':'livox_pointcloud2',
+                 'lidar_topic':'/sensors/front_mid360/guarded_points'} if raw_guard else {}
     ekf={'use_sim_time':sim,'frequency':50.0,'sensor_timeout':0.2,'two_d_mode':False,
          'publish_tf':True,'map_frame':'map','odom_frame':'odom',
          'base_link_frame':frames['base_footprint'],'world_frame':'odom',
@@ -42,6 +45,9 @@ def nodes(context):
         ekf.update({'imu0':'/hardware/chassis_imu','imu0_config':
                    [False]*9+[True,True,True]+[False]*3})
     return [
+        Node(package='rm_nav_sensors',executable='mid360_cloud_guard',
+             condition=IfCondition(LaunchConfiguration('enable_mid360_guard')),
+             parameters=[{'use_sim_time':sim,'sensor_frame':frames['lidar']}],output='screen'),
         Node(package='rm_nav_bringup',executable='gimbal_tf',parameters=[tf_params,{
             'use_sim_time':sim,'calibration_id':bundle['bundle_id'],
             'footprint_frame':frames['base_footprint'],'chassis_frame':frames['chassis'],
@@ -53,11 +59,12 @@ def nodes(context):
              parameters=[LaunchConfiguration('lio_params_file'),{'use_sim_time':sim,
                  'publish_tf':False,'odom_frame':'odom','state_frame':frames['imu'],'lidar_frame':frames['lidar'],
                  'extrinsic_est_en':False,'extrinsic_T':transforms['imu_to_lidar']['translation'],
-                 'extrinsic_R':rotation}],
+                 'extrinsic_R':rotation},lio_input],
              remappings=[('/Odometry','/lio/sensor_odometry'),('/cloud_registered','/lio/deskewed_odom_cloud')],output='screen'),
         Node(package='rm_nav_localization',executable='sensor_pose_resolver',parameters=[{
             'use_sim_time':sim,'calibration_id':bundle['bundle_id'],'sensor_frame':frames['imu'],
-            'body_frame':frames['base_footprint'],'require_encoder_health':True}],output='screen'),
+            'body_frame':frames['base_footprint'],'require_encoder_health':True,
+            'require_raw_cloud_health':raw_guard}],output='screen'),
         Node(package='robot_localization',executable='ekf_node',name='chassis_ekf',parameters=[ekf],
              remappings=[('odometry/filtered','/state/chassis')],output='screen'),
         Node(package='rm_nav_localization',executable='chassis_state_bridge',parameters=[{
@@ -75,6 +82,8 @@ def generate_launch_description():
         DeclareLaunchArgument('lio_params_file',description='Driver topics, timing and filter parameters'),
         DeclareLaunchArgument('use_sim_time',default_value='false'),
         DeclareLaunchArgument('enable_lio',default_value='true'),
+        DeclareLaunchArgument('enable_mid360_guard',default_value='false',
+                             description='Enable native Livox scan gate and raw-quality state interlock; use true for MID360 hardware'),
         DeclareLaunchArgument('enable_wheel_odometry',default_value='false'),
         DeclareLaunchArgument('enable_chassis_imu',default_value='false'),
         OpaqueFunction(function=nodes)])

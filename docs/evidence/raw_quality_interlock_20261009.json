@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "scope": "explicit synthetic pose and quality heartbeat; no hardware calibration or actuation",
+  "checks": [
+    "missing quality rejects continuously fresh valid pose",
+    "fresh accepted quality permits pose",
+    "rejected quality blocks fresh pose and health",
+    "quality recovery requires and accepts new pose",
+    "quality heartbeat timeout blocks continuously fresh pose"
+  ],
+  "accepted_pose_count": 75
+}

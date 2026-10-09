@@ -21,6 +21,7 @@ public:
     max_age_ = declare_parameter("max_age", 0.2);
     tf_wait_ = declare_parameter("tf_wait", 0.05);
     require_encoder_ = declare_parameter("require_encoder_health", true);
+    require_raw_cloud_ = declare_parameter("require_raw_cloud_health", false);
     if (calibration_.empty() || world_.empty() || body_.empty() || sensor_.empty() ||
         world_ == body_ || world_ == sensor_ || body_ == sensor_ ||
         !std::isfinite(max_age_) || max_age_ <= 0 || !std::isfinite(tf_wait_) ||
@@ -35,7 +36,15 @@ public:
         encoder_valid_ = msg->data; encoder_received_ = std::chrono::steady_clock::now();
         if (require_encoder_ && !encoder_valid_) { healthy_ = false; reason_ = "absolute encoder health lost"; }
       });
+    raw_cloud_sub_ = create_subscription<std_msgs::msg::Bool>("/sensors/front_mid360/cloud_healthy",10,
+      [this](std_msgs::msg::Bool::ConstSharedPtr msg) {
+        raw_cloud_valid_ = msg->data; raw_cloud_received_ = std::chrono::steady_clock::now();
+        if (require_raw_cloud_ && !raw_cloud_valid_) { healthy_ = false; reason_ = "raw cloud quality lost"; }
+      });
     timer_ = create_wall_timer(std::chrono::milliseconds(50), [this]() {
+      if (require_raw_cloud_ && !raw_cloud_fresh()) {
+        healthy_ = false; reason_ = "raw cloud quality missing/stale/rejected";
+      }
       if (require_encoder_ && (!encoder_valid_ ||
           std::chrono::duration<double>(std::chrono::steady_clock::now() - encoder_received_).count() > max_age_)) {
         healthy_ = false; reason_ = "absolute encoder health timed out";
@@ -50,11 +59,17 @@ public:
     });
   }
 private:
+  bool raw_cloud_fresh() const {
+    return raw_cloud_valid_ &&
+      std::chrono::duration<double>(std::chrono::steady_clock::now()-raw_cloud_received_).count() <= max_age_;
+  }
   void receive(const nav_msgs::msg::Odometry & msg)
   {
     try {
       const auto stamp = rclcpp::Time(msg.header.stamp, get_clock()->get_clock_type());
       const double age = (now() - stamp).seconds();
+      if (require_raw_cloud_ && !raw_cloud_fresh())
+        throw std::invalid_argument("Fresh accepted raw cloud quality required");
       if (require_encoder_ && (!encoder_valid_ ||
           std::chrono::duration<double>(std::chrono::steady_clock::now() - encoder_received_).count() > max_age_))
         throw std::invalid_argument("Fresh absolute encoder health required");
@@ -76,6 +91,8 @@ private:
       // Exact source timestamp only. TF performs interpolation; no latest-time fallback.
       const auto extrinsic = buffer_.lookupTransform(body_, sensor_, stamp, rclcpp::Duration::from_seconds(tf_wait_));
       const double age_after_wait = (now() - stamp).seconds();
+      if (require_raw_cloud_ && !raw_cloud_fresh())
+        throw std::invalid_argument("Raw cloud quality became stale during TF wait");
       if (age_after_wait < -0.05 || age_after_wait > max_age_ ||
           (require_encoder_ && (!encoder_valid_ ||
            std::chrono::duration<double>(std::chrono::steady_clock::now() - encoder_received_).count() > max_age_)))
@@ -107,6 +124,9 @@ private:
   double max_age_, tf_wait_;
   bool healthy_{false};
   bool require_encoder_{true}, encoder_valid_{false};
+  bool require_raw_cloud_{false}, raw_cloud_valid_{false};
+  std::chrono::steady_clock::time_point raw_cloud_received_{};
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr raw_cloud_sub_;
   std::chrono::steady_clock::time_point encoder_received_{};
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr encoder_sub_;
   std::int64_t last_stamp_{0}, accepted_stamp_{0};
