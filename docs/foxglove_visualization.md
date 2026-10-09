@@ -37,6 +37,9 @@ ws://192.168.1.145:8765
 | 原始 LIO 位姿 | `/lio/sensor_odometry` | `odom → front_mid360_imu` |
 | 底盘状态 | `/state/chassis` | `odom → base_footprint` |
 | Nav2 输出 | `/odom` | `odom → base_link` |
+| LIO 轨迹 | `/visualization/lio_path` | `nav_msgs/Path`，有界 5000 点 |
+| 底盘轨迹 | `/visualization/chassis_path` | `nav_msgs/Path`，有界 5000 点 |
+| Nav2 轨迹 | `/visualization/nav_path` | `nav_msgs/Path`，有界 5000 点 |
 | 地图修正 | TF `map → odom` | 仅 MapOdomManager 发布 |
 | 质量状态 | `/sensors/front_mid360/cloud_healthy` | 通过/拒绝 |
 | 质量原因 | `/sensors/front_mid360/cloud_reason` | 退化、超时、字段错误原因 |
@@ -45,6 +48,7 @@ ws://192.168.1.145:8765
 
 - `/state/lio_healthy`、`/state/chassis_healthy`、`/localization/healthy`
 - `/mapping/recorder_status`、`/mapping/keyframe_archive`、`/mapping/recorder_healthy`
+- `/visualization/lio_path`、`/visualization/chassis_path`、`/visualization/nav_path`
 - `/localization/status_reason`、`/localization/submap_reason`
 
 建议保存两个 Layout：

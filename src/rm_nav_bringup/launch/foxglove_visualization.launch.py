@@ -12,6 +12,9 @@ def nodes(context):
                     parameters=[{'port': int(LaunchConfiguration('port').perform(context)),
                                  'address': LaunchConfiguration('address').perform(context),
                                  'send_buffer_limit': 100 * 1024 * 1024}], output='screen')]
+    actions.append(Node(package='rm_nav_bringup', executable='foxglove_trace_publisher',
+                        name='foxglove_trace_publisher',
+                        output='screen'))
     if map_pcd:
         actions.append(Node(package='rm_nav_bringup', executable='pcd_map_publisher',
                             name='foxglove_map_cloud',
