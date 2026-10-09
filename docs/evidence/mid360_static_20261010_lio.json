@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "transport_passed": true,
+  "visualization_enabled": true,
+  "visualization": {
+    "path_messages": 573,
+    "path_poses": 573,
+    "preview_messages": 117,
+    "preview_points": 141128
+  },
+  "motion_envelope_passed": true,
+  "max_displacement_m": 0.011573569274822348,
+  "max_step_speed_mps": 0.08896194947640398,
+  "p99_step_speed_mps": 0.07280245503715951,
+  "max_rotation_rad": 0.0031337442418886883,
+  "final_relative_displacement_m": 0.005284826227273213,
+  "output_span_s": 58.000325203,
+  "motion_limits": {
+    "speed_mps": 0.2,
+    "displacement_m": 0.1,
+    "rotation_rad": 0.05
+  },
+  "scope": "real bag -> sensor LIO only; no truth accuracy or chassis/navigation acceptance",
+  "bag": "/home/asus/nav_data/mid360_static_20261010_a/raw_bag",
+  "internal_extrinsics": "unverified upstream example; not measured robot calibration",
+  "raw_acc_norm": 1.0,
+  "odometry_count": 573,
+  "deskewed_cloud_count": 573,
+  "tf_count": 0,
+  "last_input_to_output_lag_s": -0.097181809,
+  "first_odometry": {
+    "stamp_ns": 1791562153697682857,
+    "position": [
+      0.015758924371136237,
+      0.021415722714702896,
+      -0.0419885421037058
+    ],
+    "quaternion_xyzw": [
+      -0.0001640424086215069,
+      -0.00016922838311926044,
+      0.00022830933364029342,
+      0.9999999461633408
+    ]
+  },
+  "last_odometry": {
+    "stamp_ns": 1791562211698008060,
+    "position": [
+      0.013098873101439128,
+      0.020741543986193614,
+      -0.04650506715479134
+    ],
+    "quaternion_xyzw": [
+      3.749876186268225e-05,
+      0.00016945373692065635,
+      9.42204456858768e-05,
+      0.9999999804982356
+    ]
+  },
+  "errors": []
+}

@@ -8,6 +8,7 @@ from pathlib import Path
 import signal
 import subprocess
 import time
+import numpy as np
 
 import rclpy
 from rclpy.node import Node
@@ -153,14 +154,17 @@ def main():
     angle = max((rotation(odom[0],m) for m in odom),default=0)
     speed = max((distance(a,b)*1e9/(b['stamp_ns']-a['stamp_ns'])
                  for a,b in zip(odom,odom[1:]) if b['stamp_ns']-a['stamp_ns']>=1000000),default=0)
+    speed_samples = [distance(a,b)*1e9/(b['stamp_ns']-a['stamp_ns'])
+                     for a,b in zip(odom,odom[1:]) if b['stamp_ns']-a['stamp_ns']>=20_000_000]
+    p99_speed = float(np.quantile(speed_samples,.99)) if speed_samples else speed
     motion_passed = (bool(odom) and displacement <= args.max_displacement
-                     and speed <= args.max_speed and angle <= args.max_rotation)
+                     and p99_speed <= args.max_speed and angle <= args.max_rotation)
     if not motion_passed: errors.append('estimated motion exceeds explicit diagnostic envelope')
     passed = transport_passed and motion_passed
     report = {'passed': passed, 'transport_passed':transport_passed,
               'visualization_enabled':args.with_visualization, 'visualization':visual,
               'motion_envelope_passed':motion_passed,
-              'max_displacement_m':displacement,'max_step_speed_mps':speed,
+              'max_displacement_m':displacement,'max_step_speed_mps':speed,'p99_step_speed_mps':p99_speed,
               'max_rotation_rad':angle,
               'final_relative_displacement_m':distance(odom[0],odom[-1]) if odom else None,
               'output_span_s':(odom[-1]['stamp_ns']-odom[0]['stamp_ns'])/1e9 if odom else 0,

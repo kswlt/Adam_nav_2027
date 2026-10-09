@@ -22,8 +22,10 @@ def main():
     parser.add_argument('--config', required=True)
     parser.add_argument('--output', required=True)
     parser.add_argument('--duration', type=float, default=20.)
+    parser.add_argument('--external-driver', action='store_true',
+                        help='Use an already running single driver; only record/probe topics')
     args = parser.parse_args()
-    if os.environ.get('ROS_DOMAIN_ID') in (None, '', '0'):
+    if os.environ.get('ROS_DOMAIN_ID') in (None, '') or (os.environ.get('ROS_DOMAIN_ID') == '0' and not args.external_driver):
         raise RuntimeError('An isolated ROS_DOMAIN_ID is required')
     if not 5 <= args.duration <= 120:
         raise ValueError('duration must be 5..120 seconds')
@@ -98,16 +100,18 @@ def main():
         return proc
 
     try:
-        driver = launch(['ros2', 'run', 'livox_ros_driver2', 'livox_ros_driver2_node',
-                         '--ros-args', '-p', 'xfer_format:=0', '-p', 'multi_topic:=0',
-                         '-p', 'data_src:=0', '-p', 'publish_freq:=10.0',
-                         '-p', 'output_data_type:=0', '-p', 'frame_id:=front_mid360',
-                         '-p', f'user_config_path:={config}'], 'driver.log')
+        driver = None
+        if not args.external_driver:
+            driver = launch(['ros2', 'run', 'livox_ros_driver2', 'livox_ros_driver2_node',
+                             '--ros-args', '-p', 'xfer_format:=0', '-p', 'multi_topic:=0',
+                             '-p', 'data_src:=0', '-p', 'publish_freq:=10.0',
+                             '-p', 'output_data_type:=0', '-p', 'frame_id:=front_mid360',
+                             '-p', f'user_config_path:={config}'], 'driver.log')
         recorder = launch(['ros2', 'bag', 'record', '-o', str(output / 'raw_bag'),
                            '/livox/lidar', '/livox/imu'], 'recorder.log')
         start = time.monotonic()
         while time.monotonic() - start < args.duration:
-            if driver.poll() is not None or recorder.poll() is not None:
+            if (driver is not None and driver.poll() is not None) or recorder.poll() is not None:
                 raise RuntimeError('Driver/recorder exited; inspect logs')
             rclpy.spin_once(node, timeout_sec=.01)
     except Exception as exc:
