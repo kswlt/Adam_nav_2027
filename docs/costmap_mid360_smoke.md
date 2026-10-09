@@ -14,3 +14,6 @@ Point-LIO/EKF 状态链和 MPPI 的点云转 LaserScan 适配。它只验证消�
 2026-10-10 联调结果：map_server、global_costmap、local_costmap 均完成激活；
 local_costmap 观察到约 3.5 Hz 输出。测试地图和 legacy 外参只用于接口回归，
 不能替代正式场地地图、实测标定和障碍物验收。
+
+Costmap footprint 当前复用了原版 Adam reality 配置的 0.2 m 方形；该值只是兼容基线，
+必须用底盘实测长宽、旋转包络和制动距离重新确认后才能作为正式参数。
