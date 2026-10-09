@@ -78,7 +78,8 @@ GTSAM 切空间顺序为旋转 xyz、平移 xyz；相邻因子固定 sigma 为 0
 只把 `LoopValidationResult.accepted` 的边交给 GTSAM；默认不启用回环，便于对照相邻链结果。
 
 回归覆盖候选排序/预算、非法配置、正确双向回环、残差过大、重叠不足、几何退化、正反向不一致和未收敛输入。
-该测试证明的是门逻辑，不证明真实场地回环率。
+`tools/smoke_offline_mapping.py` 现在还会运行 `--enable-loops` 路径，确认无候选时输出确定性的空
+`loop_edges.json`，并验证原始归档、相邻图和地图重建不受影响。该测试证明的是接线和门逻辑，不证明真实场地回环率。
 
 运行时默认 use_voxelized_target=false，仍使用原有 GICP；
 内部 MAPPING_VGICP 枚举不向运行时定位 ROS 消息发布。

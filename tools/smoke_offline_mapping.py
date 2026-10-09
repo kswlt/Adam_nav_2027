@@ -47,7 +47,10 @@ def main():
         (directory/'metadata.json').write_text(json.dumps(metadata));frames.append(frame)
     snapshot={path:hashlib.sha256(path.read_bytes()).hexdigest() for path in session.rglob('*') if path.is_file()}
     command=['ros2','run','rm_nav_mapping','offline_graph_optimizer']
-    def run(source,output):return subprocess.run([*command,str(source),str(output)],capture_output=True,text=True,timeout=120)
+    def run(source,output,loops=False):
+        args=[*command,str(source),str(output)]
+        if loops: args.append('--enable-loops')
+        return subprocess.run(args,capture_output=True,text=True,timeout=120)
     valid=root/'optimized';result=run(session,valid)
     (root/'optimization.log').write_text(result.stdout+result.stderr)
     require(result.returncode==0,'Actual optimizer failed: '+result.stdout+result.stderr)
@@ -70,6 +73,13 @@ def main():
     require(0<len(rebuilt)<=1000000 and b'mapping_odom' in header,'Invalid reconstructed PCD')
     nearest=np.sqrt(np.min(np.sum((rebuilt[::max(1,len(rebuilt)//300),None,:]-world[None,:,:])**2,axis=2),axis=1))
     require(nearest.mean()<.05 and np.quantile(nearest,.95)<.1,'Map rebuilt from wrong pose/original geometry')
+    loop_valid=root/'optimized_loops';loop_result=run(session,loop_valid,loops=True)
+    require(loop_result.returncode==0,'Loop-enabled optimizer failed on a valid session: '+loop_result.stdout+loop_result.stderr)
+    loop_data=json.loads((loop_valid/'optimized_poses.json').read_text())
+    loop_edges=json.loads((loop_valid/'loop_edges.json').read_text())
+    require(loop_data['loop_count']==len(loop_edges)==0,
+            'Loop-enabled no-candidate fixture produced an unexpected loop edge')
+    require((loop_valid/'loop_edges.json').read_bytes()==b'[]\n','Loop artifact is not deterministic empty JSON')
     require(all(hashlib.sha256(path.read_bytes()).hexdigest()==value for path,value in snapshot.items()),'Optimizer modified original archive')
     repeated=run(session,valid)
     require(repeated.returncode!=0,'Existing optimized output overwritten')
