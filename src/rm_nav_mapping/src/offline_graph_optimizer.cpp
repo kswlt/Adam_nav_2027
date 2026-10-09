@@ -1,6 +1,9 @@
 #include "rm_nav_mapping/pose_graph.hpp"
 #include "rm_nav_mapping/archive_io.hpp"
+#include "rm_nav_mapping/loop_candidate_manager.hpp"
+#include "rm_nav_mapping/loop_validator.hpp"
 #include "rm_nav_registration/small_gicp_backend.hpp"
+#include "rm_nav_registration/kiss_gicp_backend.hpp"
 #include "rm_nav_sensors/point_cloud.hpp"
 #include <rm_nav_interfaces/msg/observation_frame.hpp>
 #include <rclcpp/serialization.hpp>
@@ -89,10 +92,43 @@ void matrix_json(std::ostream & out,const Eigen::Isometry3d & pose)
 {
   out<<'[';for(int row=0;row<4;++row)for(int col=0;col<4;++col)out<<(row||col?",":"")<<pose(row,col);out<<']';
 }
+std::vector<Eigen::Vector3d> bounded_cloud(const std::vector<Eigen::Vector3d> & points)
+{
+  if(points.size()<=50000)return points;
+  std::vector<Eigen::Vector3d> result;result.reserve(50000);
+  const std::size_t stride=(points.size()+49999)/50000;
+  for(std::size_t i=0;i<points.size() && result.size()<50000;i+=stride)result.push_back(points[i]);
+  return result;
+}
+double overlap_fraction(const std::vector<Eigen::Vector3d> & target,
+                        const std::vector<Eigen::Vector3d> & source,
+                        const Eigen::Isometry3d & target_T_source)
+{
+  if(target.empty()||source.empty())return 0;
+  const std::size_t source_stride=std::max<std::size_t>(1,source.size()/2000);
+  const std::size_t target_stride=std::max<std::size_t>(1,target.size()/5000);
+  std::size_t accepted=0,total=0;
+  for(std::size_t i=0;i<source.size();i+=source_stride) {
+    const auto point=target_T_source*source[i];double best=std::numeric_limits<double>::infinity();
+    for(std::size_t j=0;j<target.size();j+=target_stride)best=std::min(best,(point-target[j]).squaredNorm());
+    if(best<=.04)++accepted;++total;
+  }
+  return total?static_cast<double>(accepted)/total:0;
+}
+double geometry_ratio(const std::vector<Eigen::Vector3d> & points)
+{
+  if(points.size()<4)return 0;Eigen::Vector3d mean=Eigen::Vector3d::Zero();
+  for(const auto & p:points)mean+=p;mean/=static_cast<double>(points.size());
+  Eigen::Matrix3d covariance=Eigen::Matrix3d::Zero();for(const auto & p:points){const auto d=p-mean;covariance+=d*d.transpose();}
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver(covariance/static_cast<double>(points.size()-1));
+  if(solver.info()!=Eigen::Success||!solver.eigenvalues().allFinite()||solver.eigenvalues().maxCoeff()<=0)return 0;
+  return solver.eigenvalues().minCoeff()/solver.eigenvalues().maxCoeff();
+}
 int main(int argc,char ** argv)
 {
   try {
-    require(argc==3,"Usage: offline_graph_optimizer <completed-session-dir> <new-output-dir>");
+    require(argc==3 || (argc==4 && std::string(argv[3])=="--enable-loops"),"Usage: offline_graph_optimizer <completed-session-dir> <new-output-dir> [--enable-loops]");
+    const bool enable_loops=argc==4;
     const fs::path session=fs::canonical(argv[1]);const fs::path output=fs::weakly_canonical(fs::absolute(argv[2]));
     require(fs::is_directory(session) && !fs::exists(output),"Input must be a session; output must not exist");
     const auto relative=output.lexically_relative(session);
@@ -108,7 +144,9 @@ int main(int argc,char ** argv)
     require(directories.size()>=2 && directories.size()<=500,"Offline graph requires 2..500 contiguous keyframes");
     std::vector<ArchivedFrame> frames;std::vector<Eigen::Isometry3d> initial;
     std::vector<rm_nav_mapping::GraphEdge> edges;std::vector<rm_nav_registration::RegistrationResult> qualities;
-    std::vector<Eigen::Vector3d> target;
+    std::vector<Eigen::Vector3d> target;std::vector<std::vector<Eigen::Vector3d>> clouds;
+    std::vector<rm_nav_mapping::Keyframe> keyframes;std::vector<rm_nav_mapping::GraphEdge> loop_edges;
+    std::vector<rm_nav_registration::RegistrationResult> loop_qualities;
     rm_nav_registration::SmallGicpConfig config;config.use_voxelized_target=true;config.num_threads=1;
     config.max_input_points=200000;rm_nav_registration::SmallGicpBackend backend(config);
     for(const auto & item:directories) {
@@ -133,8 +171,42 @@ int main(int argc,char ** argv)
         edges.push_back(edge);qualities.push_back(result);
       }
       target=std::move(points);initial.push_back(frame.pose);frames.push_back(frame);
+      clouds.push_back(target);
+      keyframes.push_back({frame.id,frame.stamp,frame.pose});
     }
-    const auto solution=rm_nav_mapping::optimize_pose_graph(initial,edges);
+    if(enable_loops) {
+      rm_nav_mapping::LoopCandidateManager candidates;
+      rm_nav_registration::KissGicpConfig kiss_config;kiss_config.num_threads=1;kiss_config.max_input_points=50000;
+      kiss_config.refinement.num_threads=1;kiss_config.refinement.max_input_points=50000;
+      rm_nav_registration::KissGicpBackend kiss(kiss_config);
+      for(std::size_t j=0;j<keyframes.size();++j) {
+        std::vector<rm_nav_mapping::Keyframe> history(keyframes.begin(),keyframes.begin()+j);
+        for(const auto id:candidates.candidates(keyframes[j],history)) {
+          const std::size_t i=static_cast<std::size_t>(id);
+          rm_nav_registration::RegistrationRequest forward_request;
+          forward_request.target_points=bounded_cloud(clouds[i]);forward_request.source_points=bounded_cloud(clouds[j]);
+          forward_request.initial_target_T_source=frames[i].pose.inverse()*frames[j].pose;
+          const auto forward=kiss.register_clouds(forward_request);
+          rm_nav_registration::RegistrationRequest reverse_request;
+          reverse_request.target_points=bounded_cloud(clouds[j]);reverse_request.source_points=bounded_cloud(clouds[i]);
+          reverse_request.initial_target_T_source=forward_request.initial_target_T_source.inverse();
+          const auto reverse=kiss.register_clouds(reverse_request);
+          rm_nav_mapping::LoopValidationInput validation{forward,reverse,
+            overlap_fraction(clouds[i],clouds[j],forward.target_T_source),
+            overlap_fraction(clouds[j],clouds[i],reverse.target_T_source),
+            std::max(forward.translation_delta,reverse.translation_delta),
+            std::max(forward.rotation_delta,reverse.rotation_delta),
+            std::min(geometry_ratio(clouds[i]),geometry_ratio(clouds[j]))};
+          const auto verdict=rm_nav_mapping::validate_loop(validation);
+          std::cout<<"loop="<<i<<"->"<<j<<" accepted="<<verdict.accepted<<" reason="<<verdict.reason<<'\n';
+          if(!verdict.accepted)continue;
+          rm_nav_mapping::GraphEdge edge;edge.from=i;edge.to=j;edge.from_T_to=forward.target_T_source;
+          edge.loop=true;edge.validated=true;edge.huber_k=1.;edge.sigmas<<.05,.05,.05,.10,.10,.10;
+          loop_edges.push_back(edge);loop_qualities.push_back(forward);
+        }
+      }
+    }
+    const auto solution=rm_nav_mapping::optimize_pose_graph(initial,edges,loop_edges);
     // Re-read original frames, never rebuild from a downsampled registration cloud or online merged map.
     std::map<std::tuple<long,long,long>,Eigen::Vector3d> voxels;
     for(std::size_t i=0;i<frames.size();++i) {
@@ -160,7 +232,8 @@ int main(int argc,char ** argv)
     poses<<"{\"schema\":1,\"coordinate_frame\":\"mapping_odom\",\"calibration_id\":"<<rm_nav_mapping::json_string(frames[0].calibration)
       <<",\"source_id\":"<<rm_nav_mapping::json_string(frames[0].source)<<",\"body_frame\":"<<rm_nav_mapping::json_string(frames[0].body)
       <<",\"official_alignment_applied\":false,\"initial_error\":"
-      <<solution.initial_error<<",\"final_error\":"<<solution.final_error<<",\"iterations\":"<<solution.iterations<<",\"poses\":[";
+      <<solution.initial_error<<",\"final_error\":"<<solution.final_error<<",\"iterations\":"<<solution.iterations
+      <<",\"loop_count\":"<<solution.loop_count<<",\"poses\":[";
     for(std::size_t i=0;i<frames.size();++i){poses<<(i?",":"")<<"{\"id\":"<<frames[i].id<<",\"matrix\":";matrix_json(poses,solution.poses[i]);poses<<'}';}
     poses<<"]}\n";poses.close();
     std::ofstream hashes(staging/"input_hashes.json");hashes.exceptions(std::ios::badbit|std::ios::failbit);hashes<<'[';
@@ -176,11 +249,16 @@ int main(int argc,char ** argv)
       audit<<",\"rmse_m\":"<<quality.residual<<",\"inlier_ratio\":"<<quality.inlier_ratio<<",\"condition\":"<<quality.condition_score
         <<",\"sigmas_rotation_translation\":[0.03,0.03,0.03,0.05,0.05,0.05]}";
     }audit<<"]\n";audit.close();
+    std::ofstream loops(staging/"loop_edges.json");loops.exceptions(std::ios::badbit|std::ios::failbit);loops<<std::setprecision(17)<<'[';
+    for(std::size_t i=0;i<loop_edges.size();++i) {
+      const auto & q=loop_qualities[i];loops<<(i?",":"")<<"{\"from\":"<<loop_edges[i].from<<",\"to\":"<<loop_edges[i].to<<",\"algorithm\":\"KISS_GICP_bidirectional_validated\",\"matrix\":";
+      matrix_json(loops,loop_edges[i].from_T_to);loops<<",\"rmse_m\":"<<q.residual<<",\"inlier_ratio\":"<<q.inlier_ratio<<",\"condition\":"<<q.condition_score<<"}";
+    }loops<<"]\n";loops.close();
     std::ofstream pcd(staging/"rebuilt_map.pcd",std::ios::binary);pcd.exceptions(std::ios::badbit|std::ios::failbit);
     pcd<<"# mapping_odom; official alignment pending\nVERSION .7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH "
       <<voxels.size()<<"\nHEIGHT 1\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS "<<voxels.size()<<"\nDATA binary\n";
     for(const auto & item:voxels){const auto point=item.second.cast<float>().eval();pcd.write(reinterpret_cast<const char *>(point.data()),12);}pcd.close();
-    for(const auto & name:{"optimized_poses.json","adjacent_edges.json","input_hashes.json","rebuilt_map.pcd"}) {
+    for(const auto & name:{"optimized_poses.json","adjacent_edges.json","loop_edges.json","input_hashes.json","rebuilt_map.pcd"}) {
       const int fd=::open((staging/name).c_str(),O_RDONLY|O_CLOEXEC);
       require(fd>=0,"Cannot fsync output file");const int result=::fsync(fd);::close(fd);require(result==0,"Output file fsync failed");
     }

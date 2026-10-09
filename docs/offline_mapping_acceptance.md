@@ -21,6 +21,8 @@ MAKEFLAGS=-j2 CMAKE_PREFIX_PATH=/home/asus/nav_deps/install:${CMAKE_PREFIX_PATH:
 source install/setup.bash
 # 先停止 keyframe_recorder，保留原始 session。
 ros2 run rm_nav_mapping offline_graph_optimizer /absolute/session /absolute/new_output
+# 显式启用有界候选、双向 KISS/GICP 和已验收回环边。
+ros2 run rm_nav_mapping offline_graph_optimizer /absolute/session /absolute/new_loop_output --enable-loops
 ```
 
 只接收 2–500 帧连续编号的完整 session；该初版上限用于约束批量优化规模。
@@ -68,11 +70,12 @@ GTSAM 切空间顺序为旋转 xyz、平移 xyz；相邻因子固定 sigma 为 0
 
 `loop_validator.hpp` 只接受真实 `RegistrationResult`，正反向都必须收敛并达到 inlier/比例、RMSE、Hessian 条件、
 双向重叠和三维几何阈值；修正不能超过轨迹先验，并检查正反向变换往返误差。任一条件失败即拒绝，
-避免把重复结构或单平面匹配直接写入图。当前接口还没有把 LoopConstraint 添加到 `pose_graph.cpp`；
+避免把重复结构或单平面匹配直接写入图。
 当前 `pose_graph.cpp` 已支持单独的 validated loop edge 输入：回环边必须显式设置
 `loop=true`、`validated=true`，拥有有限的正定噪声和 Huber 参数；未验收或被伪装成相邻边的输入会拒绝。
 回环因子使用 GTSAM Huber 鲁棒核，优化后至少要求目标函数有限且不增加；含回环图不再错误地要求相邻链的近零残差。
-当前离线优化器还没有从关键帧中生成这些 validated loop edge，仍需完成真实候选配准和接线。
+离线优化器已在 `--enable-loops` 下从关键帧生成候选，执行真实 KISS 正反向配准、重叠率和几何检查，
+只把 `LoopValidationResult.accepted` 的边交给 GTSAM；默认不启用回环，便于对照相邻链结果。
 
 回归覆盖候选排序/预算、非法配置、正确双向回环、残差过大、重叠不足、几何退化、正反向不一致和未收敛输入。
 该测试证明的是门逻辑，不证明真实场地回环率。
@@ -88,7 +91,7 @@ GTSAM 切空间顺序为旋转 xyz、平移 xyz；相邻因子固定 sigma 为 0
 
 只做确定性 0.05 m 体素去重，最多 1000000 个输出体素；尚无时间持久性动态点清理。
 原始点数据与元数据不写回；CDR SHA256、参考点和标定均复核。
-产物为 optimized_poses.json、adjacent_edges.json、input_hashes.json、二进制 XYZ rebuilt_map.pcd。
+产物为 optimized_poses.json、adjacent_edges.json、loop_edges.json、input_hashes.json、二进制 XYZ rebuilt_map.pcd。
 优化位姿保留来源/标定/参考点；边记录实际算法、变换和质量；输入表记录 CDR SHA256。
 坐标标记 mapping_odom、official_alignment_applied=false，不自动加载到 match 模式或发布 map→odom。
 源参考原点仍在原始归档，XYZ PCD 不保留逐点时间/射线信息，不能作为射线清障证明。
