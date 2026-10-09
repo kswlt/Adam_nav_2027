@@ -24,6 +24,7 @@
 **P0–P10 尚未全部完成。** 数据结构和单元测试不等于完整导航功能。
 详细进度见 [阶段验收矩阵](docs/stage_completion_matrix.md)。
 接手开发见 [交接文档](docs/HANDOFF.md)，包含部署、真实数据证据、未完成工作和重现命令。
+Foxglove 查看地图、TF、原始点云及实时建图请看 [Foxglove 可视化说明](docs/foxglove_visualization.md)。
 
 MID-360 已接通 ASUS，修复有线/无线重叠路由。原始点云质量门已接入，可拒绝有效回波不足、
 几何退化、时间异常和断流，并联锁 LIO 健康；移除遮挡后每帧有效点约 1.41–1.48 万，
