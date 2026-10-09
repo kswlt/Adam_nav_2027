@@ -1,0 +1,27 @@
+schema_version: 1
+bundle_id: legacy-adam-static-20261010
+status: legacy_static
+source: adam_original_rm_static_tf
+frames:
+  base_footprint: base_footprint
+  chassis: chassis
+  big_gimbal_yaw: big_gimbal_yaw
+  imu: front_mid360_imu
+  lidar: front_mid360
+encoder:
+  joint: big_gimbal_yaw
+  sign: 1.0
+  zero_offset: 0.0
+transforms:
+  footprint_to_chassis:
+    translation: [0.0, 0.0, 0.076]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
+  chassis_to_yaw_zero:
+    translation: [0.07, 0.0, 0.0]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
+  yaw_to_imu:
+    translation: [0.09, 0.0, 0.18]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
+  imu_to_lidar:
+    translation: [0.0, 0.0, 0.0]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]

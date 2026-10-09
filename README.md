@@ -33,6 +33,8 @@ Nav2 使用的 `/scan`；默认关闭，必须先完成实测 TF、传感器高�
 消息接口和 Costmap 输入，不代表实测标定或整车验收。
 当前 Nav2 Costmap 联调已确认 `/scan` 输入正常，但因尚未启动真实 LIO→EKF 动态
 `odom→base_link` TF，Costmap 不能激活；不能用静态 TF 绕过该前置条件。
+已增加显式 legacy 联调模式，Point-LIO→resolver→EKF 可输出 `/state/chassis`
+和动态 `odom→base_link`；该模式使用原版外参假设，不能替代实测标定。
 
 MID-360 已接通 ASUS，修复有线/无线重叠路由。原始点云质量门已接入，可拒绝有效回波不足、
 几何退化、时间异常和断流，并联锁 LIO 健康；移除遮挡后每帧有效点约 1.41–1.48 万，

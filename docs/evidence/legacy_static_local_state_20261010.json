@@ -1,0 +1,16 @@
+{
+  "test": "legacy_static_pointlio_resolver_ekf",
+  "date": "2026-10-10",
+  "calibration": "local_state_calibration.legacy_adam_static.yaml",
+  "explicit_opt_in": "allow_legacy_static_calibration:=true",
+  "result": "dynamic_odom_tf_pass",
+  "state_topic": "/state/chassis",
+  "state_frame": "odom",
+  "state_child_frame": "base_footprint",
+  "tf_chain": "odom -> base_link available through base_footprint/chassis",
+  "limitations": [
+    "原版静态外参而非实测 CalibrationBundle",
+    "imu_to_lidar 单位变换为联调假设",
+    "Nav2 lifecycle 仍需地图和全局 Costmap 配置后验收"
+  ]
+}

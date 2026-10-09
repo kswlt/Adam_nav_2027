@@ -25,4 +25,7 @@ def generate_launch_description():
         _static('legacy_chassis_to_front_mid360',
                 (0.16, 0.0, 0.18), (1.0, 0.0, 0.0, 0.0),
                 'chassis', 'front_mid360'),
+        _static('legacy_chassis_to_front_mid360_imu',
+                (0.16, 0.0, 0.18), (1.0, 0.0, 0.0, 0.0),
+                'chassis', 'front_mid360_imu'),
     ])

@@ -12,8 +12,11 @@ from launch.conditions import IfCondition
 def nodes(context):
     with open(LaunchConfiguration('calibration_file').perform(context),encoding='utf-8') as handle:
         bundle=yaml.safe_load(handle)
-    if bundle.get('status')!='verified' or not bundle.get('bundle_id'):
+    allow_legacy = LaunchConfiguration('allow_legacy_static_calibration').perform(context) == 'true'
+    if bundle.get('status') != 'verified' and not (allow_legacy and bundle.get('status') == 'legacy_static'):
         raise ValueError('Measured CalibrationBundle with verified status required')
+    if allow_legacy and bundle.get('status') == 'legacy_static':
+        print('[WARN] 使用原版 Adam 静态外参，仅用于联调；禁止作为实车标定验收')
     frames=bundle['frames']
     keys=('base_footprint','chassis','big_gimbal_yaw','imu','lidar')
     if any(not frames.get(k) for k in keys) or len({frames[k] for k in keys})!=5 or 'base_link' in {frames[k] for k in keys}:
@@ -63,7 +66,7 @@ def nodes(context):
              remappings=[('/Odometry','/lio/sensor_odometry'),('/cloud_registered','/lio/deskewed_odom_cloud')],output='screen'),
         Node(package='rm_nav_localization',executable='sensor_pose_resolver',parameters=[{
             'use_sim_time':sim,'calibration_id':bundle['bundle_id'],'sensor_frame':frames['imu'],
-            'body_frame':frames['base_footprint'],'require_encoder_health':True,
+            'body_frame':frames['base_footprint'],'require_encoder_health':not allow_legacy,
             'require_raw_cloud_health':raw_guard}],output='screen'),
         Node(package='robot_localization',executable='ekf_node',name='chassis_ekf',parameters=[ekf],
              remappings=[('odometry/filtered','/state/chassis')],output='screen'),
@@ -86,4 +89,6 @@ def generate_launch_description():
                              description='Enable native Livox scan gate and raw-quality state interlock; use true for MID360 hardware'),
         DeclareLaunchArgument('enable_wheel_odometry',default_value='false'),
         DeclareLaunchArgument('enable_chassis_imu',default_value='false'),
+        DeclareLaunchArgument('allow_legacy_static_calibration',default_value='false',
+                             description='显式允许原版静态外参联调；默认拒绝，不能用于正式验收'),
         OpaqueFunction(function=nodes)])
