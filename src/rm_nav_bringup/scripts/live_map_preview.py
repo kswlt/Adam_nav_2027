@@ -14,7 +14,7 @@ from std_msgs.msg import String
 
 
 class LiveMapPreview(Node):
-    def __init__(self, voxel, max_voxels):
+    def __init__(self, voxel, max_voxels, publish_hz):
         super().__init__('live_map_preview')
         self.voxel = voxel
         self.limit = max_voxels
@@ -30,7 +30,7 @@ class LiveMapPreview(Node):
         self.cloud_pub = self.create_publisher(PointCloud2, '/visualization/live_map_preview', qos)
         self.status_pub = self.create_publisher(String, '/visualization/live_map_status', qos)
         self.create_subscription(PointCloud2, '/lio/deskewed_odom_cloud', self.receive, qos_profile_sensor_data)
-        self.create_timer(.5, self.publish)
+        self.create_timer(1.0/publish_hz, self.publish)
 
     def receive(self, msg):
         try:
@@ -100,11 +100,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--voxel', type=float, default=.1)
     parser.add_argument('--max-voxels', type=int, default=200000)
+    parser.add_argument('--publish-hz', type=float, default=2.0)
     args, _ = parser.parse_known_args()
-    if not math.isfinite(args.voxel) or not .05 <= args.voxel <= 1 or not 10 <= args.max_voxels <= 200000:
-        raise ValueError('voxel must be .05..1 m and cap 10..200000')
+    if (not math.isfinite(args.voxel) or not .05 <= args.voxel <= 1 or not 10 <= args.max_voxels <= 200000
+            or not math.isfinite(args.publish_hz) or not .2 <= args.publish_hz <= 10):
+        raise ValueError('voxel .05..1 m, cap 10..200000, publish-hz .2..10')
     rclpy.init()
-    node = LiveMapPreview(args.voxel, args.max_voxels)
+    node = LiveMapPreview(args.voxel, args.max_voxels, args.publish_hz)
     try: rclpy.spin(node)
     finally: node.destroy_node(); rclpy.shutdown()
 
