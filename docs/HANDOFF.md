@@ -1,6 +1,6 @@
 # Adam_nav_2027 开发交接文档
 
-交接日期：2026-10-09。代码基线：`f37c2172a5d9071e2027fe86d1055c241d8ca9f8`。
+交接日期：2026-10-10。代码基线：以远端 `main` 最新提交为准。
 本文随后独立提交；上面的 SHA 指交接前的已验证代码。
 
 ## 1. 项目目标与用户要求
@@ -93,7 +93,7 @@ SDK 安装在用户前缀。不要直接运行上游 `build.sh`：它会删除�
 | 观测与局部定位 | 原生观测来源/原点/角色；有界子地图；真实 small_gicp GICP | 真实移动序列和多源感知 |
 | 丢失恢复 | 真实 KISS 粗配准 + GICP 精化、独立候选复核、受限搜索、恢复事务及新任务放行 | 真实重复场景/丢失恢复及硬件停车反馈 |
 | 优化建图 | 原始关键帧持久化；真实 VGICP 相邻约束；GTSAM Pose3 图与原始云重建；回环候选预算/双向质量门接口 | 回环边接入 GTSAM、官方坐标对齐、动态清理、MapBundle 发布 |
-| Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor → gate，理想全向模型横移及故障停车 | 实际定位/地图/足迹与最终 TDT、Omni PID、yaw、串口适配 |
+| Nav2 基线 | Smac2D + MPPI Omni → smoother → collision monitor → gate，理想全向模型横移及故障停车；提供默认关闭的 MID-360 点云→LaserScan 适配 | 实际定位/地图/足迹与最终 TDT、Omni PID、yaw、串口适配 |
 | 监管 | 本地/全局健康、运动许可、唯一任务、旧任务取消与恢复后重新规划 | 最终控制与整车运行验收 |
 | 实机输入 | MID-360 官方驱动、60 秒静止和约 1 m 移动回放、原始点云质量门和 Foxglove 轨迹链 | 外部运动真值、实测外参、动态精度或端到端整车验收仍未完成 |
 
@@ -170,6 +170,7 @@ MPPI Omni 是技术路线的早期可运行基线，不替代最终 TDT/Omni PID
 | `src/rm_nav_mapping/src/loop_candidate_manager.cpp` | 时间/空间候选原型，尚非完整回环 |
 | `src/rm_nav_registration/` | 真实 GICP/VGICP/KISS 后端和质量数据 |
 | `src/rm_nav_bringup/launch/mppi_baseline.launch.py` | Nav2 基线及监管/输出门 |
+| `docs/mppi_pointcloud_scan_adapter.md` | MID-360 点云到 `/scan` 的可选适配和实测 TF 前置条件 |
 | `tools/patches/small_point_lio_raw_state.patch` | 集中维护上游发布接口补丁 |
 
 ## 7. 构建与重现命令

@@ -7,7 +7,7 @@
 
 ## 当前进度
 
-截至 2026-10-09，工程含 14 个 ROS 包，远端全量构建通过。
+截至 2026-10-10，工程含 14 个 ROS 包，远端全量构建通过。
 最近一次测试汇总为 36 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
 单独加载 libscrc 1.8.1 后全部 13 项串口协议测试通过。
 
@@ -25,6 +25,10 @@
 详细进度见 [阶段验收矩阵](docs/stage_completion_matrix.md)。
 接手开发见 [交接文档](docs/HANDOFF.md)，包含部署、真实数据证据、未完成工作和重现命令。
 Foxglove 查看地图、TF、原始点云及实时建图请看 [Foxglove 可视化说明](docs/foxglove_visualization.md)。
+
+MPPI 基线已提供官方 `pointcloud_to_laserscan` 适配器，可将质量门后的 MID-360 点云转换为
+Nav2 使用的 `/scan`；默认关闭，必须先完成实测 TF、传感器高度和 footprint 验收后再启用，
+详见 [MPPI 点云适配说明](docs/mppi_pointcloud_scan_adapter.md)。
 
 MID-360 已接通 ASUS，修复有线/无线重叠路由。原始点云质量门已接入，可拒绝有效回波不足、
 几何退化、时间异常和断流，并联锁 LIO 健康；移除遮挡后每帧有效点约 1.41–1.48 万，

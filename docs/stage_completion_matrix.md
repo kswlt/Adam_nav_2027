@@ -9,7 +9,7 @@
 | P4 | 固定上游 small_point_lio、完整 SE(3) ROS resolver、60 秒静止及明确约 1 m 移动的 MID-360/Foxglove 回放 | 静止链通过（最大变化 1.16 cm）；约 1 m 移动被捕获（估计最大位移 0.773 m），外部真值、实测标定及轮速待接入 |
 | P5 | 真实GICP/KISS、双次候选、受限自动触发、停车/取消/TF/清图及新任务放行 | 主 LIO→滚动子地图→GICP 与恢复链已接入；真实回放与实车稳定性待验证 |
 | P6 | 原始关键帧采集、真实 VGICP 相邻因子、GTSAM Pose3 优化与原始点云离线重建；有界回环候选和双向质量门 | 合成漂移归档及回环门单测通过；回环边接入、真实回环、官方对齐、清理及 MapBundle 发布待接入 |
-| P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch | 理想全向模型导航集成通过；环境查询和过滤层待接入 |
+| P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch；官方 MID-360 PointCloud2→LaserScan 可选适配 | 理想全向模型导航集成通过；适配器默认关闭，待实测 TF、footprint、Costmap 和真实环境验收 |
 | P8 | SweptFootprint、CommandSynthesizer、MPPI → smoother → collision monitor | 横移导航及三种停车集成通过；TDT/Omni PID/串口适配待接入 |
 | P9 | 本地/全局健康联锁、许可输出门、任务监管、恢复后新规划、外部抢占与故障保持 | 软件监管已接入；实车反馈、最终控制和运行验收待完成 |
 | P10 | 全量构建、CTest、版本化配置、远端推送；Foxglove Bridge、实时话题清单和 PCD 可视化发布器 | 工程验证完成；框架完成后自行寻找公开 rosbag 系统测试、实车及长期验收待完成 |
