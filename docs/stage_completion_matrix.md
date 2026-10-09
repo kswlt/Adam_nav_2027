@@ -12,7 +12,7 @@
 | P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch | 理想全向模型导航集成通过；环境查询和过滤层待接入 |
 | P8 | SweptFootprint、CommandSynthesizer、MPPI → smoother → collision monitor | 横移导航及三种停车集成通过；TDT/Omni PID/串口适配待接入 |
 | P9 | 本地/全局健康联锁、许可输出门、任务监管、恢复后新规划、外部抢占与故障保持 | 软件监管已接入；实车反馈、最终控制和运行验收待完成 |
-| P10 | 全量构建、CTest、版本化配置、远端推送 | 工程验证完成；实车回放和长期运行待完成 |
+| P10 | 全量构建、CTest、版本化配置、远端推送 | 工程验证完成；框架完成后自行寻找公开 rosbag 系统测试、实车及长期验收待完成 |
 
 ## 不得误报为完成的项目
 
@@ -20,3 +20,4 @@
 - 当前没有伪造 small_gicp、KISS、GTSAM、TDT、MPPI 或 ros2_control 的算法输出。
 - 当前单元测试证明的是数据契约和边界逻辑，不等于实车导航验收。
 - 真实硬件输入、地图、标定、MCAP 和下位机报文仍是最终验收所需证据。
+- 用户要求的公开 rosbag 系统测试为最终交付必做项，见 [执行计划](rosbag_system_test_plan.md)。
