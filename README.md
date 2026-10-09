@@ -31,6 +31,8 @@ Nav2 使用的 `/scan`；默认关闭，必须先完成实测 TF、传感器高�
 详见 [MPPI 点云适配说明](docs/mppi_pointcloud_scan_adapter.md)。
 已用原版静态 TF 完成现场接口联调，`/scan` 已收到 `base_link` 帧的 360 线束；证据仅覆盖
 消息接口和 Costmap 输入，不代表实测标定或整车验收。
+当前 Nav2 Costmap 联调已确认 `/scan` 输入正常，但因尚未启动真实 LIO→EKF 动态
+`odom→base_link` TF，Costmap 不能激活；不能用静态 TF 绕过该前置条件。
 
 MID-360 已接通 ASUS，修复有线/无线重叠路由。原始点云质量门已接入，可拒绝有效回波不足、
 几何退化、时间异常和断流，并联锁 LIO 健康；移除遮挡后每帧有效点约 1.41–1.48 万，

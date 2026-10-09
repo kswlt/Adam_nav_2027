@@ -1,0 +1,10 @@
+{
+  "test": "mppi_costmap_mid360_live_interface",
+  "date": "2026-10-10",
+  "scan_adapter": "pass",
+  "scan_topic": "/scan",
+  "costmap_result": "blocked_by_missing_dynamic_odom_tf",
+  "observed_log": "Failed to activate local_costmap because transform from base_link to odom did not become available before timeout",
+  "required_next_step": "启动真实 LIO -> resolver -> robot_localization EKF，发布唯一 odom -> base_footprint/base_link 动态 TF",
+  "static_tf_policy": "原版静态 TF 仅用于 base/chassis/lidar 联调，不替代 odom 动态 TF"
+}
