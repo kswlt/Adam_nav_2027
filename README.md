@@ -5,10 +5,262 @@
 构建与运行验证在 `asus@192.168.1.145` 完成，代码同步至
 [kswlt/Adam_nav_2027](https://github.com/kswlt/Adam_nav_2027)。
 
-## 当前进度
+## 目录
+
+- [项目定位与边界](#项目定位与边界)
+- [五分钟快速开始](#五分钟快速开始)
+- [运行模式与启动顺序](#运行模式与启动顺序)
+- [框架架构](#框架架构)
+- [数据流、TF 与接口](#数据流tf-与接口)
+- [实机使用：MID-360、建图和定位](#实机使用mid-360建图和定位)
+- [Foxglove 可视化](#foxglove-可视化)
+- [构建、测试与结果判读](#构建测试与结果判读)
+- [故障排查](#故障排查)
+- [当前进度与未完成边界](#当前进度与未完成边界)
+
+## 项目定位与边界
+
+本仓库是 RM Nav V2 的可运行 ROS 2 Jazzy 框架，目标平台是 ASUS NUC 15 Pro，目标底盘是 RoboMaster 全向哨兵。它把原版实车工程中的 `my_serial_py` 通信、MID-360/Point-LIO、动态云台 TF、状态估计、建图、重定位、Nav2 全向基线和监管逻辑组织成可分别验收的模块。
+
+代码按“先能观测、再能定位、再能建图、最后才允许规划输出”的顺序工作。默认启动不会把 `/nav/cmd_vel_safe` 接到物理串口，也不会用静态 `map → odom` 冒充生产定位。测试替身、原版静态外参和理想底盘反馈只能用于对应的测试 profile。
+
+### 这套代码适合做什么
+
+1. 在独立 ROS Domain 中验证消息、TF、健康状态、Costmap、MPPI、串口协议和恢复事务。
+2. 接入真实 MID-360，查看原始点云、质量门、Point-LIO、局部子地图和轨迹。
+3. 记录带标定 ID 的原始关键帧，离线运行 VGICP/GTSAM 建图，并用 Foxglove 检查结果。
+4. 在完成实测标定、轮速/停车反馈和硬件验收后，逐步接入真实底盘。
+
+### 当前明确不做的事情
+
+- 不使用 `standard_robot_pp_ros2`；串口入口始终是 `my_serial_py`。
+- 不伪造编码器、轮速、停车反馈、真值、实测外参或正式地图。
+- 不在未完成硬件验收前发送物理底盘运动指令。
+- 不把 `mapping_odom` 下的离线 PCD 直接当成正式 `map`。
+
+## 五分钟快速开始
+
+以下命令在 ASUS 上执行。每个新终端都要重新 source；不要先 source 本工程旧的 `install` 再编译。
+
+```bash
+cd /home/asus/nav_2027/rm_nav_v2
+source /opt/ros/jazzy/setup.bash
+source /home/asus/nav_deps/install_lio/setup.bash
+MAKEFLAGS=-j2 CMAKE_PREFIX_PATH=/home/asus/nav_deps/install:${CMAKE_PREFIX_PATH:-} \
+  colcon build --symlink-install --parallel-workers 2
+source install/setup.bash
+```
+
+先跑一个不会接触真实硬件的全向导航基线：
+
+```bash
+ROS_DOMAIN_ID=87 python3 tools/smoke_mppi_baseline.py
+```
+
+再跑完整回归：
+
+```bash
+colcon test
+colcon test-result --verbose
+```
+
+看到 `0 errors, 0 failures` 才能把该环境用于下一步调试。测试中出现 `skipped` 时，要查看具体原因；当前可选的原版 `libscrc` 兼容检查属于已知跳过项。
+
+## 运行模式与启动顺序
+
+### A. 纯软件测试模式
+
+软件测试不需要 MID-360、STM32 或 Foxglove。推荐每个测试使用不同 `ROS_DOMAIN_ID`，避免旧节点互相订阅：
+
+```bash
+ROS_DOMAIN_ID=87 python3 tools/smoke_mppi_baseline.py
+ROS_DOMAIN_ID=88 python3 tools/smoke_serial_pty.py
+ROS_DOMAIN_ID=89 python3 tools/smoke_frozen_map_localization.py
+ROS_DOMAIN_ID=90 python3 tools/smoke_motion_gate.py
+ROS_DOMAIN_ID=91 python3 tools/smoke_kiss_recovery.py
+ROS_DOMAIN_ID=102 python3 tools/smoke_mapping_capture.py
+python3 tools/smoke_offline_mapping.py
+```
+
+这些脚本会创建合成输入或理想反馈，用来验证软件契约，不代表实车精度和制动性能。
+
+### B. MID-360 实机观测模式
+
+先确认 ASUS 网卡和雷达路由正常。当前约定是 Wi-Fi `192.168.1.145` 用于 SSH/外网，有线 `192.168.1.50/32` 只访问雷达 `192.168.1.3`。有线网卡不要改回与 Wi-Fi 重叠的 `/24`。
+
+终端 1，启动官方 Livox 驱动：
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source /home/asus/nav_deps/livox_ws/install/setup.bash
+ros2 launch livox_ros_driver2 msg_MID360_launch.py
+```
+
+终端 2，先做诊断或启动状态链。生产模式使用实测 CalibrationBundle：
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source /home/asus/nav_deps/install_lio/setup.bash
+source /home/asus/nav_2027/rm_nav_v2/install/setup.bash
+ros2 launch rm_nav_bringup local_state.launch.py \
+  calibration_file:=/absolute/measured_calibration.yaml \
+  lio_params_file:=/absolute/lio_params.yaml \
+  enable_lio:=true enable_mid360_guard:=true
+```
+
+如果只是复现原版静态外参联调，必须显式标记为 legacy：
+
+```bash
+ros2 launch rm_nav_bringup local_state.launch.py \
+  calibration_file:=/home/asus/nav_2027/rm_nav_v2/src/rm_nav_frames/config/local_state_calibration.legacy_adam_static.yaml \
+  lio_params_file:=/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml \
+  enable_lio:=false enable_mid360_guard:=false \
+  allow_legacy_static_calibration:=true
+```
+
+legacy 模式只用于接口检查，不能用于宣布实测定位通过。
+
+### C. 建图和导航模式
+
+启动顺序固定为：传感器 → LIO/状态 → 观测子地图或关键帧 → Foxglove → Nav2。Nav2 需要 `/map`、`/odom`、`/scan` 和完整 TF，因此不能只启动 Nav2 就期待出现地图或点云。
+
+实机关键帧采集：
+
+```bash
+ros2 launch rm_nav_bringup mapping_capture.launch.py \
+  archive_root:=/home/asus/nav_data/mapping_sessions \
+  calibration_id:=measured-bundle-v1 \
+  body_frame:=base_footprint sensor_frame:=front_mid360
+```
+
+每次采集使用新的 session。当前单个归档最多 500 帧；达到上限会停止并报告，需要新建分段，不能静默丢帧。停止采集后离线优化：
+
+```bash
+ros2 run rm_nav_mapping offline_graph_optimizer \
+  /home/asus/nav_data/mapping_sessions/<session> \
+  /home/asus/nav_data/mapping_outputs/<output>
+```
+
+输出坐标是 `mapping_odom`。完成官方场地对齐、地图清理、占据栅格和 MapBundle 发布前，不要把它加载为正式冻结地图。
+
+MPPI 全向基线：
+
+```bash
+ros2 launch rm_nav_bringup mppi_baseline.launch.py \
+  enable_task_supervisor:=true \
+  enable_pointcloud_scan_adapter:=true
+```
+
+`enable_pointcloud_scan_adapter` 只有在传感器高度、TF 和 footprint 已实测后才打开。导航任务通过 `/nav/submit_goal` 交给 task supervisor；直接向 Nav2 action 发送目标不会自动获得运动许可。当前 `/nav/cmd_vel_safe` 仍与物理串口隔离。
+
+## 框架架构
+
+```text
+MID-360/Livox ──> cloud guard ──> Point-LIO ──> sensor-pose resolver
+       │                                  │                 │
+       │                                  └─> odom submap ──┤
+       │                                                    v
+       └──────────── Foxglove/raw topics              EKF / state bridge
+                                                            │
+                                      odom→base_footprint ──┘
+                                                            │
+             my_serial_py <── Hardware boundary       Nav2 / MPPI
+                 │                                          │
+                 └── chassis/gimbal feedback          safe command gate
+
+mapping capture ──> VGICP/GTSAM ──> mapping_odom PCD ──> MapBundle (待正式对齐)
+frozen map + odom submap ──> KISS/GICP ──> MapOdomManager ──> map→odom
+```
+
+包的职责边界如下：
+
+| 层 | ROS 包 | 主要职责 |
+| --- | --- | --- |
+| 硬件与接口 | `my_serial_py`, `pb_rm_interfaces`, `rm_nav_hardware` | 复用原协议、串口桥、硬件健康和反馈边界 |
+| Frame 与状态 | `rm_nav_frames`, `rm_nav_localization`, `rm_nav_sensors` | CalibrationBundle、云台 TF、Point-LIO 观测、resolver、EKF 和状态桥 |
+| 配准与定位 | `rm_nav_registration`, `rm_nav_localization` | small_gicp、KISS/GICP、冻结地图定位、恢复事务 |
+| 建图 | `rm_nav_mapping` | 关键帧归档、VGICP 相邻边、GTSAM、回环候选、地图清单 |
+| 感知与规划 | `rm_nav_perception`, `rm_nav_planning`, `rm_nav_control` | 点云/Costmap 适配、路径、轨迹、全向控制接口和 yaw 管理 |
+| 启动与监管 | `rm_nav_bringup`, `rm_nav_sim` | launch、任务监管、故障门、仿真和集成 smoke |
+
+## 数据流、TF 与接口
+
+### TF 所有权
+
+```text
+map ──(MapOdomManager 唯一发布)──> odom
+odom ──(robot_localization 唯一发布)──> base_footprint
+base_footprint ──(标定)──> chassis
+chassis ──(绝对编码器/云台状态)──> big_gimbal_yaw
+big_gimbal_yaw ──(CalibrationBundle)──> front_mid360
+```
+
+`map → odom` 只允许重定位管理器修改；重定位不能跳变 `odom → base_footprint`。`front_mid360` 是传感器 frame，不能直接当作 `base_link`。`base_link` 的定义必须与 Nav2 参数一致，不能同时由两个节点发布。
+
+### 关键话题
+
+| 方向 | 话题 | 说明 |
+| --- | --- | --- |
+| 原始输入 | `/livox/lidar`, `/livox/imu` | Livox 原始点云和 IMU；保留源时间，不能重复加 header 时间 |
+| 质量门 | `/sensors/front_mid360/guarded_points`, `/sensors/front_mid360/cloud_healthy`, `/sensors/front_mid360/cloud_reason` | 质量通过的原始 payload、健康状态和拒绝原因 |
+| LIO | `/lio/sensor_odometry`, `/lio/deskewed_odom_cloud` | 原始 LIO 位姿和已经在 odom 中的去畸变点云 |
+| 状态 | `/state/chassis`, `/state/chassis_healthy`, `/odom` | 底盘状态、健康心跳和 Nav2 参考点里程计 |
+| 建图 | `/localization/odom_submap`, `/mapping/keyframe_archive` | 局部观测子地图、关键帧提交状态 |
+| 定位 | `/localization/frozen_map`, `/localization/estimate`, `/localization/healthy` | 冻结地图输入、定位估计和健康状态 |
+| 导航 | `/scan`, `/global_costmap/costmap`, `/local_costmap/costmap` | Costmap 输入和结果 |
+| 命令 | `/nav/cmd_vel_raw`, `/nav/cmd_vel_smoothed`, `/nav/cmd_vel_checked`, `/nav/cmd_vel_safe` | Nav2 到安全输出门的速度链，当前不直连物理底盘 |
+| 原串口 | `/cmd_vel`, `/cmd_yaw_angle` | `my_serial_py` 的 xy 平移和 yaw 目标角；协议不发送 `angular.z` |
+
+### 健康与停车逻辑
+
+安全输出需要新鲜的 `/state/chassis_healthy`、`/localization/healthy`、`/nav/motion_enable` 和有效速度。点云质量门、LIO、定位、任务监管或串口 watchdog 任一失效，输出门应回到零速度。EKF 估计速度不能当作硬件实测停车反馈。
+
+## 实机使用：MID-360、建图和定位
+
+### 采集建议
+
+静止检查保持雷达稳定 60 秒；动态检查分别采集 1 m 直线、横移、原地旋转和往返闭环。记录场地、速度、云台角度、遮挡情况和开始/结束时间。没有外部真值时，只报告链路、时间、健康、漂移和资源指标，不把估计轨迹称为定位真值。
+
+### 正式冻结地图前的门槛
+
+`create_map_bundle.py` 生成的清单默认是 `draft_mapping_odom`。只有完成真实 PCD 验证、输入一致性检查、官方坐标对齐、动态点清理、occupancy/terrain 生成和人工验收后，才允许进入 `frozen_map_localization.launch.py`。draft Bundle 会被启动器拒绝。
+
+## Foxglove 可视化
+
+启动 Bridge：
+
+```bash
+ros2 launch rm_nav_bringup foxglove_visualization.launch.py
+```
+
+Windows Foxglove 连接 `ws://192.168.1.145:8765`。3D 面板固定 frame：看实时 LIO/子地图用 `odom`，看正式地图和全局 Costmap 用 `map`，看离线优化结果用 `mapping_odom`。建议同一时间只显示一个高带宽点云：原始 `/livox/lidar`、质量门点云和实时累积地图同时显示会造成明显延迟。
+
+最小可用布局：
+
+| 面板 | 添加内容 |
+| --- | --- |
+| 3D | TF、`/visualization/live_map_preview`、`/localization/odom_submap`、一条点云、三条 Path |
+| Raw Messages | `/state/chassis_healthy`、`/localization/healthy`、`/sensors/front_mid360/cloud_reason` |
+| Plot | `/state/chassis` 位置/速度、`/lio/sensor_odometry`、健康状态 |
+| 3D（全局） | `/visualization/map_cloud`、`/global_costmap/costmap`、`/scan`、TF |
+
+加载离线地图和优化图：
+
+```bash
+ros2 launch rm_nav_bringup foxglove_visualization.launch.py \
+  map_pcd:=/absolute/rebuilt_map.pcd \
+  map_frame:=mapping_odom \
+  graph_poses:=/absolute/optimized_poses.json \
+  graph_loops:=/absolute/loop_edges.json \
+  map_bundle:=/absolute/map_bundle.json
+```
+
+实时建图时，Bridge 只负责显示，不会自动启动驱动、LIO 或关键帧采集；必须先启动传感器和状态链。看到话题但 3D 空白时，先检查固定 frame 是否能通过 TF 变换到该话题的 frame，再检查话题是否真的有新消息和时间戳是否在前进。
+
+## 当前进度与未完成边界
 
 截至 2026-10-10，工程含 14 个 ROS 包，远端全量构建通过。
-最近一次测试汇总为 36 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
+最近一次 P0 全量测试汇总为 38 项、0 失败、1 跳过；跳过项是可选的原版 libscrc 兼容核验，
 单独加载 libscrc 1.8.1 后全部 13 项串口协议测试通过。
 
 | 功能 | 已验证内容 | 尚未完成 |
@@ -42,7 +294,7 @@ MID-360 已接通 ASUS，修复有线/无线重叠路由。原始点云质量门
 最大姿态变化约 0.09°，本次静止检查通过，动态和整车验收仍待完成。
 接线配置、原始 rosbag 及遮挡失败对照见 [实机接入记录](docs/mid360_hardware_acceptance.md)。
 
-## 构建（asus 主机）
+### 构建（asus 主机）
 
 ```bash
 cd /home/asus/nav_2027/rm_nav_v2
@@ -62,7 +314,7 @@ colcon test-result --verbose
 ros2_control 和 controllers。small_gicp、KISS-Matcher、ROBIN 在用户目录构建，精确提交见
 [dependencies.repos](dependencies.repos)。[依赖清单](dependencies.lock.yaml) 目前仅部分锁定。
 
-## 已实现的启动与验收
+### 已实现的启动与验收
 
 ```bash
 # 独立 Domain 中运行理想全向模型，启动真实 Nav2 节点。
@@ -161,7 +413,7 @@ EKF 估计速度不等于硬件实测停车反馈，输出仍未连接物理底�
 见 [状态桥与观测链验收](docs/state_observation_acceptance.md)。
 见 [动态云台状态链验收](docs/local_state_acceptance.md)。
 
-## 包结构
+### 包结构
 
 | 包 | 职责 |
 | --- | --- |
@@ -174,7 +426,7 @@ EKF 估计速度不等于硬件实测停车反馈，输出仍未连接物理底�
 | `rm_nav_planning` / `rm_nav_control` | 全局路径、轨迹、全向控制与 yaw 管理 |
 | `rm_nav_bringup` / `rm_nav_sim` | 启动配置、监管、仿真与集成验收 |
 
-## 验收记录与后续顺序
+### 验收记录与后续顺序
 
 - [MPPI 软件基线](docs/mppi_baseline_acceptance.md)
 - [串口协议及 ROS/PTY](docs/serial_acceptance.md)
@@ -204,3 +456,45 @@ EKF 估计速度不等于硬件实测停车反馈，输出仍未连接物理底�
 
 框架完成后，必须自行寻找公开 rosbag，在 asus 上进行真实数据回放及系统验收，
 修复问题并上传测试配置与报告。见 [rosbag 系统测试计划](docs/rosbag_system_test_plan.md)。
+
+## 故障排查
+
+### Foxglove 连接成功但画面空白
+
+先执行 `ros2 topic list` 和 `ros2 topic hz <topic>`，确认当前 Domain 中确实有新消息；再在 3D 面板选择与数据一致的固定 frame。原始点云通常是 `front_mid360`，去畸变点云和局部子地图通常是 `odom`。如果固定 frame 是 `map` 或 `mapping_odom` 而没有对应 TF，Foxglove 会列出话题但无法绘制。
+
+### Foxglove 延迟四五秒或明显卡顿
+
+只打开一个高带宽点云。调试雷达时选 `/livox/lidar`，调试建图时选 `/visualization/live_map_preview` 或 `/localization/odom_submap`，不要同时打开原始点云、guarded 点云、去畸变点云和累积地图。Bridge 默认已经限制发送缓冲和实时预览体素；延迟仍高时先关闭 Plot/Raw Messages 中的高频数组字段，再检查 ASUS CPU 和无线链路。
+
+### `odom → base_link` 缺失或 TF 面板出现红色错误
+
+检查是否启动了 `local_state.launch.py`，以及 `calibration_file` 是否为真实 Bundle。生产模式由 robot_localization 发布 `odom → base_footprint`，状态桥提供 Nav2 参考点；不能启动第二个静态 `odom → base_link`。`mapping_odom` 是离线建图坐标，与实时 `odom` 没有天然 TF，离线地图要把 3D 固定 frame 设为 `mapping_odom`。
+
+### Costmap 节点启动但不激活
+
+Costmap 至少需要 `/scan`、地图输入和动态 `odom → base_link`。独立测试使用：
+
+```bash
+ROS_DOMAIN_ID=131 ros2 launch rm_nav_bringup costmap_mid360_smoke.launch.py \
+  profile:=TEST_ONLY map_yaml:=/tmp/smoke_map.yaml
+```
+
+`TEST_ONLY` 仅创建测试用静态 TF；`LEGACY_DEBUG` 需要外部真实 LIO/状态输入；`PRODUCTION` 会明确拒绝该 smoke launch。不要用静态 TF 绕过正式定位依赖。
+
+### Point-LIO 健康失败
+
+查看 `/sensors/front_mid360/cloud_reason`、`/state/lio_reason` 和 `/state/chassis_healthy`。常见原因是有效回波不足、点云源时间异常、IMU 单位/frame 不匹配或质量门断流。MID-360 原始 IMU 当前按 `g` 检查，不能把同一消息又乘一次 9.81；点云逐点 timestamp 是绝对纳秒，不能再与 header 时间相加。
+
+### 物理串口没有输出
+
+这是默认安全状态。确认 `my_serial_py` 的 PTY 测试先通过，再检查 `/nav/cmd_vel_safe`、`/nav/motion_enable`、`/state/chassis_healthy` 和 `/localization/healthy` 是否新鲜。当前框架没有把安全输出自动接到物理底盘，不能用 `/contact_angle` 代替速度或停车反馈。
+
+### 远端构建失败
+
+确认 shell 顺序为 `/opt/ros/jazzy` → `/home/asus/nav_deps/install_lio` → 本工程 `install`，并把并行度限制为 2。优先查看第一个编译错误；不要删除 `build/ install/ log/` 来掩盖依赖问题。修改后先运行受影响包的 smoke，再运行 `colcon test-result --verbose`。
+
+## 开发约定
+
+修改流程固定为：阅读架构契约 → 在 ASUS 构建 → 运行对应 smoke/MCAP → 更新文档和阶段矩阵 → 使用中文 commit → 推送 `audit-p0-tf-costmap` 等 feature branch。测试未完成的功能不能合并 `main`。提交身份统一为 `kswlt <kswlt@users.noreply.github.com>`。
+
