@@ -17,6 +17,7 @@
 - [构建、测试与结果判读](#构建测试与结果判读)
 - [故障排查](#故障排查)
 - [当前进度与未完成边界](#当前进度与未完成边界)
+- [阶段 B 硬件协议契约](#阶段-b-硬件协议契约)
 
 ## 项目定位与边界
 
@@ -493,6 +494,10 @@ ROS_DOMAIN_ID=131 ros2 launch rm_nav_bringup costmap_mid360_smoke.launch.py \
 ### 远端构建失败
 
 确认 shell 顺序为 `/opt/ros/jazzy` → `/home/asus/nav_deps/install_lio` → 本工程 `install`，并把并行度限制为 2。优先查看第一个编译错误；不要删除 `build/ install/ log/` 来掩盖依赖问题。修改后先运行受影响包的 smoke，再运行 `colcon test-result --verbose`。
+
+## 阶段 B 硬件协议契约
+
+当前 `my_serial_py` 的协议边界、缺失字段和兼容扩展方案见 [阶段 B 硬件协议契约](docs/stage_b_hardware_contract.md)。在收到真实轮速、实际速度、绝对云台角、停车确认、watchdog 和急停状态之前，硬件状态闭环保持 BLOCKED，不能把 Nav2 输出接到物理底盘。
 
 ## 开发约定
 
