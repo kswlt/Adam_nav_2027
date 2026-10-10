@@ -73,3 +73,16 @@ resolver 对 36 个协方差元素执行有限、对称、正定检查。ASUS �
 本审计尚未修改生产 TF、未接通物理底盘、未把 legacy 外参改为 verified，未执行完整 `colcon test`。
 P0 修复完成后必须在独立 Domain 运行构建、测试、TF authority、Costmap 障碍层和传感器断流回归，
 再等待批准进入 P1。
+
+## P0 修复进度
+
+已在 feature branch 增加 Costmap smoke profile：
+
+- `TEST_ONLY`：显式测试静态 `map→odom` 和 `odom→base_footprint`，只允许接口/Costmap 回归。
+- `LEGACY_DEBUG`：依赖外部 LIO/状态输入，允许原版静态外参联调，不发布测试 `map→odom`。
+- `PRODUCTION`：启动时直接拒绝，要求正式地图、MapOdomManager、实测标定和真实状态链。
+
+ASUS 验证结果：`PRODUCTION` 拒绝通过；独立 Domain 的 `TEST_ONLY` 成功读取 20×20 测试地图，
+map_server、global/local Costmap 激活，LaserScan 适配器建立订阅。使用命令行注入的零时间戳
+LaserScan 未能证明障碍代价变化，因此障碍层实际 marking 仍为 **NOT VERIFIED**；下一步需要
+带当前时间戳的测试发布器或真实 guarded 点云回放。
