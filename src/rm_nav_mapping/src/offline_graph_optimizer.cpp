@@ -4,6 +4,7 @@
 #include "rm_nav_mapping/loop_validator.hpp"
 #include "rm_nav_registration/small_gicp_backend.hpp"
 #include "rm_nav_registration/kiss_gicp_backend.hpp"
+#include <small_gicp/registration/registration_helper.hpp>
 #include "rm_nav_sensors/point_cloud.hpp"
 #include <rm_nav_interfaces/msg/observation_frame.hpp>
 #include <rclcpp/serialization.hpp>
@@ -108,11 +109,21 @@ double overlap_fraction(const std::vector<Eigen::Vector3d> & target,
   if(target.empty()||source.empty())return 0;
   const std::size_t source_stride=std::max<std::size_t>(1,source.size()/2000);
   const std::size_t target_stride=std::max<std::size_t>(1,target.size()/5000);
+  std::vector<Eigen::Vector3d> target_sampled,source_sampled;
+  target_sampled.reserve((target.size()+target_stride-1)/target_stride);
+  source_sampled.reserve((source.size()+source_stride-1)/source_stride);
+  for(std::size_t j=0;j<target.size();j+=target_stride)target_sampled.push_back(target[j]);
+  for(std::size_t i=0;i<source.size();i+=source_stride)source_sampled.push_back(source[i]);
+  // Reuse small_gicp's deterministic voxel preprocessing and KdTree. The
+  // threshold remains the same 0.2 m Euclidean radius as the old metric.
+  auto [target_cloud,target_tree]=small_gicp::preprocess_points(target_sampled,.01,10,1);
+  if(!target_cloud || !target_tree || target_cloud->size()==0)return 0;
   std::size_t accepted=0,total=0;
-  for(std::size_t i=0;i<source.size();i+=source_stride) {
-    const auto point=target_T_source*source[i];double best=std::numeric_limits<double>::infinity();
-    for(std::size_t j=0;j<target.size();j+=target_stride)best=std::min(best,(point-target[j]).squaredNorm());
-    if(best<=.04)++accepted;++total;
+  for(const auto & source_point:source_sampled) {
+    Eigen::Vector4d point; point.head<3>()=target_T_source*source_point; point.w()=1.0;
+    std::size_t index=0;double distance=0;
+    if(target_tree->knn_search(point,1,&index,&distance) && distance<=.04)++accepted;
+    ++total;
   }
   return total?static_cast<double>(accepted)/total:0;
 }
