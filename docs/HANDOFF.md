@@ -5,6 +5,10 @@
 
 ## 1. 项目目标与用户要求
 
+本轮第一阶段任务审计见 [第一阶段功能审计矩阵](phase1_function_audit.md)。审计基线已经先执行
+`git fetch origin`，以 `audit-p0-tf-costmap` 最新提交为准；ASUS 上未提交的
+`offline_graph_optimizer.cpp` overlap 优化被保留，不能在同步文档时覆盖。
+
 根据 `RM_Nav_V2_技术方案_v2.5_NUC15Pro_重定位回环_GitHub同步 (1).pdf`
 完成 P0–P10 导航框架，保持结构清晰，可参考、复用其他学校开源代码。
 原版为 `adam深北莫开源改版代码-上场版`；上位机/下位机通信必须复用 **my_serial_py**，
