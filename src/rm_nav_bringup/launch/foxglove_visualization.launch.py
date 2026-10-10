@@ -43,12 +43,13 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('port', default_value='8765'),
         DeclareLaunchArgument('address', default_value='0.0.0.0'),
-        DeclareLaunchArgument('send_buffer_limit', default_value=str(16*1024*1024)),
+        # 小缓冲优先丢弃旧数据，避免高带宽点云在 WebSocket 排队形成秒级延迟。
+        DeclareLaunchArgument('send_buffer_limit', default_value=str(4*1024*1024)),
         DeclareLaunchArgument('map_frame', default_value='map'),
         DeclareLaunchArgument('enable_live_preview', default_value='true'),
-        DeclareLaunchArgument('preview_max_voxels', default_value='80000'),
+        DeclareLaunchArgument('preview_max_voxels', default_value='50000'),
         DeclareLaunchArgument('preview_voxel', default_value='0.15'),
-        DeclareLaunchArgument('preview_publish_hz', default_value='2.0'),
+        DeclareLaunchArgument('preview_publish_hz', default_value='1.0'),
         DeclareLaunchArgument('map_pcd', default_value='', description='Optional binary XYZ PCD to publish latched'),
         DeclareLaunchArgument('graph_poses', default_value='', description='Optional optimized_poses.json'),
         DeclareLaunchArgument('graph_loops', default_value='', description='Optional loop_edges.json'),

@@ -126,7 +126,7 @@ ROS_DOMAIN_ID=104 ros2 launch rm_nav_bringup foxglove_visualization.launch.py
 另外观察 `/visualization/live_map_preview`；它将去畸变 `odom` 点云做有界体素累积，适合实时看建图进展。
 它断流时会在 `/visualization/live_map_status` 标记 `input_stale=true`，不会把旧点云重新伪装成新时间。
 
-Foxglove 低延迟默认配置为 Bridge 发送缓冲 16 MiB、实时预览 0.15 m 体素、最多 80000 点、2 Hz。
+Foxglove 低延迟默认配置为 Bridge 发送缓冲 4 MiB、实时预览 0.15 m 体素、最多 50000 点、1 Hz。
 同时显示原始点云、去畸变点云和实时累积地图会显著增加带宽和浏览器渲染压力；调试雷达时只打开
 `/livox/lidar`，看建图时只打开 `/visualization/live_map_preview` 和轨迹。
 `/mapping/keyframe_archive` 只是提交状态，不是点云；实时“地图效果”应使用
