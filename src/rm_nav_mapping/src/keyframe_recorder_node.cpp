@@ -33,7 +33,10 @@ public:
     sensor_=declare_parameter("sensor_frame","front_mid360");
     const auto root=declare_parameter<std::string>("archive_root","");
     max_age_=declare_parameter("max_age",.3);
-    max_frames_=declare_parameter<std::int64_t>("max_keyframes",5000);
+    // Offline PoseGraph currently has a hard bounded graph of 500 poses. Keep the
+    // recorder contract identical so frame 501 is refused explicitly rather than
+    // producing an archive that the optimizer cannot consume.
+    max_frames_=declare_parameter<std::int64_t>("max_keyframes",500);
     max_bytes_=declare_parameter<std::int64_t>("max_archive_bytes",2147483648LL);
     KeyframeTriggerConfig config;
     config.translation_threshold_m=declare_parameter("translation_threshold_m",.15);
@@ -41,8 +44,8 @@ public:
     manager_=KeyframeManager(config);
     if(calibration_.empty() || source_.empty() || sensor_.empty() || body_.empty() || body_=="odom" ||
        root.empty() || !fs::path(root).is_absolute() || !std::isfinite(max_age_) || max_age_<=0 || max_age_>1 ||
-       max_frames_<1 || max_frames_>10000 || max_bytes_<4096 || max_bytes_>107374182400LL)
-      throw std::invalid_argument("Explicit archive/calibration and bounded recording limits required");
+       max_frames_<1 || max_frames_>500 || max_bytes_<4096 || max_bytes_>107374182400LL)
+      throw std::invalid_argument("Archive max_keyframes must be 1..500; use a new session for the next segment");
     fs::create_directories(root);
     root_=fs::canonical(root);
     std::random_device random;
@@ -140,7 +143,8 @@ private:
   }
   void archive(const Keyframe & keyframe,const rm_nav_interfaces::msg::ObservationFrame & observation)
   {
-    if(manager_.keyframes().size()>=static_cast<std::size_t>(max_frames_))throw std::runtime_error("Keyframe quota reached; recording stopped");
+    if(manager_.keyframes().size()>=static_cast<std::size_t>(max_frames_))
+      throw std::runtime_error("Keyframe quota reached at graph limit; recording stopped, start a new segment");
     rclcpp::Serialization<rm_nav_interfaces::msg::ObservationFrame> serializer;
     rclcpp::SerializedMessage serialized;serializer.serialize_message(&observation,&serialized);
     const auto & buffer=serialized.get_rcl_serialized_message();
