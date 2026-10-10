@@ -86,3 +86,11 @@ ASUS 验证结果：`PRODUCTION` 拒绝通过；独立 Domain 的 `TEST_ONLY` �
 map_server、global/local Costmap 激活，LaserScan 适配器建立订阅。使用命令行注入的零时间戳
 LaserScan 未能证明障碍代价变化，因此障碍层实际 marking 仍为 **NOT VERIFIED**；下一步需要
 带当前时间戳的测试发布器或真实 guarded 点云回放。
+
+最新 ASUS 回归：重新 source Livox 和 Point-LIO overlay、恢复 `/tmp/mid360_asus.json` 后，
+真实 Point-LIO 输出被 resolver 接受，`/state/lio_reason` 为 `time-aligned SE3 body pose accepted`，
+`odom→base_link` 可查询。早期启动时的协方差拒绝属于启动瞬态样本，本轮未放宽校验；仍需在多次
+重启和 MCAP 回放中确认不会持续复现。
+
+构建与测试：`colcon build --symlink-install --parallel-workers 2` 成功；
+`colcon test` / `colcon test-result --verbose` 为 38 tests、0 errors、0 failures、1 skipped。
