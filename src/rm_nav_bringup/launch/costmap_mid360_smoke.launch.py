@@ -21,15 +21,13 @@ def generate_launch_description():
         DeclareLaunchArgument('map_yaml', default_value='/tmp/smoke_map.yaml'),
         DeclareLaunchArgument(
             'calibration_file', default_value=os.path.join(
-                bringup, '..', '..', '..', '..', 'src', 'rm_nav_frames', 'config',
+                get_package_share_directory('rm_nav_frames'), 'config',
                 'local_state_calibration.legacy_adam_static.yaml')),
         DeclareLaunchArgument(
             'lio_params_file', default_value='/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml'),
         Node(package='tf2_ros', executable='static_transform_publisher',
              name='smoke_odom_to_map', output='screen',
              arguments=['0', '0', '0', '0', '0', '0', '1', 'map', 'odom']),
-        IncludeLaunchDescription(PythonLaunchDescriptionSource(
-            os.path.join(bringup, 'launch', 'legacy_static_tf.launch.py'))),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(
             os.path.join(bringup, 'launch', 'local_state.launch.py')),
             launch_arguments={

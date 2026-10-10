@@ -5,7 +5,7 @@
 
 ```text
 base_footprint → chassis       (0, 0, 0.076)
-chassis        → base_link     (0, 0, 0)
+base_footprint → base_link     (0, 0, 0)
 chassis        → front_mid360  (0.16, 0, 0.18; 四元数 [1, 0, 0, 0])
 chassis        → front_mid360_imu (同上，仅用于匹配当前 Point-LIO child frame)
 ```
@@ -34,6 +34,6 @@ ros2 launch rm_nav_bringup local_state.launch.py \
   allow_legacy_static_calibration:=true
 ```
 
-该文件把原版 `chassis→front_mid360` 拆成 `chassis→gimbal_yaw→imu`，并假设
-`imu→lidar` 为单位变换；这是联调假设，不是实测外参。默认参数仍为 `false`，
-因此普通启动不会接受该文件。
+legacy 模式直接加载原版静态 TF 启动器，不启动动态 gimbal_tf；不要另行重复启动
+legacy_static_tf.launch.py。`front_mid360_imu` 使用雷达相同位姿是联调假设，仍需核对
+Point-LIO 内部 IMU/LiDAR 外参。无编码器健康时底盘健康保持关闭。默认参数为 `false`。
