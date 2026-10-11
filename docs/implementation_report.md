@@ -27,6 +27,10 @@ published artifact；`create_map_bundle.py` 使用相对 manifest 的可靠路�
 `publish_map_bundle.py` 在 verified 官方 alignment 输入下生成 map PCD、occupancy PGM 和 terrain
 参考数据。三者都拒绝缺少真实硬件/官方坐标输入的生产启动。
 
+`rm_nav_hardware` 另增加可加载的 Jazzy `ros2_control` SystemInterface 合同插件。它要求显式
+`allow_hardware_activation=true`，并在没有真实反馈时拒绝 `read/write`；因此不会生成零值假反馈，
+也不会绕过现有 `my_serial_py` 串口 owner。
+
 ## P0/P1 - Initial workspace skeleton
 
 状态：完成本地文件落地，远端首次构建通过。

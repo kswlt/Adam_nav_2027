@@ -1,0 +1,5 @@
+<library path="rm_serial_hardware_interface">
+  <class name="rm_nav_hardware/RmSerialHardwareInterface" type="rm_nav_hardware::RmSerialHardwareInterface" base_class_type="hardware_interface::SystemInterface">
+    <description>Safety-gated ros2_control boundary for the existing my_serial_py protocol.</description>
+  </class>
+</library>

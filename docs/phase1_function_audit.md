@@ -25,6 +25,7 @@ ASUS 工作区 `/home/asus/nav_2027/rm_nav_v2` 另有未提交的
 | Costmap 与 Nav2 MPPI | `costmap_mid360_smoke.launch.py`、`mppi_baseline.launch.py`、Nav2 参数 | TEST_ONLY/LEGACY_DEBUG/PRODUCTION 隔离；软件障碍和断流停车通过 | footprint、障碍空间位置、正式地图和制动距离未测 | **软件基线通过 / 实车 BLOCKED**；替换实测 footprint 和安全限值 |
 | 任务监管与安全门 | `task_supervisor.py`、motion gate、recovery transaction | 健康断流、恢复、旧任务取消、重新规划 smoke 通过 | 无独立急停、下位机 watchdog 和真实速度确认 | **软件通过 / 上车 BLOCKED**；完成 HIL 后才可申请低速运动 |
 | 最终 Omni 控制适配 | `rm_nav_control/omni_pid.hpp`、`yaw_manager.hpp`、`omni_pid_adapter_node.cpp` | Omni PID/YawManager 单测通过；适配器默认物理输出关闭并拒绝无反馈输入 | 没有真实 measured_twist、drive_ready、停车和 watchdog | **软件通过 / 硬件 BLOCKED**；获得 STM32 字段后再接 ros2_control 与物理输出 |
+| ros2_control 边界 | `rm_nav_hardware/RmSerialHardwareInterface` plugin | Jazzy HardwareInterface 插件可构建，激活和 read/write 在无真实反馈时拒绝 | 尚无 STM32 状态帧和串口 owner 联调 | **接口合同完成 / 实车 BLOCKED**；补齐真实反馈后才能允许 activation |
 | Foxglove 诊断 | `foxglove_visualization.launch.py`、live preview/trace publishers | 话题、TF、PCD、实时预览链已验证 | 无法由可视化证明定位精度或制动性能 | **可用**；高带宽点云只开一路以控制延迟 |
 
 ## A 阶段审计结论
