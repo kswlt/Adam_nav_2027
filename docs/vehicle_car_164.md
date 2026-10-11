@@ -5,7 +5,7 @@
 | 项目 | 实测值 |
 | --- | --- |
 | SSH | `asus@192.168.1.164:2233` |
-| ROS 工作区 | 车上已有 ROS 2 Humble 工作区，尚未部署 `Adam_nav_2027` |
+| ROS 工作区 | 实测 /opt/ros/jazzy；新工作区独立部署，原工作区保持原状 |
 | Wi-Fi | `192.168.1.164/23` |
 | 雷达网卡 | `enp86s0`，`192.168.1.50/32` |
 | MID-360 | `192.168.1.152` |
@@ -21,7 +21,7 @@
 
 当前 profile 仍保留硬件安全门。已采用用户确认的安装尺寸：`x=0 m`、`y=+0.08 m`、`z=0.20 m`，其中 `y` 采用 REP-103 左正方向。轮速反馈和停车反馈暂按用户要求延期接入，但延期不等于伪造反馈。
 
-MID-360 的 LiDAR-IMU 内部外参由设备/驱动提供，配置中的 `imu_extrinsic_source` 标记为 `mid360_factory_calibration`。这解决的是雷达内部 LiDAR 与 IMU 的关系；雷达整体相对车体的安装变换仍由本车的 `x/y/z` 和姿态参数描述，不能用设备内部标定替代。
+MID-360 内部 LiDAR-IMU 工厂参数需显式写入 Point-LIO 的 extrinsic_T/extrinsic_R，并核对方向和坐标轴。驱动 JSON 使用恒等变换保留原始点云坐标，车体安装位置仅在 TF 中应用一次。本车外参与实时 TF 尚未联合验收。
 
 车上先做无电机联调：
 
@@ -39,4 +39,4 @@ ros2 launch my_serial_py serial.launch.py \
   serial_port:=/dev/ttyUSB0 baud_rate:=115200 cmd_vel_timeout:=0.3
 ```
 
-物理输出保持关闭。确认雷达、串口和真实状态反馈后，再部署 Jazzy 版导航工作区；Humble 工作区不能直接运行本仓库已经按 Jazzy 验证的二进制。
+物理输出保持关闭。独立 Jazzy 工作区已经部署；环境加载、构建和当前阻塞见 HANDOFF_VEHICLE_164.md。

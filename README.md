@@ -5,6 +5,10 @@
 构建与运行验证在 `asus@192.168.1.145` 完成，代码同步至
 [kswlt/Adam_nav_2027](https://github.com/kswlt/Adam_nav_2027)。
 
+车载 `192.168.1.164:2233` 的独立部署、环境加载和当前硬件限制见
+[实车交接文档](docs/HANDOFF_VEHICLE_164.md)。车载实际环境为 Jazzy；新框架启动的是
+`small_point_lio`，需要单独构建其 overlay。驱动保留雷达原始坐标，车体安装外参只在 TF 中应用一次。
+
 ## 目录
 
 - [项目定位与边界](#项目定位与边界)
@@ -190,8 +194,8 @@ frozen map + odom submap ──> KISS/GICP ──> MapOdomManager ──> map→
 
 ```text
 map ──(MapOdomManager 唯一发布)──> odom
-odom ──(robot_localization 唯一发布)──> base_footprint
-base_footprint ──(标定)──> chassis
+odom ──(base_footprint_projection 唯一发布)──> base_footprint
+base_footprint ──(动态 6DoF 投影)──> chassis
 chassis ──(绝对编码器/云台状态)──> big_gimbal_yaw
 big_gimbal_yaw ──(CalibrationBundle)──> front_mid360
 ```
@@ -407,8 +411,10 @@ footprint、停止区和速度约束目前为调试初值，需要实际尺寸�
 `ros2 launch rm_nav_bringup local_state.launch.py calibration_file:=<实测标定> lio_params_file:=<驱动/滤波配置>`。
 模板未测量并默认拒绝启动；绝对云台反馈来自 `/hardware/gimbal_joint_states`，不使用
 `/contact_angle`。LIO 发布原始 IMU 位姿，resolver 按源时刻查询外参并保留完整 SE(3)，
-EKF 唯一发布 odom→base_footprint，状态输出 `/state/chassis`。
-状态桥按完整参考点变换输出 Nav2 `/odom`，本地健康同时约束输出门与任务监管。
+EKF 输出完整车体状态 `/state/chassis`，自身不发布 TF。
+EKF 保留完整 `odom→chassis` 6DoF 状态；`base_footprint_projection` 按同一时刻生成平面
+`odom→base_footprint` 和动态 `base_footprint→chassis`。状态桥按 chassis 参考点变换输出
+Nav2 `/odom`，本地健康同时约束输出门与任务监管。
 EKF 估计速度不等于硬件实测停车反馈，输出仍未连接物理底盘。
 主 LIO 经原生观测适配与滚动窗口输出 `/localization/odom_submap`。
 见 [状态桥与观测链验收](docs/state_observation_acceptance.md)。
@@ -470,7 +476,10 @@ EKF 估计速度不等于硬件实测停车反馈，输出仍未连接物理底�
 
 ### `odom → base_link` 缺失或 TF 面板出现红色错误
 
-检查是否启动了 `local_state.launch.py`，以及 `calibration_file` 是否为真实 Bundle。生产模式由 robot_localization 发布 `odom → base_footprint`，状态桥提供 Nav2 参考点；不能启动第二个静态 `odom → base_link`。`mapping_odom` 是离线建图坐标，与实时 `odom` 没有天然 TF，离线地图要把 3D 固定 frame 设为 `mapping_odom`。
+检查是否启动了 `local_state.launch.py`，以及 `calibration_file` 是否为真实 Bundle。生产模式由
+`base_footprint_projection` 发布平面 `odom → base_footprint`，EKF 保留完整 chassis 状态；
+不能启动第二个静态 `odom → base_link`。`mapping_odom` 是离线建图坐标，与实时 `odom` 没有天然
+TF，离线地图要把 3D 固定 frame 设为 `mapping_odom`。
 
 ### Costmap 节点启动但不激活
 

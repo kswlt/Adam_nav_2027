@@ -37,15 +37,15 @@
 | 串口 | `/dev/ttyUSB0`，Silicon Labs CP2102，115200 baud |
 | 串口协议 | 原版 `my_serial_py`，54 字节 TX、26 字节 RX、CRC |
 
-Livox 驱动的平移外参字段单位是毫米，必须使用：
+Livox 驱动的平移字段单位为毫米且必须是整数。本框架保留原始 LiDAR 坐标，驱动必须使用恒等变换：
 
 ```json
 "x": 0,
-"y": 80,
-"z": 200
+"y": 0,
+"z": 0
 ```
 
-雷达内部 LiDAR-IMU 标定由 MID-360 工厂参数和驱动使用；上述 JSON 是雷达整体相对车体的安装变换。
+车体安装位移 x=0、y=0.08、z=0.20 m 只在安装 TF 中应用一次，不能再写进驱动点云变换。Point-LIO 显式读取 extrinsic_T/extrinsic_R；工厂内部参数必须核对方向并写入 LIO 标定配置，驱动不会自动替 LIO 填写。当前尚未完成本车内部外参与 TF 的联合验收。
 
 ## 3. 已完成内容
 
@@ -75,10 +75,7 @@ Livox 驱动的平移外参字段单位是毫米，必须使用：
 ## 5. 环境加载
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-source /home/asus/nav_2027_vehicle_config_164/workspace/install/setup.bash
-export CMAKE_PREFIX_PATH=/home/asus/nav_2027_vehicle_config_164/deps/install:/opt/ros/jazzy/opt/small_gicp_vendor:${CMAKE_PREFIX_PATH:-}
-export LD_LIBRARY_PATH=/home/asus/nav_2027_vehicle_config_164/deps/install/lib:/opt/ros/jazzy/opt/small_gicp_vendor/lib:${LD_LIBRARY_PATH:-}
+source /home/asus/nav_2027_vehicle_config_164/workspace/tools/vehicle_164_env.bash
 ```
 
 ## 6. 雷达启动前检查
@@ -101,13 +98,15 @@ sudo ip route replace 192.168.1.152/32 dev enp86s0 src 192.168.1.50
 
 ```bash
 export ROS_DOMAIN_ID=97
-ros2 launch livox_ros_driver2 msg_MID360_launch.py
+ros2 launch rm_nav_bringup mid360_diagnostic.launch.py \
+  driver_config:=/home/asus/nav_2027_vehicle_config_164/workspace/config/hardware/mid360_car_164.json \
+  lio_params_file:=/home/asus/nav_2027_vehicle_config_164/deps/src/small_point_lio/config/mid360.yaml
 ```
 
 启动配置位于隔离源码：
 
 ```text
-/home/asus/nav_2027_vehicle_config_164/workspace/src/livox_ros_driver2/config/MID360_config.json
+/home/asus/nav_2027_vehicle_config_164/workspace/config/hardware/mid360_car_164.json
 ```
 
 ## 7. 串口启动
@@ -134,7 +133,7 @@ ros2 launch my_serial_py serial.launch.py \
 6. 串口节点。
 7. 经过人工确认后才允许物理输出。
 
-当前不能直接宣称“已经可以导航控制车辆”，因为最后一次雷达启动因错误的 JSON 数值类型退出，且网口没有 carrier；修正后的毫米 JSON 尚待雷达重新接通后验证。
+当前不能宣称已能实车导航：网口 carrier=0，实时点云、LIO 和 TF 联合验收未完成。新框架实际启动 small_point_lio，原版 point_lio 只作参考，不能代替该依赖。
 
 ## 9. 物理控制安全边界
 
@@ -147,9 +146,19 @@ ros2 launch my_serial_py serial.launch.py \
 ## 10. 下一步
 
 1. 接通 MID-360 网线，确认 `carrier=1`、能 ping `192.168.1.152`。
-2. 使用修正后的 `x=0,y=80,z=200` JSON 启动驱动，确认 `/livox/lidar` 和 `/livox/imu`。
+2. 使用保留原始坐标的 `x=0,y=0,z=0` JSON 启动驱动，确认 `/livox/lidar` 和 `/livox/imu`。
 3. 启动 Point-LIO，检查点云、IMU、`odom` 和 TF 时间连续性。
 4. 在独立 ROS Domain 中启动 Costmap/Nav2，先只观察 `/nav/cmd_vel_safe`。
 5. 串口协议抓包确认零速、平移、yaw 角字段。
 6. 低速、空旷、人工急停在场后，再进行首次实际移动。
 
+
+## 11. 本轮部署修复与限制
+
+- 新增 `tools/vehicle_164_env.bash`，加载 Jazzy、独立依赖、small_point_lio 和导航工作区，使用 ROS_DOMAIN_ID=97。
+- 在独立工作区执行 `bash tools/vehicle_164_build.bash`，构建固定版本 small_point_lio，再构建和测试导航包。原版 driver/point_lio 副本不加入导航包测试列表。
+- 离线优化器直接依赖 small_gicp 导入目标，不再使用全局 `-I` 掩盖缺失依赖。
+- 上面的 diagnostic 启动仅用于传感器诊断，不发布车体 TF、不启动串口、不代表生产定位通过。指定的上游 YAML 内部外参仍需核对；请先用 `ls` 确认实际文件名。
+- 本车 `x/y/z` 来自用户提供尺寸，不标记为实测 verified CalibrationBundle。
+- 系统 ROS 依赖安装会修改 /opt/ros 环境；隔离的是源码、构建产物和运行 Domain，不能声称系统依赖完全隔离。
+- Omni 适配器、真实反馈及 HardwareInterface 的运行验收尚未完成，编译通过不能证明可实车导航。

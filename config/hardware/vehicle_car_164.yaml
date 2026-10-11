@@ -2,7 +2,7 @@ schema_version: 1
 profile_id: vehicle-car-164
 status: partial_hardware_profile
 platform: ASUS NUC 15 Pro on vehicle
-ros_distro: humble
+ros_distro: jazzy
 vehicle_model: omni_single_yaw
 coordinate_convention: REP-103; x-forward, y-left, z-up
 
@@ -35,7 +35,9 @@ sensor_mount:
   height_m: 0.2
   measured_calibration_required: false
   imu_extrinsic_source: mid360_factory_calibration
-  note: User confirmed radar is upright, centered longitudinally, 0.20 m high, and 0.08 m left of vehicle center. MID-360 factory LiDAR-IMU calibration is used internally by the driver; the chassis mount transform remains a separate vehicle calibration.
+  driver_point_transform: identity
+  imu_extrinsic_delivery: explicit_lio_parameters_required
+  note: User confirmed upright mounting at x=0, y=0.08, z=0.20 metres. Apply this installation transform once in TF. The driver preserves LiDAR coordinates; Point-LIO requires explicit internal LiDAR-IMU extrinsic parameters. Factory provenance and axis convention must be checked before live acceptance.
 
 startup_policy:
   allow_legacy_static_calibration: false
