@@ -65,6 +65,7 @@ def main():
     c,s=math.cos(.2),math.sin(.2)
     world_R_body=rotation_yaw(.4)@np.array([[c,0,s],[0,1,0],[-s,0,c]])
     body_position=np.array([2.,-1.,.3])
+    chassis_position=body_position+world_R_body@np.array([0.,0.,.1])
     origin=time.monotonic()
     def yaw(t):return .7*math.sin(2*t)
     def stamp(message,ns):
@@ -124,24 +125,30 @@ def main():
             require(wait(lambda:False,1.0) is False,'Unexpected fixture wait')
             for out in resolved[-30:]:
                 p=out.pose.pose.position
-                require(np.linalg.norm(np.array([p.x,p.y,p.z])-body_position)<.002,
-                        'Yaw rotation/lever arm falsely moved chassis; SE3 transform wrong')
+                require(np.linalg.norm(np.array([p.x,p.y,p.z])-chassis_position)<.002,
+                        'Yaw rotation/lever arm falsely moved chassis; SE3 transform wrong: '+str([p.x,p.y,p.z]))
                 q=out.pose.pose.orientation
                 expected=np.array(quaternion(world_R_body))
                 require(np.linalg.norm(np.array([q.x,q.y,q.z,q.w])-expected)<.002,'Resolver lost pitch/yaw orientation')
             out=filtered[-1]
             p=out.pose.pose.position
-            require(out.header.frame_id=='odom' and out.child_frame_id=='base_footprint','EKF frame ownership wrong')
-            require(np.linalg.norm(np.array([p.x,p.y,p.z])-body_position)<.03,'Actual EKF did not track resolved pose')
+            require(out.header.frame_id=='odom' and out.child_frame_id=='chassis','EKF must preserve full chassis frame')
+            require(np.linalg.norm(np.array([p.x,p.y,p.z])-chassis_position)<.03,'Actual EKF did not track resolved pose')
             p=nav_odom[-1].pose.pose.position
             require(nav_odom[-1].child_frame_id=='base_link' and np.linalg.norm(
-                    np.array([p.x,p.y,p.z])-(body_position+world_R_body@np.array([0.,0.,.1])))<.03,
-                    'Nav2 odometry used footprint reference instead of chassis reference')
+                    np.array([p.x,p.y,p.z])-chassis_position)<.03,
+                    'Nav2 odometry did not preserve chassis reference')
             covariance=np.array(resolved[-1].pose.covariance).reshape(6,6)
             require(np.linalg.eigvalsh(covariance).min()>0 and np.linalg.norm(covariance[:3,3:])>1e-5,
                     'Lever-arm pose covariance was not propagated')
             owners={tf.child_frame_id for group in transforms for tf in group.transforms}
-            require(owners=={'big_gimbal_yaw','base_footprint'},'Unexpected dynamic TF authority '+str(owners))
+            require(owners=={'big_gimbal_yaw','base_footprint','chassis'},'Unexpected projected TF authority '+str(owners))
+            projected={tf.child_frame_id:tf for group in transforms for tf in group.transforms}
+            footprint_tf=projected['base_footprint'].transform
+            require(abs(footprint_tf.translation.z)<1e-6 and abs(footprint_tf.rotation.x)<1e-6 and
+                    abs(footprint_tf.rotation.y)<1e-6,'base_footprint projection is not planar')
+            chassis_tf=projected['chassis'].transform
+            require(abs(chassis_tf.translation.z)>.05,'chassis residual lost 6DoF height')
             for mode in ['stale','wrong_frame','nan','zero_cov','indefinite_cov']:
                 enabled['mode']=mode
                 require(wait(lambda:not health['lio'],.5),'Illegal pose kept resolver healthy: '+mode)

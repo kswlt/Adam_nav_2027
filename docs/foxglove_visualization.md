@@ -35,7 +35,7 @@ ws://192.168.1.145:8765
 | 冻结地图输入 | `/localization/frozen_map` | `map`，需要定位链发布 |
 | 可视化 PCD 地图 | `/visualization/map_cloud` | 启动参数指定的 `map_frame` |
 | 原始 LIO 位姿 | `/lio/sensor_odometry` | `odom → front_mid360_imu` |
-| 底盘状态 | `/state/chassis` | `odom → base_footprint` |
+| 底盘状态 | `/state/chassis` | 完整 `odom → chassis` 状态；平面 TF 由 projection 发布 |
 | Nav2 输出 | `/odom` | `odom → base_link` |
 | LaserScan 障碍物输入 | `/scan` | `base_link`，由 guarded MID-360 点云转换 |
 | 局部 Costmap | `/local_costmap/costmap` | `odom`，检查实时障碍物层和膨胀层 |

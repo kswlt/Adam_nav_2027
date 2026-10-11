@@ -18,13 +18,16 @@
 
 ```text
 map -> odom                 MapOdomManager
-odom -> base_footprint      ChassisState / robot_localization
-base_footprint -> chassis   static calibration
+odom -> base_footprint      base_footprint_projection
+base_footprint -> chassis   base_footprint_projection (dynamic 6DoF residual)
 chassis -> big_gimbal_yaw   gimbal state
 big_gimbal_yaw -> lidar     CalibrationBundle
 ```
 
-重定位只能修正 `map -> odom`，不得重置 Point-LIO 或跳变 `odom -> base_footprint`。
+robot_localization 保留完整 `odom -> chassis` 状态并输出 `/state/chassis`，不直接发布 TF；
+base_footprint_projection 将同一时刻的 chassis 状态投影为平面 `odom -> base_footprint`，
+并发布 `base_footprint -> chassis` 的动态 z/roll/pitch 残差。重定位只能修正 `map -> odom`，
+不得重置 Point-LIO 或跳变 `odom -> base_footprint`。
 
 ## Stable Baseline
 

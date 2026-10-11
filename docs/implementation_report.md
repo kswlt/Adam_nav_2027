@@ -13,6 +13,11 @@
 - `e022c44`：MapBundle draft 清单增加真实二进制 XYZ PCD、输入记录、pose ID 和有限值校验；`smoke_map_bundle.py` 覆盖损坏 PCD 拒绝。
 - `1d8a89a`：回环 `overlap_fraction()` 复用 small_gicp KdTree，保持原采样和 0.2 m 物理阈值；`rm_nav_mapping` 构建及 `smoke_offline_mapping.py` 通过。
 
+随后完成 A 阶段 TF 语义收口：`robot_localization` 保留完整 `odom→chassis` 6DoF 状态，新增
+`base_footprint_projection` 发布平面 `odom→base_footprint` 和动态
+`base_footprint→chassis` 残差；`smoke_local_state.py` 已验证 z/roll/pitch 不污染平面 frame，
+并覆盖编码器、时间、协方差和源位姿断流。对应实车云台/底盘组合运动仍未验证。
+
 ## P0/P1 - Initial workspace skeleton
 
 状态：完成本地文件落地，远端首次构建通过。

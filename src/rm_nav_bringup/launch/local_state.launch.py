@@ -42,8 +42,8 @@ def nodes(context):
     lio_input = {'lidar_type':'livox_pointcloud2',
                  'lidar_topic':'/sensors/front_mid360/guarded_points'} if raw_guard else {}
     ekf={'use_sim_time':sim,'frequency':50.0,'sensor_timeout':0.2,'two_d_mode':False,
-         'publish_tf':True,'map_frame':'map','odom_frame':'odom',
-         'base_link_frame':frames['base_footprint'],'world_frame':'odom',
+         'publish_tf':False,'map_frame':'map','odom_frame':'odom',
+         'base_link_frame':frames['chassis'],'world_frame':'odom',
          'pose0':'/state/lio_pose','pose0_config':[True]*6+[False]*9,
          'pose0_differential':False,'pose0_relative':False,'pose0_queue_size':5,
          'print_diagnostics':True}
@@ -74,13 +74,16 @@ def nodes(context):
              remappings=[('/Odometry','/lio/sensor_odometry'),('/cloud_registered','/lio/deskewed_odom_cloud')],output='screen'),
         Node(package='rm_nav_localization',executable='sensor_pose_resolver',parameters=[{
             'use_sim_time':sim,'calibration_id':bundle['bundle_id'],'sensor_frame':frames['imu'],
-            'body_frame':frames['base_footprint'],'require_encoder_health':not legacy,
+            'body_frame':frames['chassis'],'require_encoder_health':not legacy,
             'require_raw_cloud_health':raw_guard}],output='screen'),
         Node(package='robot_localization',executable='ekf_node',name='chassis_ekf',parameters=[ekf],
              remappings=[('odometry/filtered','/state/chassis')],output='screen'),
+        Node(package='rm_nav_localization',executable='base_footprint_projection',parameters=[{
+            'use_sim_time':sim,'odom_frame':'odom','footprint_frame':frames['base_footprint'],
+            'chassis_frame':frames['chassis']}],output='screen'),
         Node(package='rm_nav_localization',executable='chassis_state_bridge',parameters=[{
             'use_sim_time':sim,'calibration_id':bundle['bundle_id'],
-            'state_reference_frame':frames['base_footprint']}],output='screen'),
+            'state_reference_frame':frames['chassis']}],output='screen'),
         Node(package='rm_nav_sensors',executable='lio_observation_adapter',parameters=[{
             'use_sim_time':sim,'calibration_id':bundle['bundle_id'],'sensor_frame':frames['lidar']}],output='screen'),
         Node(package='rm_nav_localization',executable='observation_submap',parameters=[{

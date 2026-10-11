@@ -13,7 +13,7 @@ ASUS 工作区 `/home/asus/nav_2027/rm_nav_v2` 另有未提交的
 
 | 功能 | 代码位置与当前实现 | 软件测试 | 真实硬件测试 | 当前判定与下一步 |
 | --- | --- | --- | --- | --- |
-| TF 拓扑和唯一发布者 | `src/rm_nav_bringup/launch/local_state.launch.py`；`scripts/gimbal_tf.py`；`map_odom_manager_node.cpp` | `smoke_local_state.py`、TF smoke 已通过；LIO 不发布 TF，EKF 发布 odom 链，MapOdomManager 独占 map→odom | 未完成云台旋转、底盘运动、断流组合测试 | **软件通过 / 硬件 BLOCKED**；需要实测编码器和完整 TF authority 录包 |
+| TF 拓扑和唯一发布者 | `local_state.launch.py`、`gimbal_tf.py`、`base_footprint_projection_node.cpp`、`map_odom_manager_node.cpp` | `smoke_local_state.py` 已验证 EKF 输出完整 chassis、投影后的 base_footprint 平面性和唯一 TF authority；MapOdomManager 独占 map→odom | 未完成云台旋转、底盘运动、断流组合测试 | **软件通过 / 硬件 BLOCKED**；需要实测编码器和完整 TF authority 录包 |
 | CalibrationBundle 门 | `rm_nav_frames/config/local_state_calibration.template.yaml`、`validate_calibration_bundle.py`、`local_state.launch.py` | 未 verified Bundle 会拒绝；legacy 需要显式参数 | 当前仅使用 legacy 原版值联调，没有实测 Bundle | **软件通过 / 生产 BLOCKED**；测量四段外参、零位、方向和时钟误差 |
 | 源时间 SE(3) resolver | `sensor_pose_resolver_node.cpp` | 检查 frame、单调时间、年龄、协方差正定、精确时间 TF 和质量门健康 | MID-360 静止回放通过；动态云台时间覆盖未验证 | **软件通过 / 动态 NOT VERIFIED**；采集云台往复和底盘运动数据 |
 | 6DoF 状态与 Nav2 参考点 | `chassis_state_bridge_node.cpp`、robot_localization 参数生成 | `two_d_mode=false`，保留 z/roll/pitch；参考点变换和协方差检查有单测 | 没有轮速、底盘 IMU 或实际停车反馈 | **软件通过 / 硬件 BLOCKED**；接入真实状态后再确认参考点和速度方向 |

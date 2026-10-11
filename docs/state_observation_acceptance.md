@@ -4,9 +4,10 @@
 
 ## 状态与运动联锁
 
-`chassis_state_bridge` 将 `/state/chassis` 的 odom→base_footprint 状态转换为
-Nav2 `/odom` 的 odom→base_link 状态。标定必须显式指定，两参考点之间必须为静态 TF。
-桥不发布 TF；odom→base_footprint 仍只有 robot_localization 一个发布者。
+`chassis_state_bridge` 将 EKF 输出的完整 odom→chassis 状态转换为 Nav2 `/odom` 的
+odom→base_link 状态。标定必须显式指定，chassis→base_link 为静态别名。
+桥不发布 TF；平面 odom→base_footprint 和动态 base_footprint→chassis 由
+`base_footprint_projection` 唯一发布。
 
 完整转换包含旋转、平移杠杆臂、角速度导致的参考点线速度和两个 6×6 协方差。
 单元测试通过已知偏心/旋转速度案例及六维有限差分 Jacobian 验证。

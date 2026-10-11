@@ -143,7 +143,8 @@ MPPI Omni 是技术路线的早期可运行基线，不替代最终 TDT/Omni PID
 2. 原串口 RX 没有独立测量速度、底盘 IMU或绝对云台编码器。
    `/contact_angle` 不能代替 `/hardware/gimbal_joint_states` 的绝对角。
    `/hardware/measured_twist` 需要真实适配，EKF 估计速度不是实测停车反馈。
-3. `map→odom` 由 MapOdomManager 独占；`odom→base_footprint` 由 robot_localization 独占。
+3. `map→odom` 由 MapOdomManager 独占；robot_localization 输出完整 `odom→chassis` 状态，
+   `base_footprint_projection` 独占发布平面 `odom→base_footprint` 和动态 chassis 残差。
    LIO 只发布原始传感器位姿；不发布竞争 TF。重定位不重置 LIO/odom。
 4. resolver 必须按源时刻查询云台外参，保留完整 SE(3) 和协方差；不回退到最新 TF。
    未实测的 CalibrationBundle 模板不能改成 verified 冒充实测。

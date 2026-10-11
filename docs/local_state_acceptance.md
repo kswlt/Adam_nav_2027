@@ -20,7 +20,7 @@ verified 只是显式配置声明，需要实际测量与审核，不是程序�
 同一个 bundle 提供静态 TF、云台零位及 IMU→LiDAR 外参，覆盖上游参数文件中外参，
 关闭上游在线外参估计，避免两套标定真值。
 
-TF：base_footprint→chassis（静态）→big_gimbal_yaw（编码器动态）→IMU→LiDAR（静态）；
+TF：base_footprint→chassis（投影动态）→big_gimbal_yaw（编码器动态）→IMU→LiDAR（静态）；
 base_link 是 chassis 参考点的静态别名。
 上游 LIO 不发布 TF，resolver 也不发布 TF，唯一 odom→base_footprint 来自 EKF。
 输出 `/state/chassis` 是完整位姿/速度/covariance 的 Odometry；参考点桥已接入

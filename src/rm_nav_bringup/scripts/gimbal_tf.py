@@ -34,8 +34,9 @@ class GimbalTF(Node):
         self.stamp = 0
         self.received = 0.0
         self.valid = False
-        static = [self.transform('footprint_frame','chassis_frame','footprint_to_chassis'),
-                  self.transform('yaw_frame','imu_frame','yaw_to_imu'),
+        # base_footprint -> chassis is dynamic and is projected from the full
+        # 6DoF EKF state; do not freeze roll/pitch/z in a static transform.
+        static = [self.transform('yaw_frame','imu_frame','yaw_to_imu'),
                   self.transform('imu_frame','lidar_frame','imu_to_lidar')]
         # Nav2's base_link aliases the calibrated chassis reference, not the yawing sensor.
         alias = TransformStamped()
