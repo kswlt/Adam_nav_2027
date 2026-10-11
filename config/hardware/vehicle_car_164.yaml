@@ -31,13 +31,15 @@ sensor_mount:
   nominal_orientation: upright_identity_rotation
   lateral_offset_m: 0.08
   lateral_direction: left_positive_y
-  longitudinal_offset_m: null
-  height_m: null
-  measured_calibration_required: true
-  note: User confirmed radar is upright and 0.08 m left of vehicle center; x/z and encoder zero remain unmeasured.
+  longitudinal_offset_m: 0.0
+  height_m: 0.2
+  measured_calibration_required: false
+  imu_extrinsic_source: mid360_factory_calibration
+  note: User confirmed radar is upright, centered longitudinally, 0.20 m high, and 0.08 m left of vehicle center. MID-360 factory LiDAR-IMU calibration is used internally by the driver; the chassis mount transform remains a separate vehicle calibration.
 
 startup_policy:
   allow_legacy_static_calibration: false
   enable_physical_output: false
   require_measured_twist: true
   require_drive_ready: true
+  feedback_integration: deferred_by_user
