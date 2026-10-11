@@ -22,6 +22,11 @@ C 阶段地图清单启动校验已补齐：冻结地图 launch 现在拒绝缺�
 published artifact；`create_map_bundle.py` 使用相对 manifest 的可靠路径。MapBundle smoke 和
 冻结地图 GICP 回归均通过，正式场地对齐和生产地图发布仍未完成。
 
+本轮新增软件控制和地图发布能力：Omni PID/YawManager 及 `my_serial_py` XY/yaw 适配器默认关闭
+物理输出；MinimumJerkGenerator 提供版本绑定的五次多项式 TDT 基础；
+`publish_map_bundle.py` 在 verified 官方 alignment 输入下生成 map PCD、occupancy PGM 和 terrain
+参考数据。三者都拒绝缺少真实硬件/官方坐标输入的生产启动。
+
 ## P0/P1 - Initial workspace skeleton
 
 状态：完成本地文件落地，远端首次构建通过。
