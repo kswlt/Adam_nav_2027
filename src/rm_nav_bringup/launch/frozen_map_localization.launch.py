@@ -6,17 +6,36 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 def nodes(context):
+    import hashlib
     import json
     from pathlib import Path
     bundle_path=LaunchConfiguration('map_bundle').perform(context)
     map_version=LaunchConfiguration('map_version').perform(context)
     if bundle_path:
-        bundle=json.loads(Path(bundle_path).resolve(strict=True).read_text())
+        manifest_path=Path(bundle_path).resolve(strict=True)
+        if manifest_path.is_symlink():
+            raise ValueError('MapBundle manifest must not be a symlink')
+        bundle=json.loads(manifest_path.read_text())
         if (bundle.get('status')!='published' or bundle.get('coordinate_frame')!='map' or
                 bundle.get('official_alignment_applied') is not True or
                 bundle.get('publishable_for_frozen_localization') is not True or
                 bundle.get('version')!=map_version):
             raise ValueError('MapBundle is not an aligned published map or version does not match')
+        artifacts=bundle.get('artifacts')
+        if not isinstance(artifacts, dict) or not artifacts:
+            raise ValueError('Published MapBundle must contain artifact references')
+        root=manifest_path.parent
+        for name, entry in artifacts.items():
+            if not isinstance(entry, dict) or not isinstance(entry.get('path'), str) or not isinstance(entry.get('sha256'), str):
+                raise ValueError(f'Invalid MapBundle artifact entry: {name}')
+            path=(root / entry['path']).resolve()
+            try: path.relative_to(root)
+            except ValueError as error: raise ValueError(f'MapBundle artifact escapes manifest directory: {name}') from error
+            if path.is_symlink() or not path.is_file():
+                raise ValueError(f'MapBundle artifact missing or symlinked: {name}')
+            digest=hashlib.sha256(path.read_bytes()).hexdigest()
+            if digest != entry['sha256']:
+                raise ValueError(f'MapBundle artifact hash mismatch: {name}')
     parameters={'map_version':ParameterValue(LaunchConfiguration('map_version'),value_type=str),
                 'use_sim_time':ParameterValue(LaunchConfiguration('use_sim_time'),value_type=bool)}
     return [

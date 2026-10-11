@@ -18,6 +18,10 @@
 `base_footprint→chassis` 残差；`smoke_local_state.py` 已验证 z/roll/pitch 不污染平面 frame，
 并覆盖编码器、时间、协方差和源位姿断流。对应实车云台/底盘组合运动仍未验证。
 
+C 阶段地图清单启动校验已补齐：冻结地图 launch 现在拒绝缺失、越界、软链接或哈希不匹配的
+published artifact；`create_map_bundle.py` 使用相对 manifest 的可靠路径。MapBundle smoke 和
+冻结地图 GICP 回归均通过，正式场地对齐和生产地图发布仍未完成。
+
 ## P0/P1 - Initial workspace skeleton
 
 状态：完成本地文件落地，远端首次构建通过。

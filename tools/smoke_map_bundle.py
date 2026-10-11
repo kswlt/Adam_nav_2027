@@ -30,6 +30,9 @@ def main():
     result=subprocess.run(command,capture_output=True,text=True);require(result.returncode==0,result.stdout+result.stderr)
     data=json.loads(manifest.read_text());require(data['status']=='draft_mapping_odom' and not data['publishable_for_frozen_localization'],'Draft status was not conservative')
     require(data['files']['rebuilt_map.pcd']==hashlib.sha256((source/'rebuilt_map.pcd').read_bytes()).hexdigest(),'PCD hash mismatch')
+    require(data['artifacts']['rebuilt_map.pcd']['path']=='optimized/rebuilt_map.pcd' and
+            (manifest.parent/data['artifacts']['rebuilt_map.pcd']['path']).resolve()==(source/'rebuilt_map.pcd').resolve(),
+            'Manifest artifact path is not relative to manifest')
     repeated=subprocess.run(command,capture_output=True,text=True);require(repeated.returncode!=0,'Manifest overwrite accepted')
     broken=root/'broken';shutil.copytree(source,broken);(broken/'rebuilt_map.pcd').unlink()
     rejected=subprocess.run(['python3','tools/create_map_bundle.py','--optimized-dir',str(broken),'--output',str(root/'broken.json')],capture_output=True,text=True)

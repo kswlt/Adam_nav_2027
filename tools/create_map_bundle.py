@@ -81,15 +81,18 @@ def main():
         raise ValueError('input_hashes.json IDs do not match optimized poses')
     point_count = validate_binary_xyz_pcd(map_pcd)
     pcd_hash=sha256(map_pcd); version='mapping-odom-'+pcd_hash[:16]
+    manifest_root = output.parent.resolve()
+    def reference(path):
+        return os.path.relpath(path.resolve(), manifest_root)
     artifacts = {
-        'rebuilt_map.pcd': {'path': 'rebuilt_map.pcd', 'sha256': pcd_hash},
-        'optimized_poses.json': {'path': 'optimized_poses.json', 'sha256': sha256(poses)},
-        'loop_edges.json': {'path': 'loop_edges.json', 'sha256': sha256(loops)},
-        'input_hashes.json': {'path': 'input_hashes.json', 'sha256': sha256(hashes)},
+        'rebuilt_map.pcd': {'path': reference(map_pcd), 'sha256': pcd_hash},
+        'optimized_poses.json': {'path': reference(poses), 'sha256': sha256(poses)},
+        'loop_edges.json': {'path': reference(loops), 'sha256': sha256(loops)},
+        'input_hashes.json': {'path': reference(hashes), 'sha256': sha256(hashes)},
     }
     manifest={'schema':1,'status':'draft_mapping_odom','version':version,'coordinate_frame':'mapping_odom',
-              'official_alignment_applied':False,'localization_map':map_pcd.name,'base_occupancy':'',
-              'terrain_reference':'','semantic_terrain':'','metadata':'optimized_poses.json',
+              'official_alignment_applied':False,'localization_map':artifacts['rebuilt_map.pcd']['path'],'base_occupancy':'',
+              'terrain_reference':'','semantic_terrain':'','metadata':artifacts['optimized_poses.json']['path'],
               'files':{name:item['sha256'] for name,item in artifacts.items()}, 'artifacts':artifacts,
               'pose_count':len(poses_data),'point_count':point_count,'loop_count':len(loop_data),'input_frame_count':len(hash_data),
               'source':'rm_nav_mapping/offline_graph_optimizer','publishable_for_frozen_localization':False}
