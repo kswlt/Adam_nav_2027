@@ -10,7 +10,9 @@ network:
   wifi_ip: 192.168.1.164
   lidar_interface: enp86s0
   lidar_host_ip: 192.168.1.50
-  lidar_ip: 192.168.1.152
+  lidar_ip: null
+  lidar_ip_status: replaced_sensor_pending_discovery
+  previous_lidar_ip: 192.168.1.152
   lidar_route: 192.168.1.152/32
 
 serial:

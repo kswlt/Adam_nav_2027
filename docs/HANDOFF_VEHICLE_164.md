@@ -32,7 +32,7 @@
 | ROS | ROS 2 Jazzy |
 | 车载 Wi-Fi | `192.168.1.164` |
 | 雷达网卡 | `enp86s0`，配置地址 `192.168.1.50/32` |
-| MID-360 | `192.168.1.152` |
+| MID-360 | 用户确认已换新雷达；实际 IP 待发现，`192.168.1.152` 是旧设备地址 |
 | 雷达安装 | 正装；车体中心左侧 80 mm；纵向 0 mm；高度 200 mm |
 | 串口 | `/dev/ttyUSB0`，Silicon Labs CP2102，115200 baud |
 | 串口协议 | 原版 `my_serial_py`，54 字节 TX、26 字节 RX、CRC |
@@ -79,6 +79,9 @@ source /home/asus/nav_2027_vehicle_config_164/workspace/tools/vehicle_164_env.ba
 ```
 
 ## 6. 雷达启动前检查
+
+**新雷达 IP 未确认前，不执行下面的旧地址启动示例。** JSON 与 /32 路由中的
+192.168.1.152 仅保留旧配置，必须先按实际新地址更新。见 [网络诊断](vehicle_164_network_diagnosis.md)。
 
 ```bash
 ip -brief addr show enp86s0
