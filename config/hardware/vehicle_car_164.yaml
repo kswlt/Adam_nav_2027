@@ -1,0 +1,43 @@
+schema_version: 1
+profile_id: vehicle-car-164
+status: partial_hardware_profile
+platform: ASUS NUC 15 Pro on vehicle
+ros_distro: humble
+vehicle_model: omni_single_yaw
+coordinate_convention: REP-103; x-forward, y-left, z-up
+
+network:
+  wifi_ip: 192.168.1.164
+  lidar_interface: enp86s0
+  lidar_host_ip: 192.168.1.50
+  lidar_ip: 192.168.1.152
+  lidar_route: 192.168.1.152/32
+
+serial:
+  package: my_serial_py
+  device: /dev/ttyUSB0
+  usb_model: Silicon_Labs_CP2102
+  baud_rate: 115200
+  tx_semantics: planar_xy_plus_yaw_target_degree
+  physical_output_enabled: false
+
+vehicle:
+  drive_type: omni
+  yaw_control: single_yaw_target
+  yaw_rate_command_supported: false
+
+sensor_mount:
+  sensor_frame: front_mid360
+  nominal_orientation: upright_identity_rotation
+  lateral_offset_m: 0.08
+  lateral_direction: left_positive_y
+  longitudinal_offset_m: null
+  height_m: null
+  measured_calibration_required: true
+  note: User confirmed radar is upright and 0.08 m left of vehicle center; x/z and encoder zero remain unmeasured.
+
+startup_policy:
+  allow_legacy_static_calibration: false
+  enable_physical_output: false
+  require_measured_twist: true
+  require_drive_ready: true
