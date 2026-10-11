@@ -65,9 +65,9 @@ def generate_launch_description():
     nodes.append(Node(
         package='rm_nav_control', executable='omni_pid_adapter', name='omni_pid_adapter',
         output='screen', condition=IfCondition(LaunchConfiguration('enable_omni_adapter')),
-        parameters=[{'use_sim_time': sim_time,
+        parameters=[LaunchConfiguration('omni_params_file'), {'use_sim_time': sim_time,
                      'enable_physical_output': ParameterValue(LaunchConfiguration('enable_physical_output'), value_type=bool),
-                     'require_measured_feedback': True}]))
+                     'require_measured_feedback': ParameterValue(LaunchConfiguration('require_measured_feedback'), value_type=bool)}]))
     nodes.append(Node(
         package='nav2_lifecycle_manager', executable='lifecycle_manager',
         name='lifecycle_manager_navigation', output='screen',
@@ -82,6 +82,10 @@ def generate_launch_description():
                               description='启动 Omni PID/YawManager 到 my_serial_py 的安全适配器'),
         DeclareLaunchArgument('enable_physical_output', default_value='false',
                               description='必须在真实反馈、急停和人工批准后才允许 true'),
+        DeclareLaunchArgument('omni_params_file', default_value=os.path.join(
+            get_package_share_directory('rm_nav_bringup'), 'config', 'omni_pid_adapter.yaml')),
+        DeclareLaunchArgument('require_measured_feedback', default_value='true',
+                              description='false 使用纯速度前馈；不伪造轮速，drive_ready 和真实 odom 仍必需'),
         DeclareLaunchArgument(
             'enable_mid360_scan', default_value='false',
             description='启用 MID-360 PointCloud2 到 LaserScan 适配；需要已验证 TF'),

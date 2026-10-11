@@ -1,9 +1,14 @@
 omni_pid_adapter:
   ros__parameters:
     base_frame: base_link
+    odom_frame: odom
     enable_physical_output: false
     require_measured_feedback: true
     feedback_timeout: 0.2
+    command_timeout: 0.25
+    odom_timeout: 0.25
+    drive_ready_timeout: 0.25
+    max_planar_speed: 0.5
     vx.kp: 0.0
     vx.ki: 0.0
     vx.kd: 0.0
@@ -19,4 +24,4 @@ omni_pid_adapter:
     wz.kd: 0.0
     wz.integral_limit: 1.0
     wz.output_limit: 0.2
-    yaw.max_rate: 3.14
+    yaw.max_rate: 1.0

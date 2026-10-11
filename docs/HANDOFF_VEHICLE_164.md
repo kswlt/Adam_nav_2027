@@ -162,3 +162,16 @@ ros2 launch my_serial_py serial.launch.py \
 - 本车 `x/y/z` 来自用户提供尺寸，不标记为实测 verified CalibrationBundle。
 - 系统 ROS 依赖安装会修改 /opt/ros 环境；隔离的是源码、构建产物和运行 Domain，不能声称系统依赖完全隔离。
 - Omni 适配器、真实反馈及 HardwareInterface 的运行验收尚未完成，编译通过不能证明可实车导航。
+
+## 12. Omni 适配器接续
+
+已完成空反馈解引用、命令/odom/就绪超时、最终向量限幅和零速/yaw 重置修复。
+无轮速模式为纯前馈，仍保留真实 odom 与 drive_ready 要求；不是闭环 PID 已调参。
+车载 13 包构建通过，41 项测试 0 错误、0 失败、1 跳过；新增回归在 Domain 199、
+`/test_only/omni/*` 下执行，未打开串口。见 [Omni 验收](omni_adapter_acceptance.md)。
+当前 my_serial_py 保留旧 yaw 角，平移超时不能保证旋转停止，必须核验下位机停止语义。
+
+网络检查：到 192.168.1.152 的 /32 路由走 enp86s0、源地址 192.168.1.50；
+Wi-Fi SSH 保持正常。ethtool 显示 Link detected: no、速度未知，网卡收发计数为 0。
+重新协商未恢复；未修改 Wi-Fi、持久 IP 配置或重载网卡驱动。雷达实际 IP 尚不能确认，
+需要先恢复物理链路。不能只凭雷达通电判定以太网正常。
