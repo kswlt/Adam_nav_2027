@@ -10,4 +10,15 @@ Controller baseline, Omni PID and yaw authority.
 缺少真实反馈或 drive_ready 时不发布任何物理命令。它不把 EKF 估计速度冒充实测速度。
 见 [输出门验收](../../docs/motion_gate_acceptance.md)。
 
+在 MPPI launch 中启动软件适配器：
+
+```bash
+ros2 launch rm_nav_bringup mppi_baseline.launch.py \
+  enable_omni_adapter:=true \
+  enable_physical_output:=false
+```
+
+只有真实反馈、STM32 watchdog、独立急停和人工批准都完成后，才允许单独评审
+`enable_physical_output:=true`；默认配置不会发布物理底盘命令。
+
 `CommandSynthesizer` clamps world-frame velocity commands and emits zero during a safety gate. It does not own serial transport or strategy policy.

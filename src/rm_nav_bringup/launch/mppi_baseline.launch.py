@@ -63,6 +63,12 @@ def generate_launch_description():
         package='rm_nav_control', executable='motion_gate', name='motion_gate',
         output='screen', parameters=[{'use_sim_time': sim_time}]))
     nodes.append(Node(
+        package='rm_nav_control', executable='omni_pid_adapter', name='omni_pid_adapter',
+        output='screen', condition=IfCondition(LaunchConfiguration('enable_omni_adapter')),
+        parameters=[{'use_sim_time': sim_time,
+                     'enable_physical_output': ParameterValue(LaunchConfiguration('enable_physical_output'), value_type=bool),
+                     'require_measured_feedback': True}]))
+    nodes.append(Node(
         package='nav2_lifecycle_manager', executable='lifecycle_manager',
         name='lifecycle_manager_navigation', output='screen',
         parameters=[{'use_sim_time': sim_time, 'autostart': autostart,
@@ -72,6 +78,10 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument('autostart', default_value='true'),
         DeclareLaunchArgument('enable_task_supervisor', default_value='true'),
+        DeclareLaunchArgument('enable_omni_adapter', default_value='false',
+                              description='启动 Omni PID/YawManager 到 my_serial_py 的安全适配器'),
+        DeclareLaunchArgument('enable_physical_output', default_value='false',
+                              description='必须在真实反馈、急停和人工批准后才允许 true'),
         DeclareLaunchArgument(
             'enable_mid360_scan', default_value='false',
             description='启用 MID-360 PointCloud2 到 LaserScan 适配；需要已验证 TF'),

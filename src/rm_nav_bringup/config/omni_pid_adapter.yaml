@@ -1,0 +1,22 @@
+omni_pid_adapter:
+  ros__parameters:
+    base_frame: base_link
+    enable_physical_output: false
+    require_measured_feedback: true
+    feedback_timeout: 0.2
+    vx.kp: 0.0
+    vx.ki: 0.0
+    vx.kd: 0.0
+    vx.integral_limit: 1.0
+    vx.output_limit: 0.2
+    vy.kp: 0.0
+    vy.ki: 0.0
+    vy.kd: 0.0
+    vy.integral_limit: 1.0
+    vy.output_limit: 0.2
+    wz.kp: 0.0
+    wz.ki: 0.0
+    wz.kd: 0.0
+    wz.integral_limit: 1.0
+    wz.output_limit: 0.2
+    yaw.max_rate: 3.14
