@@ -10,6 +10,8 @@
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
   <depend>nav_msgs</depend>
+  <depend>rm_nav_planning</depend>
+  <depend>rm_nav_interfaces</depend>
   <test_depend>rclpy</test_depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>
