@@ -1,36 +1,66 @@
 #include "rm_nav_planning/minimum_jerk.hpp"
-
+#include <limits>
 namespace rm_nav_planning {
-static double wrap_yaw(double angle)
+namespace {
+constexpr double kTwoPi = 6.28318530717958647692;
+constexpr std::size_t kMaxSamples = 200000;
+double minimum_duration(double distance, double velocity, double acceleration, double jerk)
 {
-  constexpr double pi=3.14159265358979323846;
-  while(angle>pi) angle-=2*pi;
-  while(angle<-pi) angle+=2*pi;
-  return angle;
+  // Exact extrema of normalized quintic derivatives h', h'', h'''.
+  return std::max({1.875 * distance / velocity,
+    std::sqrt((10.0 / std::sqrt(3.0)) * distance / acceleration),
+    std::cbrt(60.0 * distance / jerk)});
 }
-bool MinimumJerkGenerator::generate(const Eigen::Vector3d & start, const Eigen::Vector3d & goal, double duration_s,
-                                    std::uint64_t id, const std::string & map_version, const std::string & environment,
-                                    std::int64_t now_ns, TimedTrajectory & output) const {
+}
+bool MinimumJerkGenerator::generate(
+    const Eigen::Vector3d & start, const Eigen::Vector3d & goal, double duration_s,
+    std::uint64_t id, const std::string & map_version, const std::string & environment,
+    std::int64_t now_ns, TimedTrajectory & output) const
+{
   if (!start.allFinite() || !goal.allFinite() || map_version.empty() || environment.empty() ||
-      !std::isfinite(limits_.max_velocity) || limits_.max_velocity<=0 || !std::isfinite(limits_.max_acceleration) || limits_.max_acceleration<=0 ||
-      !std::isfinite(limits_.max_jerk) || limits_.max_jerk<=0 || !std::isfinite(limits_.sample_period) || limits_.sample_period<=0) return false;
-  Eigen::Vector3d delta=goal-start; delta[2]=wrap_yaw(delta[2]);
-  if (!std::isfinite(duration_s) || duration_s<=0) duration_s=std::max(0.5, delta.head<2>().norm()/limits_.max_velocity*1.5);
-  if (duration_s<=0 || duration_s>3600) return false;
-  const std::size_t count=static_cast<std::size_t>(std::ceil(duration_s/limits_.sample_period))+1;
-  output={}; output.trajectory_id=id; output.map_bundle_version=map_version; output.environment_version=environment;
-  output.generated_at_ns=now_ns; output.valid_until_ns=now_ns+static_cast<std::int64_t>((duration_s+0.5)*1e9); output.points.reserve(count);
-  for(std::size_t i=0;i<count;++i){
-    const double t=std::min(duration_s, i*limits_.sample_period), s=t/duration_s, s2=s*s, s3=s2*s, s4=s3*s2, s5=s4*s;
-    const double h=10*s3-15*s4+6*s5, dh=(30*s2-60*s3+30*s4)/duration_s;
-    const double ddh=(60*s-180*s2+120*s3)/(duration_s*duration_s);
-    const double dddh=(60-360*s+360*s2)/(duration_s*duration_s*duration_s);
-    TrajectoryPoint point; point.t_from_start_s=t; point.pose=start+delta*h; point.pose[2]=wrap_yaw(start[2]+delta[2]*h);
-    point.velocity=delta*dh; point.clearance_m=0.0;
-    if (point.velocity.head<2>().norm()>limits_.max_velocity+1e-6 || std::abs(point.velocity[2])>limits_.max_velocity+1e-6 ||
-        (delta*ddh).norm()>limits_.max_acceleration+1e-6 || (delta*dddh).norm()>limits_.max_jerk+1e-6) return false;
-    output.points.push_back(point);
+      now_ns < 0 || !std::isfinite(duration_s)) return false;
+  for (double value : {limits_.max_velocity, limits_.max_acceleration, limits_.max_jerk,
+      limits_.sample_period, limits_.max_yaw_rate, limits_.max_yaw_acceleration,
+      limits_.max_yaw_jerk}) {
+    if (!std::isfinite(value) || value <= 0.0) return false;
   }
-  return output.valid_at(now_ns,map_version,environment);
+  Eigen::Vector3d delta = goal - start;
+  delta[2] = std::remainder(std::remainder(goal[2], kTwoPi) -
+    std::remainder(start[2], kTwoPi), kTwoPi);
+  if (!delta.allFinite()) return false;
+  const double required = std::max(
+    minimum_duration(delta.head<2>().stableNorm(), limits_.max_velocity,
+      limits_.max_acceleration, limits_.max_jerk),
+    minimum_duration(std::abs(delta[2]), limits_.max_yaw_rate,
+      limits_.max_yaw_acceleration, limits_.max_yaw_jerk));
+  if (duration_s <= 0.0) duration_s = std::max(0.5, required);
+  if (!std::isfinite(required) || duration_s < required || duration_s > 3600.0) return false;
+  const double intervals = std::ceil(duration_s / limits_.sample_period);
+  if (!std::isfinite(intervals) || intervals > kMaxSamples - 1) return false;
+  const std::size_t count = static_cast<std::size_t>(std::max(1.0, intervals)) + 1;
+  const long double lifetime_ns = std::ceil((static_cast<long double>(duration_s) + 0.5L) * 1e9L);
+  if (lifetime_ns > static_cast<long double>(std::numeric_limits<std::int64_t>::max()) - now_ns)
+    return false;
+  TimedTrajectory candidate;
+  candidate.trajectory_id = id;
+  candidate.map_bundle_version = map_version;
+  candidate.environment_version = environment;
+  candidate.generated_at_ns = now_ns;
+  candidate.valid_until_ns = now_ns + static_cast<std::int64_t>(lifetime_ns);
+  candidate.points.reserve(count);
+  for (std::size_t i = 0; i < count; ++i) {
+    const double s = static_cast<double>(i) / (count - 1);
+    const double h = s*s*s*(10.0 + s*(-15.0 + 6.0*s));
+    const double dh = 30.0*s*s*(1.0-s)*(1.0-s) / duration_s;
+    TrajectoryPoint point;
+    point.t_from_start_s = s * duration_s;
+    point.pose = start + delta * h;
+    point.pose[2] = std::remainder(std::remainder(start[2], kTwoPi) + delta[2] * h, kTwoPi);
+    point.velocity = delta * dh;
+    candidate.points.push_back(point);
+  }
+  if (!candidate.valid_at(now_ns, map_version, environment)) return false;
+  output = std::move(candidate);
+  return true;
 }
 }  // namespace rm_nav_planning

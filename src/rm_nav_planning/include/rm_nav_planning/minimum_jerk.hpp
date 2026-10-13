@@ -4,7 +4,10 @@
 #include <cmath>
 
 namespace rm_nav_planning {
-struct MinimumJerkLimits { double max_velocity{1.0}, max_acceleration{2.0}, max_jerk{10.0}, sample_period{0.02}; };
+struct MinimumJerkLimits {
+  double max_velocity{1.0}, max_acceleration{2.0}, max_jerk{10.0}, sample_period{0.02};
+  double max_yaw_rate{1.0}, max_yaw_acceleration{2.0}, max_yaw_jerk{10.0};
+};
 
 class MinimumJerkGenerator {
 public:
