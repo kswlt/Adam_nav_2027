@@ -1,5 +1,9 @@
 # Adam_nav_2027
 
+本机离线开发与最新缺口见 [2026-10-13 本机验收记录](docs/LOCAL_DEVELOPMENT_20261013.md)。
+WSL Ubuntu 24.04/Jazzy 可执行 `bash tools/local_build_test.bash offline`；这只构建明确列出的 9 个包，
+不代表 TDT、HardwareInterface、完整定位建图或实车导航已完成。
+
 面向 ASUS NUC 15 Pro、Ubuntu 24.04、ROS 2 Jazzy 的 RoboMaster 全向哨兵导航框架。
 架构依据 `RM_Nav_V2` 技术方案 v2.5，通信复用此前实车运行的 `my_serial_py`。
 构建与运行验证在 `asus@192.168.1.145` 完成，代码同步至
