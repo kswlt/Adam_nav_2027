@@ -139,6 +139,22 @@ class AdapterRegression(unittest.TestCase):
         self.assertEqual(self.exercise(), [])
         self.assertEqual(self.angles, [])
 
+    def test_not_ready_command_is_not_cached_across_ready_recovery(self):
+        self.start()
+        self.assertGreater(self.exercise()[-1].linear.x, 0)
+        # Publish commands continuously while ready=false, including one immediately
+        # before ready becomes true. Receipt must reject them without waiting for tick().
+        self.assert_stopped(self.exercise(mode='not_ready'))
+        stamp=self.node.get_clock().now().to_msg()
+        old=TwistStamped(); old.header.stamp=stamp; old.header.frame_id='base_link'
+        old.twist.linear.x=.1
+        self.cmd.publish(old)
+        self.assert_stopped(self.exercise(command=False))
+        # Delayed delivery from the old epoch cannot become a new recovery command.
+        self.cmd.publish(old)
+        self.assert_stopped(self.exercise(command=False))
+        self.assertGreater(self.exercise()[-1].linear.x, 0)
+
 
 if __name__ == '__main__':
     unittest.main(argv=[sys.argv[0]])

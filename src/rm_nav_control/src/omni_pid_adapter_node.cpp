@@ -41,13 +41,19 @@ public:
     if (!require_feedback_) RCLCPP_WARN(get_logger(), "Measured feedback disabled: velocity feedforward only; PID correction bypassed.");
     safe_sub_ = create_subscription<geometry_msgs::msg::TwistStamped>("/nav/cmd_vel_safe", 1,
       [this](geometry_msgs::msg::TwistStamped::ConstSharedPtr m) {
-        if (valid_twist(*m, command_timeout_)) { safe_ = *m; safe_at_ = Clock::now(); }
+        const auto at=Clock::now();
+        if (valid_twist(*m, command_timeout_) && drive_ready_ &&
+            recent(ready_at_, ready_timeout_, at) && yaw_valid_ &&
+            recent(odom_at_, odom_timeout_, at) && stamp_fresh(odom_stamp_, odom_timeout_) &&
+            rclcpp::Time(m->header.stamp).nanoseconds() >= ready_epoch_ns_ &&
+            (!require_feedback_ || (feedback_ && recent(feedback_at_, feedback_timeout_, at) &&
+              valid_twist(*feedback_, feedback_timeout_)))) { safe_ = *m; safe_at_ = at; }
         else safe_.reset();
       });
     feedback_sub_ = create_subscription<geometry_msgs::msg::TwistStamped>("/hardware/measured_twist", 1,
       [this](geometry_msgs::msg::TwistStamped::ConstSharedPtr m) {
         if (valid_twist(*m, feedback_timeout_)) { feedback_ = *m; feedback_at_ = Clock::now(); }
-        else feedback_.reset();
+        else { feedback_.reset(); safe_.reset(); }
       });
     odom_sub_ = create_subscription<nav_msgs::msg::Odometry>("/odom", 1,
       [this](nav_msgs::msg::Odometry::ConstSharedPtr m) {
@@ -59,9 +65,16 @@ public:
           current_yaw_ = std::atan2(2*(q.w*q.z+q.x*q.y), 1-2*(q.y*q.y+q.z*q.z));
           odom_stamp_ = m->header.stamp; odom_at_ = Clock::now();
         }
+        else safe_.reset();
       });
     ready_sub_ = create_subscription<std_msgs::msg::Bool>("/hardware/drive_ready", 1,
-      [this](std_msgs::msg::Bool::ConstSharedPtr m) { drive_ready_ = m->data; ready_at_ = Clock::now(); });
+      [this](std_msgs::msg::Bool::ConstSharedPtr m) {
+        if (!m->data || !drive_ready_ || !recent(ready_at_, ready_timeout_, Clock::now())) {
+          safe_.reset();
+          ready_epoch_ns_=now().nanoseconds();
+        }
+        drive_ready_ = m->data; ready_at_ = Clock::now();
+      });
     cmd_pub_ = create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 1);
     yaw_pub_ = create_publisher<std_msgs::msg::Float32>("/cmd_yaw_angle", 1);
     timer_ = create_wall_timer(std::chrono::milliseconds(20), [this]() { tick(); });
@@ -132,6 +145,7 @@ private:
   bool enabled_{false}, require_feedback_{true}, drive_ready_{false}, yaw_valid_{false};
   double feedback_timeout_, command_timeout_, odom_timeout_, ready_timeout_, max_speed_, max_rate_, current_yaw_{0};
   builtin_interfaces::msg::Time odom_stamp_;
+  std::int64_t ready_epoch_ns_{0};
   std::optional<geometry_msgs::msg::TwistStamped> safe_, feedback_;
   Clock::time_point safe_at_{}, feedback_at_{}, odom_at_{}, ready_at_{}, last_{};
   std::unique_ptr<OmniPid> pid_; std::unique_ptr<YawManager> yaw_;
