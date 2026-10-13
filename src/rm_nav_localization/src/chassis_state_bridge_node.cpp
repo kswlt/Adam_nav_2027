@@ -17,6 +17,7 @@ public:
     body_ = declare_parameter("body_frame", "base_link");
     calibration_ = declare_parameter<std::string>("calibration_id", "");
     max_age_ = declare_parameter("max_age", 0.2);
+    require_encoder_=declare_parameter("require_encoder_health",true);
     if (calibration_.empty() || reference_.empty() || body_.empty() || reference_==body_ ||
         !std::isfinite(max_age_) || max_age_<=0) throw std::invalid_argument("Explicit calibration/reference frames required");
     odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("/odom",10);
@@ -30,7 +31,7 @@ public:
     encoder_sub_ = create_subscription<std_msgs::msg::Bool>("/state/gimbal_healthy",10,
       [this](std_msgs::msg::Bool::ConstSharedPtr msg) {
         encoder_=msg->data; encoder_at_=Clock::now();
-        if (!encoder_) { valid_=false; reason_="encoder health lost"; }
+        if (require_encoder_&&!encoder_) { valid_=false; reason_="encoder health lost"; }
       });
     input_ = create_subscription<nav_msgs::msg::Odometry>("/state/chassis",10,
       [this](nav_msgs::msg::Odometry::ConstSharedPtr msg) { receive(*msg); });
@@ -46,7 +47,8 @@ public:
 private:
   using Clock=std::chrono::steady_clock;
   double elapsed(Clock::time_point value) const { return std::chrono::duration<double>(Clock::now()-value).count(); }
-  bool upstream() const { return lio_ && encoder_ && elapsed(lio_at_)<=max_age_ && elapsed(encoder_at_)<=max_age_; }
+  bool upstream() const { return lio_ && elapsed(lio_at_)<=max_age_ &&
+      (!require_encoder_||(encoder_&&elapsed(encoder_at_)<=max_age_)); }
   void receive(const nav_msgs::msg::Odometry & msg)
   {
     try {
@@ -97,7 +99,7 @@ private:
   tf2_ros::TransformListener listener_;
   std::string reference_,body_,calibration_,reason_{"no verified chassis state"};
   double max_age_;
-  bool lio_{false},encoder_{false},valid_{false};
+  bool lio_{false},encoder_{false},valid_{false},require_encoder_{true};
   std::int64_t last_stamp_{0},accepted_stamp_{0};
   Clock::time_point lio_at_{},encoder_at_{},accepted_at_{};
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr input_;

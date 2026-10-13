@@ -1,0 +1,20 @@
+schema_version: 1
+bundle_id: vehicle164-user-mount-mid360-factory-20261013
+status: user_provided_factory_internal
+sensor_mount: fixed_chassis
+source: user_mount_xyz_and_pinned_small_point_lio_mid360_internal_config
+field_calibration_verified: false
+frames:
+  base_footprint: base_footprint
+  chassis: chassis
+  imu: front_mid360_imu
+  lidar: front_mid360
+transforms:
+  # chassis_T_lidar = chassis_T_imu * imu_T_lidar = [0, 0.08, 0.20].
+  # The factory vector maps LiDAR points into the IMU frame; not its inverse.
+  chassis_to_imu:
+    translation: [0.011, 0.10329, 0.15588]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
+  imu_to_lidar:
+    translation: [-0.011, -0.02329, 0.04412]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
