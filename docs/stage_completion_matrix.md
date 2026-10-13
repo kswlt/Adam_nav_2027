@@ -1,5 +1,10 @@
 # P0-P10 验收矩阵
 
+2026-10-13 接续：新增时序轨迹核心、ROS 消息/候选输出节点，修复 Omni 未就绪恢复时旧命令缓存。
+本机 WSL 离线 9 包构建通过，25 tests / 0 failures / 1 skipped；地图回归 8 项通过。
+见 [轨迹跟踪验收](TRAJECTORY_TRACKER_ACCEPTANCE.md)。以下历史矩阵不代表新增模块已完成实车验收；
+TDT 上游、生产 Costmap 快照/命令来源接入、HardwareInterface 实际读写仍未完成，Git 推送受阻。
+
 第一阶段基础自主导航审计矩阵见 [phase1_function_audit.md](phase1_function_audit.md)。
 当前软件闭环可以继续回归，但真实标定、硬件速度/停车反馈、正式地图和独立急停仍是 BLOCKED，
 不能把合成测试或静止回放升级为实车运动验收。

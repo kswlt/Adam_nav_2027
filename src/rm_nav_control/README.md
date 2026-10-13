@@ -2,6 +2,25 @@
 
 Controller baseline, Omni PID and yaw authority.
 
+## 时序轨迹跟踪入口
+
+新增 `trajectory_tracker`，详见 [验收与接续说明](../../docs/TRAJECTORY_TRACKER_ACCEPTANCE.md)。
+它把同一坐标系下的时序轨迹、当前平面位姿转换成 body frame 全向速度：速度前馈 + 位置/yaw 误差修正。
+输入轨迹先经过完整 polygon/栅格验证；环境刷新重新验证；版本变化、超时、误差超限和许可丢失清除旧轨迹。
+默认 `enable_tracking=false`，必须提供真实 `footprint_xy`；没有示例 footprint 冒充实车尺寸。
+
+| 话题 | 类型 | 用途 |
+| --- | --- | --- |
+| `/nav/timed_trajectory` | rm_nav_interfaces/TimedTrajectory | 有界时序候选轨迹 |
+| `/nav/trajectory_environment` | rm_nav_interfaces/TrajectoryEnvironment | 带地图/环境版本的原子栅格快照 |
+| `/odom` | nav_msgs/Odometry | 平面 base 位姿，frame 必须匹配 |
+| `/nav/motion_enable`、`/localization/healthy` | std_msgs/Bool | 持续刷新的许可与健康输入 |
+| `/nav/trajectory_cmd_vel` | geometry_msgs/TwistStamped | 待接入统一检查/运动门的候选速度 |
+| `/nav/trajectory_status` | std_msgs/String | 跟踪状态 |
+
+当前不自动重映射到 `/nav/cmd_vel_checked`、`/cmd_vel`，不启动串口。
+TDT 上游、生产环境快照适配和单一命令来源选择仍需接续，不能将此节点单测通过视作实车闭环完成。
+
 真实 ROS 入口 `motion_gate`：checked 命令经定位健康、运动许可与时间/数值检查后
 输出 safe 命令。默认停车，失效清空缓存，恢复必须接收新命令。
 `omni_pid_adapter` 已提供 Omni PID、YawManager 和 `my_serial_py` 字段适配：输入
@@ -41,3 +60,6 @@ MPPI launch 现在读取 `omni_params_file`（默认 `omni_pid_adapter.yaml`）�
 `omni_pid_adapter_regression` 在独立 ROS Domain 199、localhost discovery 下运行，
 所有话题重映射到 `/test_only/omni/*`，不启动串口。覆盖无反馈模式、最终限幅、
 命令/状态/就绪/轮速超时、非法时间和四元数、恢复不重放及零速请求。
+
+未就绪期间直接拒绝接收运动命令，ready=false 立即清缓存；就绪恢复建立新的命令时间边界，
+延迟到达的旧命令不能在恢复后重放。非法 odom/反馈同样清缓存。

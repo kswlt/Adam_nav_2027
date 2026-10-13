@@ -1,5 +1,11 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-13 本机接续：优先阅读 [轨迹跟踪验收](TRAJECTORY_TRACKER_ACCEPTANCE.md) 和
+[本机开发记录](LOCAL_DEVELOPMENT_20261013.md)。时序轨迹 ROS 候选输出入口已实现，
+Omni 未就绪恢复缓存故障已修复；WSL 9 包构建、25 tests 零失败（1 skipped）。
+没有接通串口或改动车载原代码；TDT 上游、生产环境快照/执行路径、HardwareInterface 仍需接续。
+Git CLI 网络及 kswlt 身份仍阻塞推送，本地补丁和首次失败证据保存在 `log/development_20261013`。
+
 交接日期：2026-10-10。代码基线：以远端 `main` 最新提交为准。
 本文随后独立提交；上面的 SHA 指交接前的已验证代码。
 

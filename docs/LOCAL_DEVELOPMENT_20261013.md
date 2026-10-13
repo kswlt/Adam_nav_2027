@@ -1,5 +1,9 @@
 # 2026-10-13 本机代码开发与验收
 
+后续接续记录见 [轨迹跟踪验收](TRAJECTORY_TRACKER_ACCEPTANCE.md)：已增加时序轨迹核心与 ROS 候选输出入口，
+并修复 Omni 未就绪期间接收命令可能在恢复后短暂重放的问题。最新离线汇总为 25 tests / 0 failures / 1 skipped；
+本文件下面的 23 项为上一轮历史记录。生产 TDT/环境快照/最终执行连接与 HardwareInterface 仍未全部完成。
+
 ## 基线与工作区
 
 - 远端开发分支 `audit-p0-tf-costmap`：`55a2115b9ed1261b26b4eb4aeaee3282560617b2`。

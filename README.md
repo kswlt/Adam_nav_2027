@@ -1,6 +1,7 @@
 # Adam_nav_2027
 
 本机离线开发与最新缺口见 [2026-10-13 本机验收记录](docs/LOCAL_DEVELOPMENT_20261013.md)。
+后续新增的时序轨迹 ROS 入口、接线边界和恢复缓存修复见 [轨迹跟踪验收](docs/TRAJECTORY_TRACKER_ACCEPTANCE.md)。
 WSL Ubuntu 24.04/Jazzy 可执行 `bash tools/local_build_test.bash offline`；这只构建明确列出的 9 个包，
 不代表 TDT、HardwareInterface、完整定位建图或实车导航已完成。
 
