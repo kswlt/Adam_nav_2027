@@ -1,5 +1,9 @@
 # rm_nav_hardware
 
+ROS transport 的读写、状态及命令 watchdog 已实现，见 [HardwareInterface 验收](../../docs/HARDWARE_INTERFACE_ACCEPTANCE.md)。
+默认不允许激活，不打开串口；只消费真实 DriveFeedback，发送隔离候选输出。
+下面早期骨架描述为历史边界，最新实现以该验收文档及实际源码为准。
+
 硬件层的第一阶段实现是原版 `my_serial_py`。本目录记录新框架对硬件的边界，不在第一阶段复制或替换串口协议。
 
 ```text

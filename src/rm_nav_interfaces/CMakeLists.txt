@@ -16,6 +16,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/TrajectoryPoint.msg"
   "msg/TimedTrajectory.msg"
   "msg/TrajectoryEnvironment.msg"
+  "msg/DriveFeedback.msg"
   "srv/RequestRecovery.srv"
   "srv/CommitRecovery.srv"
   "srv/ResumeRecovery.srv"

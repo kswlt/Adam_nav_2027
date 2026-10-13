@@ -11,5 +11,8 @@
   <depend>hardware_interface</depend>
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>
+  <depend>rm_nav_interfaces</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>
