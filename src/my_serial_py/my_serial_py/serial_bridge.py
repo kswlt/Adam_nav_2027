@@ -5,6 +5,8 @@ translation. Yaw is an angle in degrees; angular.z is not sent by this protocol.
 The unchanged serialpy_node.py is retained as provenance and regression input.
 """
 import math
+import os
+from pathlib import Path
 import threading
 import time
 
@@ -12,7 +14,7 @@ import rclpy
 from rclpy.node import Node
 import serial
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Int8, Float32, UInt8, UInt32
+from std_msgs.msg import Bool, Int8, Float32, UInt8, UInt32
 from pb_rm_interfaces.msg import RobotStatus, GameStatus, GameRobotHP, RfidStatus
 
 from my_serial_py.protocol import FeedbackStream, encode_command
@@ -24,8 +26,12 @@ class SerialNode(Node):
         self.serial_port = self.declare_parameter('serial_port', '/dev/ttyUSB0').value
         self.baud_rate = self.declare_parameter('baud_rate', 115200).value
         self.cmd_timeout = self.declare_parameter('cmd_vel_timeout', 0.3).value
+        self.yaw_timeout = self.declare_parameter('yaw_timeout', 0.3).value
+        self.rx_timeout = self.declare_parameter('rx_timeout', 0.3).value
         if not math.isfinite(self.cmd_timeout) or self.cmd_timeout <= 0:
             raise ValueError('cmd_vel_timeout must be positive and finite')
+        if any(not math.isfinite(t) or t <= 0 for t in (self.yaw_timeout, self.rx_timeout)):
+            raise ValueError('Yaw/RX timeouts must be finite and positive')
         self.io_lock = threading.Lock()
         self.serial_conn = None
         self.stop_event = threading.Event()
@@ -35,6 +41,8 @@ class SerialNode(Node):
         self.big_yaw_aligned = 0
         self.latest_x = self.latest_y = 0.0
         self.last_command = None
+        self.last_yaw = self.last_rx = None
+        self.health_pub = self.create_publisher(Bool, '/hardware/serial_healthy', 1)
         self.tx_reserved_fields = [1.0] * 8
         self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
         self.create_subscription(Int8, '/cmd_chassis_mode', self.chassis_mode_callback, 10)
@@ -66,6 +74,7 @@ class SerialNode(Node):
         self.serial_conn = None
         # Do not resume a pre-disconnect motion command on a new connection.
         self.last_command = None
+        self.last_yaw = self.last_rx = None
         self.latest_x = self.latest_y = 0.0
 
     def serial_read_loop(self):
@@ -75,13 +84,17 @@ class SerialNode(Node):
             try:
                 with self.io_lock:
                     if self.serial_conn is None:
+                        self.reject_existing_owner()
                         self.serial_conn = serial.Serial(
-                            self.serial_port, self.baud_rate, timeout=0.1, write_timeout=0.1)
+                            self.serial_port, self.baud_rate, timeout=0.1, write_timeout=0.1,
+                            exclusive=True)
                         stream = FeedbackStream()
                     waiting = self.serial_conn.in_waiting
                     if waiting:
                         data = self.serial_conn.read(min(waiting, 4096))
                 for feedback in stream.feed(data):
+                    with self.io_lock:
+                        self.last_rx = time.monotonic()
                     self.publish_feedback(feedback)
                 self.stop_event.wait(0.005)
             except (serial.SerialException, OSError) as error:
@@ -89,6 +102,24 @@ class SerialNode(Node):
                     self.disconnect_locked()
                 self.get_logger().warning(f'Serial reconnect: {error}')
                 self.stop_event.wait(1.0)
+
+    def reject_existing_owner(self):
+        # Older Adam drivers do not take flock; exclusive=True alone cannot detect them.
+        # Inspect actual character-device identity before opening the configured port.
+        device = os.stat(self.serial_port).st_rdev
+        for process in Path('/proc').iterdir():
+            if not process.name.isdecimal() or int(process.name) == os.getpid():
+                continue
+            try:
+                for fd in (process/'fd').iterdir():
+                    try:
+                        info = fd.stat()
+                        if info.st_rdev == device and device != 0:
+                            raise serial.SerialException(f'Port already open by PID {process.name}')
+                    except (FileNotFoundError, PermissionError):
+                        continue
+            except (FileNotFoundError, PermissionError):
+                continue
 
     def publish_feedback(self, f):
         rs = RobotStatus()
@@ -124,8 +155,12 @@ class SerialNode(Node):
                 self.last_command = None
 
     def yaw_angle_callback(self, msg):
-        if math.isfinite(msg.data):
-            self.yaw_angle = float(msg.data)
+        with self.io_lock:
+            if math.isfinite(msg.data):
+                self.yaw_angle = float(msg.data)
+                self.last_yaw = time.monotonic()
+            else:
+                self.last_yaw = None
 
     def stance_callback(self, msg):
         if 0 <= msg.data <= 255:
@@ -139,7 +174,16 @@ class SerialNode(Node):
 
     def periodic_send_to_stm32(self):
         with self.io_lock:
+            at = time.monotonic()
+            self.health_pub.publish(Bool(data=self.serial_conn is not None and
+                self.last_rx is not None and at-self.last_rx <= self.rx_timeout))
             if self.serial_conn is None:
+                return
+            # This wire format has no yaw-disable bit. Never send an invented zero
+            # angle at startup or keep refreshing an expired yaw target indefinitely.
+            if self.last_yaw is None or at-self.last_yaw > self.yaw_timeout:
+                self.last_command = None
+                self.latest_x = self.latest_y = 0.0
                 return
             fresh = (self.last_command is not None and
                      time.monotonic() - self.last_command <= self.cmd_timeout)

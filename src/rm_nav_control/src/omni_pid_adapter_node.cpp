@@ -67,7 +67,8 @@ public:
         }
         else safe_.reset();
       });
-    ready_sub_ = create_subscription<std_msgs::msg::Bool>("/hardware/drive_ready", 1,
+    ready_sub_ = create_subscription<std_msgs::msg::Bool>(
+      declare_parameter("readiness_topic", std::string("/hardware/drive_ready")), 1,
       [this](std_msgs::msg::Bool::ConstSharedPtr m) {
         if (!m->data || !drive_ready_ || !recent(ready_at_, ready_timeout_, Clock::now())) {
           safe_.reset();

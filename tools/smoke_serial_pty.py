@@ -12,7 +12,7 @@ import time
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32, UInt8, UInt32
+from std_msgs.msg import Bool, Float32, UInt8, UInt32
 from pb_rm_interfaces.msg import RobotStatus, GameStatus, GameRobotHP, RfidStatus
 from my_serial_py.protocol import RX_FORMAT, TX_FORMAT, TX_SIZE, rm_crc16, modbus_crc16
 
@@ -27,9 +27,12 @@ def main():
     master, slave = pty.openpty()
     os.set_blocking(master, False)
     path = os.ttyname(slave)
+    os.close(slave)
     rclpy.init()
     node = Node('serial_pty_acceptance')
     feedback = {}
+    healthy = [False]
+    node.create_subscription(Bool, '/hardware/serial_healthy', lambda m: healthy.__setitem__(0,m.data), 1)
     for topic, msgtype in [
         ('/referee/robot_status', RobotStatus), ('/referee/game_status', GameStatus),
         ('/referee/all_robot_hp', GameRobotHP), ('/referee/rfid_status', RfidStatus),
@@ -49,7 +52,7 @@ def main():
         rclpy.spin_once(node, timeout_sec=0.01)
         try:
             buffer.extend(os.read(master, 8192))
-        except BlockingIOError:
+        except (BlockingIOError, OSError):
             pass
         while len(buffer) >= TX_SIZE:
             if buffer[0] != 0xaa:
@@ -76,10 +79,14 @@ def main():
                 'ros2', 'run', 'my_serial_py', 'serial_node', '--ros-args',
                 '-p', 'serial_port:=' + path, '-p', 'cmd_vel_timeout:=0.3'],
                 stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-            require(wait(lambda: bool(received), 10), 'No TX frame from bridge')
-            require(received[-1][1:3] == (-0., -0.), 'Startup motion is nonzero')
             require(wait(lambda: all(p.get_subscription_count() for p in pubs.values()), 10),
                     'ROS subscription discovery timeout')
+            wait(lambda: False, .3)
+            require(not received, 'Bridge sent an invented yaw before first actual target')
+            require(not healthy[0], 'Serial health fabricated before CRC-valid RX')
+            pubs['/cmd_yaw_angle'].publish(Float32(data=30.0))
+            require(wait(lambda: bool(received), 2), 'No TX after valid yaw')
+            require(received[-1][1:3] == (-0., -0.), 'Startup motion is nonzero')
             body = b'\xa5' + struct.pack(RX_FORMAT, 4, 4, 100, 200, 60, 42, 1200, 1500, 9, -12.5, 1)
             frame = body + struct.pack('<H', rm_crc16(body))
             corrupt = bytearray(frame)
@@ -89,6 +96,7 @@ def main():
             require(not feedback, 'Corrupt/incomplete feedback was published')
             os.write(master, frame[8:])
             require(wait(lambda: len(feedback) == 6, 5), 'Split valid feedback not published')
+            require(wait(lambda: healthy[0], 1), 'Valid RX did not make serial transport healthy')
             require(feedback['/referee/robot_status'].current_hp == 100, 'HP mapping failed')
             require(feedback['/referee/robot_status'].projectile_allowance_17mm == 42, 'Bullet mapping failed')
             require(feedback['/referee/game_status'].game_type == 4, 'Game type mapping failed')
@@ -105,17 +113,27 @@ def main():
             cmd.linear.x, cmd.linear.y, cmd.angular.z = 0.5, -0.25, 99.0
             end = time.monotonic() + 1.0
             while time.monotonic() < end:
+                pubs['/cmd_yaw_angle'].publish(Float32(data=30.0))
                 pubs['/cmd_vel'].publish(cmd)
                 poll()
             require(received[-1][1:8] == (-0.5, 0.25, 30., 30., 2, 5, 1), 'TX fields changed')
             require(received[-1][8:] == (1.,) * 8, 'Reserved fields changed')
-            require(wait(lambda: received[-1][1:3] == (-0., -0.), 1), 'Command timeout did not stop')
+            end = time.monotonic()+.6
+            while time.monotonic()<end:
+                pubs['/cmd_yaw_angle'].publish(Float32(data=30.0))
+                poll()
+            require(received[-1][1:3] == (-0., -0.), 'Command timeout did not stop')
             require(received[-1][3:5] == (30., 30.), 'Timeout changed yaw angle semantics')
             cmd.linear.x = float('nan')
             pubs['/cmd_vel'].publish(cmd)
             wait(lambda: False, 0.15)
             require(received[-1][1:3] == (-0., -0.), 'Nonfinite command did not stop')
             require(all(math.isfinite(v) for v in received[-1]), 'Nonfinite wire output')
+            wait(lambda: False, .5)
+            count = len(received)
+            wait(lambda: False, .2)
+            require(len(received)==count, 'Expired yaw continued refreshing serial TX')
+            require(not healthy[0], 'RX dropout stayed transport healthy')
             print('PASS PTY: 54-byte TX, 26-byte RX, split/noise/CRC recovery, ROS fields, '
                   'signs/yaw/reserved compatibility, watchdog/nonfinite stop', flush=True)
     finally:
@@ -129,7 +147,6 @@ def main():
         node.destroy_node()
         rclpy.shutdown()
         os.close(master)
-        os.close(slave)
 
 
 if __name__ == '__main__':
