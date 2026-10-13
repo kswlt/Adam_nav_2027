@@ -1,2 +1,7 @@
 # Unified diff context prefixes intentionally contain one space on blank lines.
 tools/patches/*.patch whitespace=-blank-at-eol
+*.sh text eol=lf
+*.bash text eol=lf
+*.py text eol=lf
+*.patch text eol=lf
+src/my_serial_py/test/fixtures/* -text
