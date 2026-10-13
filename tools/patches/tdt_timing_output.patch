@@ -1,0 +1,55 @@
+--- a/minimumSnap.cpp
++++ b/minimumSnap.cpp
+@@ -132,6 +132,9 @@
+             break;
+         }
+ 
++        result.segment_times = ta;
++        result.coefficients_x = coefficients.first;
++        result.coefficients_y = coefficients.second;
+         result.path.clear();
+         std::vector<int> bad;
+         for(int i = 0; i < coefficients.first.rows(); i++){
+@@ -989,6 +992,7 @@
+         }
+     };
+     auto result = iterate(timeAllocated, items, maxIter, timeLimit, solveOnce, sample, collision, update);
++    result.normalized_time = normT;
+     result.corridor = corridor;
+     return result;
+ }
+@@ -1024,5 +1028,7 @@
+             }
+         }
+     };
+-    return iterate(timeAllocated, items, maxIter, timeLimit, solveOnce, sample, collision, update);
+-}
++    auto result = iterate(timeAllocated, items, maxIter, timeLimit, solveOnce, sample, collision, update);
++    result.normalized_time = normT;
++    return result;
++}
+--- a/minimumSnap.hpp
++++ b/minimumSnap.hpp
+@@ -182,6 +182,9 @@
+         int iter = 0;                       // 求解迭代次数
+         double time = 0.;                   // 求解时间
+         bool success = false;
++        std::vector<double> segment_times;
++        MatXd coefficients_x, coefficients_y; // descending powers, normalized segment time
++        bool normalized_time = false;
+     };
+ 
+     MinimumSnap()=default;
+--- a/sfcSquare.hpp
++++ b/sfcSquare.hpp
+@@ -6,6 +6,10 @@
+ 
+ #pragma once
+ #include <cstddef>
++#include <array>
++#include <vector>
++#include <limits>
++#include <sys/types.h>
+ #include <iostream>
+ #include <Eigen/Dense>
+ 

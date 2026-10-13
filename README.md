@@ -1,5 +1,8 @@
 # Adam_nav_2027
 
+最新接续：已恢复 kswlt SSH 推送，并接入 [TDT Polynomial 核心](docs/TDT_BACKEND_ACCEPTANCE.md)。
+独立 Git 工作区位于本机 `.dev/Adam_nav_2027`；早期“网络阻塞”记录为当时状态。
+
 本机离线开发与最新缺口见 [2026-10-13 本机验收记录](docs/LOCAL_DEVELOPMENT_20261013.md)。
 后续新增的时序轨迹 ROS 入口、接线边界和恢复缓存修复见 [轨迹跟踪验收](docs/TRAJECTORY_TRACKER_ACCEPTANCE.md)。
 WSL Ubuntu 24.04/Jazzy 可执行 `bash tools/local_build_test.bash offline`；这只构建明确列出的 9 个包，

@@ -6,6 +6,11 @@ profile="${1:-offline}"
 case "$profile" in offline|full) ;; *) echo 'Usage: bash tools/local_build_test.bash offline|full' >&2; exit 2 ;; esac
 build_root="${RM_NAV_LOCAL_BUILD_ROOT:-${HOME}/adam_nav_local_${profile}}"
 source /opt/ros/jazzy/setup.bash
+dependency_root="${RM_NAV_DEPS_ROOT:-${HOME}/.local/share/adam_nav/deps}"
+if [[ -d "$dependency_root/install" ]]; then
+  export CMAKE_PREFIX_PATH="$dependency_root/install:${CMAKE_PREFIX_PATH:-}"
+  export LD_LIBRARY_PATH="$dependency_root/install/lib:${LD_LIBRARY_PATH:-}"
+fi
 if [[ -n "${RM_NAV_DEPS_SETUP:-}" ]]; then source "$RM_NAV_DEPS_SETUP"; fi
 mkdir -p "$build_root/reports"
 cd "$build_root"

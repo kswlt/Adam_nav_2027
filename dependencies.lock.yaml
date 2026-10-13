@@ -22,6 +22,28 @@ profiles:
   enhanced:
     - rog_map
 sources:
+  osqp:
+    url: https://github.com/osqp/osqp.git
+    commit: 0dd00a578cf1c2691c5c379965d504c75bf6cfad
+    upstream_tag: v0.6.3
+    license: Apache-2.0
+    build: tools/bootstrap_tdt.sh
+  qdldl:
+    url: https://github.com/osqp/qdldl.git
+    commit: 7d16b70a10a152682204d745d814b6eb63dc5cd2
+    source: osqp-submodule
+  osqp_eigen:
+    url: https://github.com/robotology/osqp-eigen.git
+    commit: 85c37623774c682db396505f0d4ea677040c2557
+    upstream_tag: v0.8.1
+    license: BSD-3-Clause
+    build: tools/bootstrap_tdt.sh
+  tdt_nav_kit:
+    url: https://github.com/T-DT-Algorithm-2026/tdt-nav-kit.git
+    commit: 814d5ce0237acc7faa8c070e5c5e61e2ddc81996
+    license: MIT
+    source: third_party/tdt_minimum_jerk
+    patch: tools/patches/tdt_timing_output.patch
   livox_sdk2:
     url: https://github.com/Livox-SDK/Livox-SDK2.git
     commit: c0796f04c143143899c87a773d9f6b7136453c0b

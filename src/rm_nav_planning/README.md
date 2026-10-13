@@ -2,6 +2,10 @@
 
 Nav2 path preprocessing, trajectory data contract and collision validation.
 
+正式 TDT Polynomial 核心已接入，见 [TDT 验收](../../docs/TDT_BACKEND_ACCEPTANCE.md)。
+`TdtMinimumJerkBackend` 复用上游 OSQP/corridor/碰撞迭代，并对真实系数计算连续时间约束上界。
+先执行 `tools/bootstrap_tdt.sh` 安装固定 OSQP/OsqpEigen；依赖前缀可用 `RM_NAV_DEPS_ROOT` 指定。
+
 This package is part of the RM Nav V2 staged implementation.
 
 `TimedTrajectory` carries map/environment versions and an expiry timestamp. A controller must reject a trajectory after a map correction, environment update, or expiry.
