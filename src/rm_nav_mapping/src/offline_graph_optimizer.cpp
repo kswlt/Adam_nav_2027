@@ -2,6 +2,7 @@
 #include "rm_nav_mapping/archive_io.hpp"
 #include "rm_nav_mapping/loop_candidate_manager.hpp"
 #include "rm_nav_mapping/loop_validator.hpp"
+#include "rm_nav_mapping/overlap.hpp"
 #include "rm_nav_registration/small_gicp_backend.hpp"
 #include "rm_nav_registration/kiss_gicp_backend.hpp"
 #include <small_gicp/registration/registration_helper.hpp>
@@ -24,6 +25,8 @@
 #include <openssl/sha.h>
 #include <array>
 #include <sys/file.h>
+#include <sys/resource.h>
+#include <chrono>
 
 namespace fs=std::filesystem;
 using rm_nav_interfaces::msg::ObservationFrame;
@@ -102,31 +105,7 @@ std::vector<Eigen::Vector3d> bounded_cloud(const std::vector<Eigen::Vector3d> & 
   for(std::size_t i=0;i<points.size() && result.size()<50000;i+=stride)result.push_back(points[i]);
   return result;
 }
-double overlap_fraction(const std::vector<Eigen::Vector3d> & target,
-                        const std::vector<Eigen::Vector3d> & source,
-                        const Eigen::Isometry3d & target_T_source)
-{
-  if(target.empty()||source.empty())return 0;
-  const std::size_t source_stride=std::max<std::size_t>(1,source.size()/2000);
-  const std::size_t target_stride=std::max<std::size_t>(1,target.size()/5000);
-  std::vector<Eigen::Vector3d> target_sampled,source_sampled;
-  target_sampled.reserve((target.size()+target_stride-1)/target_stride);
-  source_sampled.reserve((source.size()+source_stride-1)/source_stride);
-  for(std::size_t j=0;j<target.size();j+=target_stride)target_sampled.push_back(target[j]);
-  for(std::size_t i=0;i<source.size();i+=source_stride)source_sampled.push_back(source[i]);
-  // Reuse small_gicp's deterministic voxel preprocessing and KdTree. The
-  // threshold remains the same 0.2 m Euclidean radius as the old metric.
-  auto [target_cloud,target_tree]=small_gicp::preprocess_points(target_sampled,.01,10,1);
-  if(!target_cloud || !target_tree || target_cloud->size()==0)return 0;
-  std::size_t accepted=0,total=0;
-  for(const auto & source_point:source_sampled) {
-    Eigen::Vector4d point; point.head<3>()=target_T_source*source_point; point.w()=1.0;
-    std::size_t index=0;double distance=0;
-    if(target_tree->knn_search(point,1,&index,&distance) && distance<=.04)++accepted;
-    ++total;
-  }
-  return total?static_cast<double>(accepted)/total:0;
-}
+using rm_nav_mapping::overlap_fraction;
 double geometry_ratio(const std::vector<Eigen::Vector3d> & points)
 {
   if(points.size()<4)return 0;Eigen::Vector3d mean=Eigen::Vector3d::Zero();
@@ -139,6 +118,7 @@ double geometry_ratio(const std::vector<Eigen::Vector3d> & points)
 int main(int argc,char ** argv)
 {
   try {
+    const auto started=std::chrono::steady_clock::now();
     require(argc==3 || (argc==4 && std::string(argv[3])=="--enable-loops"),"Usage: offline_graph_optimizer <completed-session-dir> <new-output-dir> [--enable-loops]");
     const bool enable_loops=argc==4;
     const fs::path session=fs::canonical(argv[1]);const fs::path output=fs::weakly_canonical(fs::absolute(argv[2]));
@@ -156,7 +136,7 @@ int main(int argc,char ** argv)
     require(directories.size()>=2 && directories.size()<=500,"Offline graph requires 2..500 contiguous keyframes");
     std::vector<ArchivedFrame> frames;std::vector<Eigen::Isometry3d> initial;
     std::vector<rm_nav_mapping::GraphEdge> edges;std::vector<rm_nav_registration::RegistrationResult> qualities;
-    std::vector<Eigen::Vector3d> target;std::vector<std::vector<Eigen::Vector3d>> clouds;
+    std::vector<Eigen::Vector3d> target;
     std::vector<rm_nav_mapping::Keyframe> keyframes;std::vector<rm_nav_mapping::GraphEdge> loop_edges;
     std::vector<rm_nav_registration::RegistrationResult> loop_qualities;
     rm_nav_registration::SmallGicpConfig config;config.use_voxelized_target=true;config.num_threads=1;
@@ -183,7 +163,6 @@ int main(int argc,char ** argv)
         edges.push_back(edge);qualities.push_back(result);
       }
       target=std::move(points);initial.push_back(frame.pose);frames.push_back(frame);
-      clouds.push_back(target);
       keyframes.push_back({frame.id,frame.stamp,frame.pose});
     }
     if(enable_loops) {
@@ -192,25 +171,40 @@ int main(int argc,char ** argv)
       kiss_config.refinement.num_threads=1;kiss_config.refinement.max_input_points=50000;
       rm_nav_registration::KissGicpBackend kiss(kiss_config);
       std::set<std::size_t> loop_current_frames;
+      std::size_t total_candidates=0;
+      const auto loop_started=std::chrono::steady_clock::now();
       for(std::size_t j=0;j<keyframes.size();++j) {
         std::vector<rm_nav_mapping::Keyframe> history(keyframes.begin(),keyframes.begin()+j);
         for(const auto id:candidates.candidates(keyframes[j],history)) {
           if (loop_current_frames.count(j)) break;
           const std::size_t i=static_cast<std::size_t>(id);
+          const auto candidate_started=std::chrono::steady_clock::now();
+          require(++total_candidates<=2000,"Total loop candidate budget exhausted; no partial map published");
+          require(std::chrono::duration<double>(std::chrono::steady_clock::now()-loop_started).count()<=300,
+                  "Loop stage time budget exhausted; no partial map published");
+          // Keep at most this candidate pair resident; immutable originals remain on disk.
+          ArchivedFrame fi,fj;
+          const auto cloud_i=load(frames[i].path,fi,true);
+          const auto cloud_j=load(frames[j].path,fj,true);
+          require(fi.digest==frames[i].digest && fj.digest==frames[j].digest,"Loop input archive changed");
           rm_nav_registration::RegistrationRequest forward_request;
-          forward_request.target_points=bounded_cloud(clouds[i]);forward_request.source_points=bounded_cloud(clouds[j]);
+          forward_request.target_points=bounded_cloud(cloud_i);forward_request.source_points=bounded_cloud(cloud_j);
           forward_request.initial_target_T_source=frames[i].pose.inverse()*frames[j].pose;
           const auto forward=kiss.register_clouds(forward_request);
           rm_nav_registration::RegistrationRequest reverse_request;
-          reverse_request.target_points=bounded_cloud(clouds[j]);reverse_request.source_points=bounded_cloud(clouds[i]);
+          reverse_request.target_points=bounded_cloud(cloud_j);reverse_request.source_points=bounded_cloud(cloud_i);
           reverse_request.initial_target_T_source=forward_request.initial_target_T_source.inverse();
           const auto reverse=kiss.register_clouds(reverse_request);
+          require(std::chrono::duration<double>(std::chrono::steady_clock::now()-candidate_started).count()<=5,
+                  "Loop candidate time budget exceeded; no partial map published");
+          require(std::chrono::duration<double>(std::chrono::steady_clock::now()-loop_started).count()<=300,
+                  "Loop stage time budget exceeded; no partial map published");
           rm_nav_mapping::LoopValidationInput validation{forward,reverse,
-            overlap_fraction(clouds[i],clouds[j],forward.target_T_source),
-            overlap_fraction(clouds[j],clouds[i],reverse.target_T_source),
+            overlap_fraction(cloud_i,cloud_j,forward.target_T_source),
+            overlap_fraction(cloud_j,cloud_i,reverse.target_T_source),
             std::max(forward.translation_delta,reverse.translation_delta),
             std::max(forward.rotation_delta,reverse.rotation_delta),
-            std::min(geometry_ratio(clouds[i]),geometry_ratio(clouds[j]))};
+            std::min(geometry_ratio(cloud_i),geometry_ratio(cloud_j))};
           const auto verdict=rm_nav_mapping::validate_loop(validation);
           std::cout<<"loop="<<i<<"->"<<j<<" accepted="<<verdict.accepted<<" reason="<<verdict.reason<<'\n';
           if(!verdict.accepted)continue;
@@ -250,7 +244,23 @@ int main(int argc,char ** argv)
       <<solution.initial_error<<",\"final_error\":"<<solution.final_error<<",\"iterations\":"<<solution.iterations
       <<",\"loop_count\":"<<solution.loop_count<<",\"poses\":[";
     for(std::size_t i=0;i<frames.size();++i){poses<<(i?",":"")<<"{\"id\":"<<frames[i].id<<",\"matrix\":";matrix_json(poses,solution.poses[i]);poses<<'}';}
-    poses<<"]}\n";poses.close();
+    poses<<"],\"validation\":{\"max_local_translation_change_m\":"<<solution.max_local_translation_change_m
+      <<",\"max_local_rotation_change_rad\":"<<solution.max_local_rotation_change_rad
+      <<",\"removal_test_loop\":"<<solution.removal_test_loop
+      <<",\"removal_max_translation_change_m\":"<<solution.removal_max_translation_change_m
+      <<",\"removal_max_rotation_change_rad\":"<<solution.removal_max_rotation_change_rad;
+    const auto residuals=[&](const char * name,const auto & values) {
+      poses<<",\""<<name<<"\":[";
+      for(std::size_t i=0;i<values.size();++i)poses<<(i?",":"")<<"["<<values[i].translation_m<<","<<values[i].rotation_rad<<","<<values[i].whitened_norm<<"]";
+      poses<<"]";
+    };
+    residuals("adjacent_before",solution.adjacent_before);residuals("adjacent_after",solution.adjacent_after);
+    residuals("loop_after",solution.loop_after);
+    poses<<",\"translation_corrections_m\":[";
+    for(std::size_t i=0;i<solution.poses.size();++i)poses<<(i?",":"")<<solution.translation_corrections_m[i];
+    poses<<"],\"rotation_corrections_rad\":[";
+    for(std::size_t i=0;i<solution.poses.size();++i)poses<<(i?",":"")<<solution.rotation_corrections_rad[i];
+    poses<<"]}}\n";poses.close();
     std::ofstream hashes(staging/"input_hashes.json");hashes.exceptions(std::ios::badbit|std::ios::failbit);hashes<<'[';
     for(std::size_t i=0;i<frames.size();++i) {
       hashes<<(i?",":"")<<"{\"id\":"<<frames[i].id<<",\"stamp_ns\":"<<frames[i].stamp<<",\"observation_sha256\":\"";
@@ -280,6 +290,10 @@ int main(int argc,char ** argv)
     rm_nav_mapping::durable_directory(staging);
     require(::syscall(SYS_renameat2,AT_FDCWD,staging.c_str(),AT_FDCWD,output.c_str(),RENAME_NOREPLACE)==0,
             "Atomic no-replace output commit failed");rm_nav_mapping::durable_directory(output.parent_path());
+    struct rusage usage{};getrusage(RUSAGE_SELF,&usage);
+    std::cout<<"resources keyframes="<<frames.size()<<" peak_rss_kib="<<usage.ru_maxrss
+      <<" cpu_s="<<usage.ru_utime.tv_sec+usage.ru_utime.tv_usec/1e6+usage.ru_stime.tv_sec+usage.ru_stime.tv_usec/1e6
+      <<" wall_s="<<std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()<<'\n';
     std::cout<<"PASS actual VGICP + GTSAM adjacent graph; error="<<solution.initial_error<<"->"<<solution.final_error
       <<" rebuilt_voxels="<<voxels.size()<<" output="<<output<<'\n';return 0;
   }catch(const std::exception & error){std::cerr<<"Mapping optimization refused: "<<error.what()<<'\n';return 1;}

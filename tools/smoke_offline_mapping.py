@@ -22,7 +22,8 @@ def pose(x,y,yaw):
 
 def main():
     Path('log').mkdir(exist_ok=True)
-    root=Path(tempfile.mkdtemp(prefix='offline_mapping_',dir=Path('log').resolve()))
+    root=Path(tempfile.mkdtemp(prefix='offline_mapping_'))
+    print('Retained native-filesystem fixture: '+str(root),flush=True)
     session=root/'session_fixture';session.mkdir()
     world=np.random.default_rng(2027).uniform(-2,2,(5000,3))
     hom=np.c_[world,np.ones(len(world))].T

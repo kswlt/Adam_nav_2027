@@ -11,6 +11,10 @@ int main() {
   in.forward.residual=.3;assert(!validate_loop(in).accepted);in.forward=good();
   in.overlap_reverse=.1;assert(!validate_loop(in).accepted);in.overlap_reverse=.8;
   in.geometry_ratio=1e-8;assert(!validate_loop(in).accepted);in.geometry_ratio=.1;
+  LoopValidationConfig separate;separate.min_geometry_ratio=.2;
+  assert(!validate_loop(in,separate).accepted);
+  separate.min_geometry_ratio=.01;separate.min_condition=.2;
+  assert(!validate_loop(in,separate).accepted);
   in.reverse.target_T_source.translation().x()=.2;assert(!validate_loop(in).accepted);
   in.reverse=good();in.forward.converged=false;assert(!validate_loop(in).accepted);
 }

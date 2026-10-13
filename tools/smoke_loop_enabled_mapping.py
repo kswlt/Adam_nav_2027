@@ -18,7 +18,8 @@ def pose(x,y,yaw):
 
 
 def main():
-    root=Path(tempfile.mkdtemp(prefix='loop_mapping_',dir=Path('log').resolve()))
+    root=Path(tempfile.mkdtemp(prefix='loop_mapping_'))
+    print('Retained native-filesystem fixture: '+str(root),flush=True)
     session=root/'return_session';session.mkdir()
     rng=np.random.default_rng(20271009)
     # A 12-second out-and-back trajectory. Frame 11 revisits frame 0's area.

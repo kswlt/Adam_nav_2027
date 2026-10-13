@@ -76,7 +76,7 @@ def main():
         return False
     process=None;Path('log').mkdir(exist_ok=True)
     # Keep actual archives alongside the log for inspection, rather than deleting evidence.
-    root=Path(tempfile.mkdtemp(prefix='mapping_capture_',dir=Path('log').resolve()))
+    root=Path(tempfile.mkdtemp(prefix='mapping_capture_'))
     def start(log,limit=100,extra=()):
         return subprocess.Popen(['ros2','run','rm_nav_mapping','keyframe_recorder','--ros-args',
             '-p','calibration_id:=mapping-fixture-v1','-p',f'archive_root:={root}',

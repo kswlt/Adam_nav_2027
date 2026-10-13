@@ -79,6 +79,60 @@ GraphSolution optimize_pose_graph(const std::vector<Eigen::Isometry3d> & initial
     if(!rm_nav_registration::valid_rigid_transform(pose))throw std::runtime_error("Invalid optimized graph pose");
     solution.poses.push_back(pose);
   }
+  const auto angle=[](const Eigen::Matrix3d & r) {
+    return std::acos(std::clamp((r.trace()-1.)*.5,-1.,1.));
+  };
+  const auto residual=[&](const GraphEdge & edge,const std::vector<Eigen::Isometry3d> & poses) {
+    const Eigen::Isometry3d error=edge.from_T_to.inverse()*poses[edge.from].inverse()*poses[edge.to];
+    const auto tangent=gtsam::Pose3::Logmap(gtsam::Pose3(error.matrix()));
+    return GraphSolution::Residual{error.translation().norm(),angle(error.linear()),
+      tangent.cwiseQuotient(edge.sigmas).norm()};
+  };
+  for(std::size_t i=0;i<initial.size();++i) {
+    const Eigen::Isometry3d correction=initial[i].inverse()*solution.poses[i];
+    solution.translation_corrections_m.push_back(correction.translation().norm());
+    solution.rotation_corrections_rad.push_back(angle(correction.linear()));
+    if(i) {
+      const Eigen::Isometry3d before=initial[i-1].inverse()*initial[i];
+      const Eigen::Isometry3d after=solution.poses[i-1].inverse()*solution.poses[i];
+      const Eigen::Isometry3d change=before.inverse()*after;
+      solution.max_local_translation_change_m=std::max(solution.max_local_translation_change_m,change.translation().norm());
+      solution.max_local_rotation_change_rad=std::max(solution.max_local_rotation_change_rad,angle(change.linear()));
+    }
+  }
+  for(const auto & edge:adjacent) {
+    solution.adjacent_before.push_back(residual(edge,initial));
+    const auto r=residual(edge,solution.poses);solution.adjacent_after.push_back(r);
+    if(!validated_loops.empty()&&(r.translation_m>.20||r.rotation_rad>.15||r.whitened_norm>9))
+      throw std::runtime_error("Optimized adjacent factor exceeds physical/normalized residual limits");
+  }
+  std::size_t worst=0;
+  for(std::size_t i=0;i<validated_loops.size();++i) {
+    const auto r=residual(validated_loops[i],solution.poses);solution.loop_after.push_back(r);
+    if(r.translation_m>.25||r.rotation_rad>.15||r.whitened_norm>9)
+      throw std::runtime_error("Optimized loop factor residual rejected despite objective decrease");
+    if(r.whitened_norm>solution.loop_after[worst].whitened_norm)worst=i;
+  }
+  if(!validated_loops.empty()) {
+    if(solution.max_local_translation_change_m>.5||solution.max_local_rotation_change_rad>.35||
+       *std::max_element(solution.translation_corrections_m.begin(),solution.translation_corrections_m.end())>5||
+       *std::max_element(solution.rotation_corrections_rad.begin(),solution.rotation_corrections_rad.end())>1)
+      throw std::runtime_error("Optimized pose correction/local deformation budget exceeded");
+    // One bounded counterfactual solve: remove the worst residual loop, retaining
+    // the identical anchor/adjacent factors. Never use decreased robust cost alone.
+    auto counterfactual=graph;
+    counterfactual.erase(counterfactual.begin()+1+adjacent.size()+worst);
+    const auto alternate=gtsam::LevenbergMarquardtOptimizer(counterfactual,result,settings).optimize();
+    solution.removal_test_loop=static_cast<std::int64_t>(worst);
+    for(std::size_t i=0;i<initial.size();++i) {
+      const Eigen::Isometry3d pose(alternate.at<gtsam::Pose3>(i).matrix());
+      const Eigen::Isometry3d change=solution.poses[i].inverse()*pose;
+      solution.removal_max_translation_change_m=std::max(solution.removal_max_translation_change_m,change.translation().norm());
+      solution.removal_max_rotation_change_rad=std::max(solution.removal_max_rotation_change_rad,angle(change.linear()));
+    }
+    if(solution.removal_max_translation_change_m>.5||solution.removal_max_rotation_change_rad>.35)
+      throw std::runtime_error("Single-loop removal reveals excessive graph sensitivity");
+  }
   return solution;
 }
 }

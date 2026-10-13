@@ -20,6 +20,12 @@ struct GraphSolution {
   double initial_error{0},final_error{0};
   int iterations{0};
   std::size_t loop_count{0};
+  struct Residual { double translation_m{0}, rotation_rad{0}, whitened_norm{0}; };
+  std::vector<Residual> adjacent_before, adjacent_after, loop_after;
+  std::vector<double> translation_corrections_m, rotation_corrections_rad;
+  double max_local_translation_change_m{0}, max_local_rotation_change_rad{0};
+  double removal_max_translation_change_m{0}, removal_max_rotation_change_rad{0};
+  std::int64_t removal_test_loop{-1};
 };
 GraphSolution optimize_pose_graph(const std::vector<Eigen::Isometry3d> & initial,
                                   const std::vector<GraphEdge> & adjacent);

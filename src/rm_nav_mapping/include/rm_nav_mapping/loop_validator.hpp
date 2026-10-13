@@ -12,6 +12,8 @@ struct LoopValidationConfig {
   double min_inlier_ratio{.55};
   double max_residual_m{.20};
   double min_condition{1e-5};
+  // Hessian eigenvalue ratio and point-coordinate PCA ratio are different metrics.
+  double min_geometry_ratio{1e-4};
   double max_translation_correction_m{1.0};
   double max_rotation_correction_rad{.35};
   double min_overlap{.55};
@@ -36,6 +38,12 @@ inline LoopValidationResult validate_loop(const LoopValidationInput & in,
                                           const LoopValidationConfig & cfg = {})
 {
   auto reject=[](const char * reason){return LoopValidationResult{false,reason};};
+  for(const double value:{cfg.min_inlier_ratio,cfg.max_residual_m,cfg.min_condition,cfg.min_geometry_ratio,
+      cfg.max_translation_correction_m,cfg.max_rotation_correction_rad,cfg.min_overlap,
+      cfg.max_reverse_translation_error_m,cfg.max_reverse_rotation_error_rad})
+    if(!std::isfinite(value)||value<0)return reject("invalid loop thresholds");
+  if(cfg.min_inliers==0||cfg.min_inlier_ratio>1||cfg.min_overlap>1||cfg.min_condition>1||cfg.min_geometry_ratio>1)
+    return reject("invalid loop ratio thresholds");
   if (!std::isfinite(in.overlap_forward) || !std::isfinite(in.overlap_reverse) ||
       !std::isfinite(in.translation_correction_m) || !std::isfinite(in.rotation_correction_rad) ||
       !std::isfinite(in.geometry_ratio)) return reject("nonfinite loop quality");
@@ -50,7 +58,7 @@ inline LoopValidationResult validate_loop(const LoopValidationInput & in,
     return reject("degenerate registration Hessian");
   if (in.overlap_forward < cfg.min_overlap || in.overlap_reverse < cfg.min_overlap)
     return reject("insufficient bidirectional overlap");
-  if (in.geometry_ratio < cfg.min_condition) return reject("degenerate scan geometry");
+  if (in.geometry_ratio < cfg.min_geometry_ratio) return reject("degenerate scan geometry");
   if (in.translation_correction_m > cfg.max_translation_correction_m ||
       in.rotation_correction_rad > cfg.max_rotation_correction_rad)
     return reject("loop correction exceeds trajectory prior");

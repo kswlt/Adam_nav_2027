@@ -29,6 +29,22 @@ int main()
   const auto with_loop=optimize_pose_graph(initial,edges,{loop});
   require(with_loop.loop_count==1 && with_loop.final_error<=with_loop.initial_error,
           "Validated loop graph did not optimize");
+  require(with_loop.loop_after.size()==1 && with_loop.removal_test_loop==0 &&
+          with_loop.removal_max_translation_change_m<1e-5,"Loop post-audit/removal comparison absent");
+  auto wrong_loop=loop;wrong_loop.from_T_to.translation().x()=2;
+  bool rejected=false;
+  try{optimize_pose_graph(initial,edges,{wrong_loop});}catch(const std::runtime_error &){rejected=true;}
+  require(rejected,"Wrong loop passed merely because robust objective decreased");
+  for(const int count:{100,300,500}) {
+    std::vector<Eigen::Isometry3d> poses(count,Eigen::Isometry3d::Identity());
+    std::vector<GraphEdge> factors;
+    for(int i=1;i<count;++i){poses[i].translation().x()=.1*i;GraphEdge e;e.from=i-1;e.to=i;e.from_T_to.translation().x()=.1;factors.push_back(e);}
+    require(optimize_pose_graph(poses,factors).poses.size()==static_cast<std::size_t>(count),"Capacity contract failed");
+  }
+  rejected=false;
+  try{optimize_pose_graph(std::vector<Eigen::Isometry3d>(501,Eigen::Isometry3d::Identity()),{});}
+  catch(const std::invalid_argument &){rejected=true;}
+  require(rejected,"501 poses silently truncated");
   auto unvalidated=loop;unvalidated.validated=false;
   try{optimize_pose_graph(initial,edges,{unvalidated});require(false,"Unvalidated loop accepted");}
   catch(const std::invalid_argument &){}
