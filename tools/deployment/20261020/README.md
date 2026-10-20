@@ -21,3 +21,12 @@ bash start_mapping_20261020.bash
 ```
 
 脚本中没有串口节点或物理运动输出。不能用此观察实例声称已经通过正式地图导航验收。
+
+新增在线回环后端，复用已运行 recorder 的实际 session，不重启雷达：
+
+```bash
+bash start_online_mapping_20261020.bash /绝对路径/当前的session
+```
+
+该脚本显式加载新 `install_online` overlay。Foxglove 导入 `mapping_online.json`，参考为 mapping_odom。
+回环、历史地图更新与资源限制详见 `docs/ONLINE_MAPPING.md`。

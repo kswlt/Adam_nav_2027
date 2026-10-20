@@ -1,6 +1,8 @@
 # ROS/colcon generated output
 build/
 install/
+build_online/
+install_online/
 log/
 
 # Python generated files

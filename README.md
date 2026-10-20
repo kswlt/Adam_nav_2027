@@ -187,7 +187,23 @@ String/JSON 状态先用 Raw Messages；图表显示“点击来添加数据系�
 跨机接收时间减 header 不能直接当延迟，须先统一实际时钟。
 更多逐步排查见 [Foxglove 详细指南](docs/foxglove_visualization.md)。
 
-## 4. 怎么保存建图、查看离线地图
+## 4. 在线回环优化建图
+
+现在可在录制时接入在线回环：后台检测回环、GTSAM 修正历史关键帧，按新位姿重建并替换地图。
+已有 odom 累积预览仍保留，优化地图在独立 `mapping_odom` 参考下查看。
+
+```bash
+cd /home/asus/nav_2027_vehicle_config_164
+bash start_online_mapping_20261020.bash /绝对路径/当前的session
+```
+
+Foxglove 导入 [mapping_online.json](src/rm_nav_bringup/config/foxglove/mapping_online.json)，
+启用 `/mapping/optimized_map_preview`、`/mapping/optimized_path`、`/mapping/loop_graph`；
+Raw Messages 看 `/mapping/online_status` 的回环数量、版本、积压与原因。
+默认 500 帧、0.15 m 体素、最多 50 万地图点，Wi-Fi 预览最多 5 万点；不是无限规模地图。
+完整操作、资源预算和验收见 [在线建图指南](docs/ONLINE_MAPPING.md)。
+
+## 5. 怎么保存建图、查看离线地图
 
 只启动可视化不会保存最终地图。雷达和状态链运行时另开第四个终端：
 
@@ -228,7 +244,7 @@ ros2 run rm_nav_bringup foxglove_graph_publisher \
 格式与命令见 [完整软件指南第 4 节](docs/SOFTWARE_USAGE_20261013.md#4-建图对齐发布)。
 无官方资料则保持 draft；terrain 当前只是观测高度参考，不是已验收可通行地形。
 
-## 5. 怎么进入正式导航
+## 6. 怎么进入正式导航
 
 需要本场地已发布且 navigation-ready 的 MapBundle、实测底盘轮廓、真实全局定位与健康输入。
 下例仅启动软件链，物理输出与串口关闭；占位符替换后才能执行：
@@ -249,7 +265,7 @@ Supervisor 管理许可，直接发送 Nav2 action 不会自动获得任务所�
 两后端互斥，my_serial_py 为唯一串口 owner。物理联调条件及参数见 [完整指南第 5 节](docs/SOFTWARE_USAGE_20261013.md#5-定位与导航)。
 不要为查看地图开启物理运动输出。
 
-## 6. 框架架构和代码职责
+## 7. 框架架构和代码职责
 
 ```text
 MID-360 → Livox → 质量门 → small_point_lio
@@ -276,7 +292,7 @@ MID-360 → Livox → 质量门 → small_point_lio
 动态云台与当前固定雷达是不同安装 profile，不伪造编码器。
 接口见 [架构契约](docs/architecture_contract.md)，完成度见 [阶段矩阵](docs/stage_completion_matrix.md)。
 
-## 7. 构建、测试、故障排查
+## 8. 构建、测试、故障排查
 
 在已有 ASUS 部署中，环境脚本提供依赖和私有消息 ABI overlay：
 

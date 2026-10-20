@@ -31,4 +31,5 @@ ROS_DOMAIN_ID=179 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
   python3 tools/smoke_small_point_lio.py --with-state --with-mapping > "$report/lio_mapping.log" 2>&1
 python3 tools/smoke_offline_mapping.py > "$report/offline_mapping.log" 2>&1
 python3 tools/smoke_loop_enabled_mapping.py > "$report/loop_mapping.log" 2>&1
+python3 tools/smoke_online_mapping.py > "$report/online_mapping.log" 2>&1
 echo 'PASS software integration suite; hardware and field accuracy remain unverified'

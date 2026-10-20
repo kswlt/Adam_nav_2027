@@ -88,7 +88,12 @@ String/JSON 诊断用 Raw Messages，Bool 可用 Raw Messages 或 State Transiti
 
 ## 保存、回放与现场边界
 
-建图先启动 recorder，再结束录制并离线优化；PCD、关键帧和最终 MapBundle 的区别及命令见 README 第 4 节。
+建图先启动 recorder，再结束录制并离线优化；PCD、关键帧和最终 MapBundle 的区别及命令见 README 第 5 节。
 观看 Foxglove 不会自动保存最终地图。离线优化结果发布器复用 bridge，显示参考为 mapping_odom。
 rosbag 回放使用独立 ROS Domain、use_sim_time 和 /clock，不与真车驱动混在 Domain 97。
 不要为消除显示告警开启物理控制或伪造 TF、编码器、速度和停车反馈。
+
+## 在线优化地图
+
+新增独立 mapping_odom 布局与实时回环显示，详见 [在线建图指南](ONLINE_MAPPING.md)。
+优化地图使用 `/mapping/optimized_map_preview`，原先 live_map_preview 保持 odom 累积语义不变。

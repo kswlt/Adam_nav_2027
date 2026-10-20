@@ -27,6 +27,15 @@ def layout(frame,navigation):
 
 def main():
     output=Path(__file__).resolve().parents[1]/'src/rm_nav_bringup/config/foxglove';output.mkdir(exist_ok=True)
+    online=layout('mapping_odom',False)
+    online['configById']['3D!scene']['topics']={topic:{'visible':True} for topic in
+        ('/mapping/optimized_map_preview','/mapping/optimized_path','/mapping/loop_graph')}
+    online['configById']['3D!scene']['topics']['/mapping/optimized_map']={'visible':False}
+    online['configById']['3D!scene']['transforms']={}
+    online['configById']['RawMessages!state']['topicPath']='/mapping/online_status'
+    online['configById']['RawMessages!tracking']['topicPath']='/mapping/recorder_status'
+    online['configById']['RawMessages!tf']['topicPath']='/mapping/mapping_odom_T_odom'
+    (output/'mapping_online.json').write_text(json.dumps(online,indent=2)+'\n')
     for name,frame,navigation in [('mapping_low_latency','odom',False),('navigation_tdt','map',True)]:
         (output/(name+'.json')).write_text(json.dumps(layout(frame,navigation),indent=2)+'\n')
 if __name__=='__main__':main()

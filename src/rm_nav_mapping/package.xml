@@ -9,6 +9,9 @@
   <depend>eigen3_cmake_module</depend>
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>visualization_msgs</depend>
   <depend>tf2_ros</depend>
   <depend>rm_nav_interfaces</depend>
   <depend>rm_nav_sensors</depend>

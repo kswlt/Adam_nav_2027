@@ -1,5 +1,11 @@
 # Adam_nav_2027 源码审计报告
 
+2026-10-20 在线建图补齐：基线 feature `541413d`，SSH fetch 后确认未有更新覆盖；独立实现后台调度、
+复用 KISS/GICP/LoopValidator/GTSAM，历史地图事务替换，原始 CDR 读取器与离线链共用。
+全 14 包在 ASUS 构建，50 tests 零失败（1 skipped）；在线/原离线闭环 ROS 回归通过，真实 session 已接入。
+实测指标、修改范围、首次编译失败及修复、资源限制、新风险和未验证项详见 [在线建图验收](ONLINE_MAPPING.md)。
+没有修改原车工作区、原协议、LIO 前端或生产 map→odom，没有启用物理控制；main 未合并。
+
 2026-10-20 现场接续：开始前检查本机和 ASUS `git status` 并 fetch GitHub，feature 最新为 `45b973f`，
 main 仍为 `7e2afa1`。保留两端未提交修改，在 ASUS 新建独立 release。
 最新完整审计/结果见 [现场启动报告](ASUS_LIVE_20261020.md)、[导航集成](NAVIGATION_INTEGRATION_ACCEPTANCE.md)、

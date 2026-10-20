@@ -13,7 +13,7 @@ This package is part of the RM Nav V2 staged implementation.
 `offline_graph_optimizer <session> <新输出目录>` 读取停止录制的归档，使用真实 VGICP
 生成相邻 Pose3 因子，由固定版 GTSAM 优化，并从原始关键帧重新拼接点云。
 归档 SHA256 与录制锁用于一致性检查，拒绝不合格边和已有输出。
-输出 mapping_odom 坐标；未接入回环、官方对齐或 MapBundle 发布。
+输出 mapping_odom 坐标；`--enable-loops` 启用受验证的回环。官方对齐与 MapBundle 发布由独立工具执行。
 见 [离线建图验收](../../docs/offline_mapping_acceptance.md)。
 
 `KeyframeManager` triggers from chassis translation/yaw. LiDAR yaw is deliberately not used because the main sensor may be mounted on the moving big gimbal.
@@ -21,3 +21,8 @@ This package is part of the RM Nav V2 staged implementation.
 `LoopCandidateManager` first filters by time separation and rough spatial proximity. It only produces candidates; KISS, GICP and LoopValidator must approve a loop before GTSAM receives a factor.
 
 `MapBundle` is the metadata contract for frozen localization maps, occupancy maps and terrain data. Runtime match mode must consume a versioned bundle and never silently mix calibration or map versions.
+
+`online_mapping` 在独立 worker 中读取正在录制 session 的已原子提交关键帧，在线执行双向 KISS/GICP、
+既有回环验证和 GTSAM 后验检查；接纳回环后重建历史地图。odom 与正式 map TF 不变。
+在线显示采用有界采样，原始 archive 保留，资源超限明确停止而不静默丢帧。
+操作、坐标语义、测试与限制见 [在线建图指南](../../docs/ONLINE_MAPPING.md)。

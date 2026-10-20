@@ -1,0 +1,77 @@
+{
+  "duration_s": 20.012164463999852,
+  "counts": {
+    "/livox/lidar": 101,
+    "/mapping/optimized_map": 1,
+    "/mapping/online_status": 19,
+    "/mapping/optimized_map_preview": 1,
+    "/mapping/optimized_path": 1,
+    "/mapping/loop_graph": 1,
+    "/state/chassis_healthy": 856,
+    "/odom": 165,
+    "/tf": 167,
+    "/lio/deskewed_odom_cloud": 130,
+    "/localization/submap_healthy": 85
+  },
+  "latest": {
+    "/livox/lidar": {
+      "points": 19968,
+      "frame": "front_mid360",
+      "stamp_ns": 1792514964181326422
+    },
+    "/mapping/optimized_map": {
+      "points": 10070,
+      "frame": "mapping_odom",
+      "stamp_ns": 1792512696980726957
+    },
+    "/mapping/online_status": {
+      "mode": "ONLINE_MAPPING_ONLY_NOT_PUBLISHED_MAP",
+      "frame": "mapping_odom",
+      "session": "/home/asus/nav_2027_vehicle_config_164/runtime_20261020/keyframes/session_1792512606735936939_1931153367",
+      "revision": "29",
+      "keyframes": "29",
+      "map_points": "10070",
+      "accepted_loops": "6",
+      "candidates_tested": "19",
+      "loops_rejected": "13",
+      "pending_keyframes": "0",
+      "last_work_ms": "302.39667700000001",
+      "last_graph_ms": "0",
+      "upstream_healthy": "true",
+      "fault": "false",
+      "reason": "forward/reverse registration not converged",
+      "budget_semantics": "soft deadline, non-preemptible registration; overshoot rejected"
+    },
+    "/mapping/optimized_map_preview": {
+      "points": 10070,
+      "frame": "mapping_odom",
+      "stamp_ns": 1792512696980726957
+    },
+    "/mapping/optimized_path": {
+      "poses": 29,
+      "frame": "mapping_odom",
+      "stamp_ns": 1792512696980726957
+    },
+    "/mapping/loop_graph": {
+      "markers": 2,
+      "loop_edges": 6
+    },
+    "/state/chassis_healthy": true,
+    "/lio/deskewed_odom_cloud": {
+      "points": 18234,
+      "frame": "odom",
+      "stamp_ns": 1792514964577599525
+    },
+    "/localization/submap_healthy": true
+  },
+  "tf_pairs": [
+    [
+      "base_footprint",
+      "chassis"
+    ],
+    [
+      "odom",
+      "base_footprint"
+    ]
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "test_only": true,
+  "accepted_before_fault": {
+    "mode": "ONLINE_MAPPING_ONLY_NOT_PUBLISHED_MAP",
+    "frame": "mapping_odom",
+    "session": "/tmp/online_mapping_test_9ml6rzok/session",
+    "revision": "12",
+    "keyframes": "12",
+    "map_points": "22416",
+    "accepted_loops": "2",
+    "candidates_tested": "2",
+    "loops_rejected": "0",
+    "pending_keyframes": "0",
+    "last_work_ms": "1191.5593509999999",
+    "last_graph_ms": "1.5505450000000001",
+    "upstream_healthy": "false",
+    "fault": "false",
+    "reason": "bidirectional loop and GTSAM post-audit accepted; historical map rebuilt",
+    "budget_semantics": "soft deadline, non-preemptible registration; overshoot rejected"
+  },
+  "fault_status": {
+    "mode": "ONLINE_MAPPING_ONLY_NOT_PUBLISHED_MAP",
+    "frame": "mapping_odom",
+    "session": "/tmp/online_mapping_test_9ml6rzok/session",
+    "revision": "12",
+    "keyframes": "12",
+    "map_points": "22416",
+    "accepted_loops": "2",
+    "candidates_tested": "2",
+    "loops_rejected": "0",
+    "pending_keyframes": "1",
+    "last_work_ms": "1191.5593509999999",
+    "last_graph_ms": "1.5505450000000001",
+    "upstream_healthy": "false",
+    "fault": "true",
+    "reason": "No such node (schema)",
+    "budget_semantics": "soft deadline, non-preemptible registration; overshoot rejected"
+  },
+  "historical_pose_changed": true,
+  "partial_ignored": true,
+  "originals_unchanged": true,
+  "physical_output": false
+}

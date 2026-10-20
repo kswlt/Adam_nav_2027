@@ -1,5 +1,11 @@
 # P0-P10 验收矩阵
 
+2026-10-20 在线建图更新：后台读取已提交关键帧，双向 KISS/GICP + 既有 GTSAM 后验验收，
+回环接纳后修正历史轨迹并替换全历史体素地图；独立 mapping_odom 可视化，odom/生产 map TF 不变。
+ASUS 全 14 包构建、50 tests / 0 errors / 0 failures / 1 skipped；在线 ROS fixture 与原离线闭环回归通过。
+当前实测 29 帧/6 条接纳边/无积压，真实场地回环精度和长期资源仍 NOT VERIFIED。
+操作与证据见 [在线建图](ONLINE_MAPPING.md)，旧阶段表的离线说明保留为历史记录。
+
 2026-10-20 更新：本机 WSL 与 ASUS 完整 14 包构建、49 tests / 0 failures / 1 skipped。
 TDT 上游/Nav2 控制器、真实 Costmap 快照、Omni PID/YawManager、HardwareInterface 实际 ROS 读写、
 租约与标准控制器、正式地图软件发布/坐标拟合均已实现。参见

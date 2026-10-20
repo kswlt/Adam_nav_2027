@@ -1,5 +1,11 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-20 最新：已接入并在 ASUS 当前真实 session 启动在线回环/历史地图重建，
+使用独立 `build_online/install_online`；当前 29 帧、6 条通过门限回环、积压 0，真实闭环真值尚未验证。
+全量 50 tests 零失败（1 skipped），在线 ROS 闭环和原离线回归通过。新 Foxglove 布局为
+`mapping_online.json`、参考 mapping_odom，详情见 [在线建图指南](ONLINE_MAPPING.md)。
+原 driver/state/recorder/Foxglove 保留，没有物理输出；下方“8765 未监听”只描述此前文档更新时的状态。
+
 2026-10-20 使用文档更新：操作入口改为 [README](../README.md)，包含当前 `.164:2233` 独立部署启动顺序、
 建图保存、导航前置条件与 Foxglove 话题/TF/颜色/曲线说明；[Foxglove 详细指南](foxglove_visualization.md) 补充排查步骤。
 本次 SSH 检查没有发现 Livox、small_point_lio、Foxglove 进程，8765 没有监听，因此下文“已启动”描述此前验证，

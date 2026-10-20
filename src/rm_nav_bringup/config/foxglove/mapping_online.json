@@ -1,0 +1,68 @@
+{
+  "configById": {
+    "3D!scene": {
+      "followTf": "mapping_odom",
+      "followMode": "follow-pose",
+      "scene": {
+        "enableStats": true,
+        "transforms": {
+          "showLabel": true,
+          "axisScale": 0.3,
+          "lineWidth": 1
+        }
+      },
+      "transforms": {},
+      "topics": {
+        "/mapping/optimized_map_preview": {
+          "visible": true
+        },
+        "/mapping/optimized_path": {
+          "visible": true
+        },
+        "/mapping/loop_graph": {
+          "visible": true
+        },
+        "/mapping/optimized_map": {
+          "visible": false
+        }
+      }
+    },
+    "RawMessages!tf": {
+      "topicPath": "/mapping/mapping_odom_T_odom"
+    },
+    "RawMessages!odom": {
+      "topicPath": "/odom"
+    },
+    "RawMessages!state": {
+      "topicPath": "/mapping/online_status"
+    },
+    "RawMessages!tracking": {
+      "topicPath": "/mapping/recorder_status"
+    }
+  },
+  "globalVariables": {},
+  "userNodes": {},
+  "linkedGlobalVariables": [],
+  "playbackConfig": {
+    "speed": 1
+  },
+  "layout": {
+    "direction": "row",
+    "splitPercentage": 72,
+    "first": "3D!scene",
+    "second": {
+      "direction": "column",
+      "splitPercentage": 50,
+      "first": {
+        "direction": "column",
+        "first": "RawMessages!state",
+        "second": "RawMessages!tracking"
+      },
+      "second": {
+        "direction": "column",
+        "first": "RawMessages!tf",
+        "second": "RawMessages!odom"
+      }
+    }
+  }
+}
