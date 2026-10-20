@@ -1,146 +1,94 @@
-# Foxglove 实时可视化
+# Foxglove 使用与排查（2026-10-20）
 
-## 1. 启动 Bridge
+当前操作入口与完整话题表见 [README 第 2、3 节](../README.md#3-foxglove-怎么连接和配置)。
+当前车载地址为 `ws://192.168.1.164:8765`，SSH 为 `asus@192.168.1.164:2233`，运行 Domain=97。
+历史 `.145` 主机与旧路径不用于本次部署。
 
-ASUS 上执行：
+## 推荐布局
 
-```bash
-cd /home/asus/nav_2027/rm_nav_v2
-source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-ros2 launch rm_nav_bringup foxglove_visualization.launch.py
-```
+| 用途 | 布局 | 世界参考 | 默认重点 |
+| --- | --- | --- | --- |
+| 真实雷达/实时建图观察 | [mapping_low_latency.json](../src/rm_nav_bringup/config/foxglove/mapping_low_latency.json) | odom | 累积预览、历史轨迹、TF、原始状态 |
+| 正式地图定位与导航 | [navigation_tdt.json](../src/rm_nav_bringup/config/foxglove/navigation_tdt.json) | map | 正式地图、规划/TDT 路线、代价图、监管状态 |
+| 离线优化地图 | 新建独立 3D 面板 | mapping_odom | PCD 与优化图，不硬叠到实时 odom |
 
-默认监听 `0.0.0.0:8765`。Windows 上打开 Foxglove Studio，选择 **Open connection → Foxglove WebSocket**，
-地址填写：
+从布局菜单 Import from file 导入 JSON，具体步骤见 [官方布局说明](https://docs.foxglove.dev/docs/visualization/layouts)。
+启动命令见 README；不要为增加一个面板再启动第二个占用 8765 的 bridge。
+导航布局不能自动生成 map→odom、地图、costmap 或任务；必须先有真实对应生产链。
 
-```text
-ws://192.168.1.145:8765
-```
+## 点云显示建议
 
-如果 Wi-Fi 地址变化，在 ASUS 上用 `ip -4 addr show wlo1` 查询新地址。Bridge 只提供可视化数据，
-不会启动底盘、串口、LIO 或导航节点。
+调试雷达选 `/livox/lidar`；看 LIO 单帧效果选 `/lio/deskewed_odom_cloud`；
+看近期配准观测选 `/localization/odom_submap`；看实时累积效果选 `/visualization/live_map_preview`。
+四者是不同阶段，不要全部启用后将密集重叠误认为地图更完整。
 
-## 2. Foxglove Layout 建议
+预览默认 1 Hz、0.15 m、50000 体素点。体素按最近更新维护，容量满后淘汰旧体素，
+所以已经扫描很远的区域消失可能是容量策略，不代表原始关键帧丢失。
+预览只包含 x/y/z，没有 intensity。用 Color map + z 看高度，或者 Flat 设置固定颜色。
+点大小可从 2 像素试起；Decay time 设 0，避免客户端再次累计整段历史。
+颜色字段、色带和显示时刻说明见 [官方 3D 文档](https://docs.foxglove.dev/docs/visualization/panels/3d)。
 
-添加一个 **3D Panel**，固定 `Frame` 为 `odom`（查看原始/局部定位）或 `map`（查看正式地图）。
-打开 TF 显示，并加入以下图层：
+蓝色参考网格不是 occupancy 或 costmap，彩色点也不是障碍等级。
+优化图例则由工程固定：青蓝轨迹、黄球关键帧、红色已接纳回环边。
 
-| 可视化内容 | 话题 | Frame/用途 |
-| --- | --- | --- |
-| 原始 MID-360 点云 | `/livox/lidar` | `front_mid360`，检查原始字段和遮挡 |
-| 质量门后的点云 | `/sensors/front_mid360/guarded_points` | 只有质量通过时发布 |
-| 去畸变点云 | `/lio/deskewed_odom_cloud` | `odom`，用于检查 LIO 输出 |
-| 实时局部子地图 | `/localization/odom_submap` | `odom`，实时建图/定位窗口 |
-| 冻结地图输入 | `/localization/frozen_map` | `map`，需要定位链发布 |
-| 可视化 PCD 地图 | `/visualization/map_cloud` | 启动参数指定的 `map_frame` |
-| 原始 LIO 位姿 | `/lio/sensor_odometry` | `odom → front_mid360_imu` |
-| 底盘状态 | `/state/chassis` | 完整 `odom → chassis` 状态；平面 TF 由 projection 发布 |
-| Nav2 输出 | `/odom` | `odom → base_link` |
-| LaserScan 障碍物输入 | `/scan` | `base_link`，由 guarded MID-360 点云转换 |
-| 局部 Costmap | `/local_costmap/costmap` | `odom`，检查实时障碍物层和膨胀层 |
-| 全局 Costmap | `/global_costmap/costmap` | `map`，检查地图层、障碍物层和膨胀层 |
-| Costmap footprint | `/local_costmap/published_footprint` | 检查机器人足迹是否覆盖真实底盘 |
-| LIO 轨迹 | `/visualization/lio_path` | `nav_msgs/Path`，有界 5000 点 |
-| 底盘轨迹 | `/visualization/chassis_path` | `nav_msgs/Path`，有界 5000 点 |
-| Nav2 轨迹 | `/visualization/nav_path` | `nav_msgs/Path`，有界 5000 点 |
-| 优化轨迹/关键帧/回环 | `/visualization/optimization_graph` | `MarkerArray`，离线建图结果 |
-| 地图版本状态 | `/visualization/map_bundle_status` | JSON `String`，版本、哈希、坐标系、发布资格 |
-| 实时累积地图预览 | `/visualization/live_map_preview` | `odom` 坐标、有界体素预览，不是优化/冻结地图 |
-| 实时预览状态 | `/visualization/live_map_status` | 点数、体素上限、淘汰数、断流状态 |
-| 地图修正 | TF `map → odom` | 仅 MapOdomManager 发布 |
-| 质量状态 | `/sensors/front_mid360/cloud_healthy` | 通过/拒绝 |
-| 质量原因 | `/sensors/front_mid360/cloud_reason` | 退化、超时、字段错误原因 |
+## 如何判断是真实时，还是停留在旧画面
 
-再添加 **Raw Messages** 或 **Plot** 面板观察：
+1. 确认顶部连接状态，点开 Issues/问题，读取每一项完整错误。
+2. Raw Messages 选择 `/visualization/live_map_preview.header`，观察 stamp 持续增加。
+3. 选择 `/visualization/live_map_status`，观察 accepted_scans 增加、input_stale=false；points 不一定每帧增加。
+4. 观察实际源话题与 TF。源停止后，旧点云可能仍留在画面，轨迹也可能仍显示最后一次状态。
 
-- `/state/lio_healthy`、`/state/chassis_healthy`、`/localization/healthy`
-- `/mapping/recorder_status`、`/mapping/keyframe_archive`、`/mapping/recorder_healthy`
-- `/visualization/lio_path`、`/visualization/chassis_path`、`/visualization/nav_path`
-- `/localization/status_reason`、`/localization/submap_reason`
+预览在没有新点云时不重新发布并伪造新时间；状态会标记 input_stale。
+`/visualization/map_cloud` 是可选静态 PCD，有些离线可视化消息时间为零，不适合用于判断实时输入延迟。
+`/mapping/keyframe_archive` 是保存事件字符串，静止时不会连续更新，不能用它检测雷达帧率。
 
-建议保存两个 Layout：
+## TF 红色或点云不出现
 
-1. `MID360 实时输入`：原始点云、质量门点云、IMU/健康状态、TF。
-2. `建图与定位`：PCD 地图、局部子地图、去畸变点云、`map→odom→base_link` TF、状态原因。
-3. `Costmap 与规划`：固定 Frame 设为 `map`，加入 `/global_costmap/costmap`；另加一个 3D
-   面板固定 Frame 为 `odom`，加入 `/local_costmap/costmap`、`/scan` 和 TF。规划调试时再加入
-   `/plan`、`/local_plan` 或 MPPI 的 `/optimal_trajectory`，不要同时显示多个高带宽点云。
+3D 需要在点云源时间找到源 frame 到世界参考的变换，只有连线名字而缺对应时刻数据仍可能报错。
+依次检查：
 
-## 3. 查看已生成地图
+- 建图模式 Fixed/Display frame=odom，离线结果=mapping_odom，正式导航成功后=map。
+- 点云 header.frame_id 是否属于正在运行的那套链，而非另一 ROS Domain 或旧回放。
+- `/tf` 的动态变换是否持续，`/tf_static` 的固定安装是否收到，是否有重复 authority。
+- 健康原因与时间是否异常。不可用静态 map→odom 代替未成功的全局定位。
 
-优化器输出的是二进制 XYZ PCD，坐标声明在文件头中。启动 Bridge 时指定：
+在 ASUS 加载本次环境后执行，每条持续命令观察后 Ctrl+C：
 
 ```bash
-ros2 launch rm_nav_bringup foxglove_visualization.launch.py \
-  map_pcd:=/absolute/path/to/rebuilt_map.pcd \
-  map_frame:=mapping_odom \
-  graph_poses:=/absolute/path/to/optimized_poses.json \
-  graph_loops:=/absolute/path/to/loop_edges.json \
-  map_bundle:=/absolute/path/to/map_bundle.json
+source /home/asus/nav_2027_vehicle_config_164/remote_env_20261020.bash
+ros2 run tf2_ros tf2_echo odom front_mid360
+ros2 topic echo /state/lio_reason --once
+ros2 topic echo /localization/submap_reason --once
+ros2 topic info /tf --verbose
 ```
 
-该 PCD 会以 transient-local `/visualization/map_cloud` 发布，Foxglove 连接后仍可收到。
-它不自动变成正式 `map`，也不替代 MapBundle/官方坐标对齐。
-如果同时指定图优化文件，`/visualization/optimization_graph` 会显示蓝色优化轨迹、黄色关键帧和红色已验收回环边。
-该 MarkerArray 可直接放入 Foxglove 3D Panel，不需要手工解析 JSON。
+当前固定安装无动态云台 frame；IMU 原点、LiDAR 原点和 chassis 是不同参考点，不能直接相互改名。
 
-可为离线结果生成显式地图清单：
+## 延迟四五秒的排查顺序
 
-```bash
-python3 tools/create_map_bundle.py \
-  --optimized-dir /absolute/optimized_output \
-  --output /absolute/optimized_output/map_bundle.json
-```
+1. 关闭高带宽云，只保留预览、TF、历史轨迹，检查是否恢复；CPU/GPU 渲染与网络都可能积压。
+2. 检查预览状态和源时间是否更新；1 Hz 预览本身不会像约 10 Hz 单帧扫描那样连续。
+3. 检查 bridge 终端是否退出或报缓冲/连接错误，ASUS 执行 `ss -ltn 'sport = :8765'`。
+4. 检查 ASUS 本机源时间年龄，再核对两台机器实际时钟。先前跨机约 8 小时差不能解释为网络耗时，也不能忽略其对显示时间的影响。
+5. 如需调整 bridge/预览参数，先停止自己所属的 Foxglove 启动实例再改，不能重复启动争用端口；不要停止原车其他 ROS 进程。
 
-当前清单状态为 `draft_mapping_odom`，带 PCD、位姿、回环和输入哈希；
-`publishable_for_frozen_localization` 明确为 false，完成官方坐标对齐、占据栅格和实测验证前不能启动正式冻结地图。
+本次专用脚本缓冲 1 MiB；通用 launch 默认 4 MiB，不能把两者混为同一运行参数。
+之前同机源年龄 p95（LIO 约 10.45 ms、子图约 96.41 ms、预览约 62.49 ms）仅是特定采样窗口，
+不是桌面 UI 延迟承诺。实际 GUI 延迟还需在同一时间基准下观测。
 
-## 4. 实时建图查看
+## Plot 与状态面板
 
-实时建图必须同时启动传感器、LIO、状态链和关键帧采集；Bridge 单独启动不会产生地图：
+Plot 添加数值字段，如 `/odom.pose.pose.position.x`、`/odom.twist.twist.linear.y`、`/livox/imu.angular_velocity.z`。
+字段路径用法见 [官方 Plot 文档](https://docs.foxglove.dev/docs/visualization/panels/plot)。
+String/JSON 诊断用 Raw Messages，Bool 可用 Raw Messages 或 State Transitions。
+不要把整条 Odometry 消息或 String 直接当一条数值曲线。
 
-```bash
-# 终端 1：官方 Livox 驱动和真实 MID-360
-source /home/asus/nav_deps/livox_ws/install/setup.bash
-ROS_DOMAIN_ID=104 ros2 launch livox_ros_driver2 msg_MID360_launch.py
+`/visualization/nav_path` 是历史轨迹；`/plan` 与 `/visualization/tdt_path` 才是未来参考。
+速度来自状态估计时不是轮速真值。`submap_healthy=true` 也不等于正式地图定位或实车制动已经通过。
 
-# 终端 2：按实测 CalibrationBundle 启动 LIO/状态/观测子地图
-source /home/asus/nav_2027/rm_nav_v2/install/setup.bash
-ROS_DOMAIN_ID=104 ros2 launch rm_nav_bringup local_state.launch.py \
-  calibration_file:=/absolute/measured_calibration.yaml \
-  lio_params_file:=/absolute/lio_params.yaml \
-  enable_mid360_guard:=true
+## 保存、回放与现场边界
 
-# 终端 3：显式存储根目录，开始原始关键帧归档
-ROS_DOMAIN_ID=104 ros2 launch rm_nav_bringup mapping_capture.launch.py \
-  archive_root:=/home/asus/nav_data/mapping_sessions \
-  calibration_id:=measured-bundle-v1
-
-# 终端 4：Foxglove Bridge
-ROS_DOMAIN_ID=104 ros2 launch rm_nav_bringup foxglove_visualization.launch.py
-```
-
-在 Foxglove 中重点观察 `/livox/lidar` → `/sensors/front_mid360/guarded_points` →
-`/lio/deskewed_odom_cloud` → `/localization/odom_submap` 的数据链。
-另外观察 `/visualization/live_map_preview`；它将去畸变 `odom` 点云做有界体素累积，适合实时看建图进展。
-它断流时会在 `/visualization/live_map_status` 标记 `input_stale=true`，不会把旧点云重新伪装成新时间。
-
-Foxglove 低延迟默认配置为 Bridge 发送缓冲 4 MiB、实时预览 0.15 m 体素、最多 50000 点、1 Hz。
-同时显示原始点云、去畸变点云和实时累积地图会显著增加带宽和浏览器渲染压力；调试雷达时只打开
-`/livox/lidar`，看建图时只打开 `/visualization/live_map_preview` 和轨迹。
-`/mapping/keyframe_archive` 只是提交状态，不是点云；实时“地图效果”应使用
-`/localization/odom_submap`。关键帧归档停止后，再运行离线优化器生成最终 PCD；
-离线 PCD 不会自动覆盖实时子地图。
-
-最近一次 40 s 实机采集已验证原始输入、局部子地图输入和 LIO 回放链；该次雷达没有形成足够大的可量化运动，
-因此轨迹图可用性已验证，动态精度尚未验收。下一次采集应在 Foxglove 中同时观察三条 Path，
-并记录明确的移动距离、旋转角度和起止位置。
-
-## 5. 时间、Frame 和安全边界
-
-- 连接 Foxglove 前确保电脑与 ASUS 在同一网络；有线雷达网口仍使用 `.50/32`，不能改回 `.50/24`。
-- 播放 rosbag 时使用独立 `ROS_DOMAIN_ID`、`use_sim_time` 和 `/clock`；不要与物理驱动共用 domain。
-- 没有实测标定时，不要把 `front_mid360` 直接当作 `base_link`；不要手工补 TF。
-- Foxglove 显示数据不会证明定位精度；健康状态、源时间和 Frame 必须同时检查。
-- 实时建图和控制输出隔离；不要为了 Foxglove 直接打开 `/nav/cmd_vel_safe` 到物理串口。
+建图先启动 recorder，再结束录制并离线优化；PCD、关键帧和最终 MapBundle 的区别及命令见 README 第 4 节。
+观看 Foxglove 不会自动保存最终地图。离线优化结果发布器复用 bridge，显示参考为 mapping_odom。
+rosbag 回放使用独立 ROS Domain、use_sim_time 和 /clock，不与真车驱动混在 Domain 97。
+不要为消除显示告警开启物理控制或伪造 TF、编码器、速度和停车反馈。

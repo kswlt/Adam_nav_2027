@@ -1,5 +1,11 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-20 使用文档更新：操作入口改为 [README](../README.md)，包含当前 `.164:2233` 独立部署启动顺序、
+建图保存、导航前置条件与 Foxglove 话题/TF/颜色/曲线说明；[Foxglove 详细指南](foxglove_visualization.md) 补充排查步骤。
+本次 SSH 检查没有发现 Livox、small_point_lio、Foxglove 进程，8765 没有监听，因此下文“已启动”描述此前验证，
+不能视为当前后台服务在线。本次只修改文档，未重启节点、改参数或开启物理控制；未重复运行 colcon 构建测试。
+文档校验包括本地相对链接、源码中的话题/参数/输出文件名与 git diff；提交号和推送状态以对应 Git 提交为准。
+
 2026-10-20 最新接续：优先阅读 [ASUS 现场启动报告](ASUS_LIVE_20261020.md)、
 [完整使用与架构说明](SOFTWARE_USAGE_20261013.md)、[导航集成验收](NAVIGATION_INTEGRATION_ACCEPTANCE.md)。
 全 14 包在本机 WSL 和 ASUS 构建测试通过，49 tests 零失败（1 skipped）；真实 MID360/LIO/TF/EKF/
