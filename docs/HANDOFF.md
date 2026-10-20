@@ -1,5 +1,11 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-20 最新硬件澄清：用户确认雷达随 yaw 转，外轮廓 50×50 cm、轴左偏 16 cm、LiDAR 离地 25 cm。
+已准备 geometry YAML 与动态标定 draft；真实角度源/方向/零点/时间仍待验证，禁止把旧 fixed profile 当作该安装的实车定位验收。
+两轮串口只读均成功（12 秒3997帧、45秒14985帧，CRC错误0、TX=0），contact_angle 均为0。
+为避免新转动被旧固定安装配置错误归档，已暂停本工程旧关键帧录制与在线优化，原始雷达/LIO/Foxglove 保留。
+细节和动作时间验证状态见 [安装及电控记录](VEHICLE_DIMENSIONS_PENDING_20261020.md)；下方在线“运行”描述暂停前状态。
+
 2026-10-20 最新：已接入并在 ASUS 当前真实 session 启动在线回环/历史地图重建，
 使用独立 `build_online/install_online`；当前 29 帧、6 条通过门限回环、积压 0，真实闭环真值尚未验证。
 全量 50 tests 零失败（1 skipped），在线 ROS 闭环和原离线回归通过。新 Foxglove 布局为

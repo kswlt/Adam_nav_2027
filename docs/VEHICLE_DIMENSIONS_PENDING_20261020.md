@@ -2,6 +2,12 @@
 
 ## 最新确认与实测（下文旧待确认项已由此更新）
 
+第二轮用户表示准备好后，已执行 45 秒只读接收，14985 个 RX26 帧、333 帧/秒、CRC 错误 0、TX 字节 0，
+contact_angle 全程范围 `[0,0]`；收到动作与采集时间重叠的明确确认前，不把它写成“已证实转动但反馈失效”。
+本轮开始前，按准确进程组仅暂停本工程旧 keyframe_recorder 和 online_mapping，已有数据保留；
+driver、LIO/local_state、Foxglove 仍运行。旧固定安装解析只作历史调试，不能用于新动态安装的车体定位或导航验收。
+证据见 [45 秒接收](evidence/serial_yaw_observation_20261020.json)。新尺寸文件及动态草稿已同步 ASUS 源码目录，未激活。
+
 用户明确确认：外轮廓 50×50 cm、原点在车体平面中心；yaw 轴左偏 16 cm，雷达与轴同轴且随轴转动；
 底盘顶面离地 20 cm，LiDAR 测量原点再高 5 cm，即名义离地 25 cm。
 已写入 `src/rm_nav_bringup/config/vehicle_164_geometry.yaml`，50×50 cm footprint 相对平面中心为 ±0.25 m。

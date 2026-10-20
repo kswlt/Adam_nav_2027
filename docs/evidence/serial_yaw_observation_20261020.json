@@ -1,0 +1,230 @@
+{
+  "port": "/dev/ttyUSB0",
+  "baud": 115200,
+  "duration_s": 45,
+  "tx_bytes": 0,
+  "raw_bytes": 389627,
+  "valid_frames": 14985,
+  "valid_frames_per_s": 333.0,
+  "crc_errors": 0,
+  "discarded_bytes": 17,
+  "first_64_bytes_hex": "000000000000000000000000000000659fa50000000000000000000000000000000000000000000000659fa50000000000000000000000000000000000000000",
+  "first_frame": {
+    "game_type": 0,
+    "game_progress": 0,
+    "remain_hp": 0,
+    "max_hp": 0,
+    "stage_remain_time": 0,
+    "bullet_17mm": 0,
+    "outpost_hp": 0,
+    "base_hp": 0,
+    "rfid_status": 0,
+    "contact_angle": 0.0,
+    "is_fire": 0
+  },
+  "last_frame": {
+    "game_type": 0,
+    "game_progress": 0,
+    "remain_hp": 0,
+    "max_hp": 0,
+    "stage_remain_time": 0,
+    "bullet_17mm": 0,
+    "outpost_hp": 0,
+    "base_hp": 0,
+    "rfid_status": 0,
+    "contact_angle": 0.0,
+    "is_fire": 0
+  },
+  "contact_angle_range": [
+    0.0,
+    0.0
+  ],
+  "contact_angle_samples_1s": [
+    {
+      "t_s": 0.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 1.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 2.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 3.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 4.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 5.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 6.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 7.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 8.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 9.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 10.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 11.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 12.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 13.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 14.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 15.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 16.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 17.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 18.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 19.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 20.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 21.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 22.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 23.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 24.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 25.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 26.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 27.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 28.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 29.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 30.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 31.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 32.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 33.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 34.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 35.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 36.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 37.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 38.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 39.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 40.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 41.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 42.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 43.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 44.0,
+      "angle": 0.0
+    },
+    {
+      "t_s": 45.0,
+      "angle": 0.0
+    }
+  ],
+  "output_dir": "/home/asus/nav_2027_vehicle_config_164/runtime_20261020/serial_rx_1792518728467270876",
+  "scope": "Physical RX only; contact_angle unit and mechanical yaw meaning not verified"
+}
