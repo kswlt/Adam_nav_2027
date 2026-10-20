@@ -24,6 +24,8 @@ public:
   {
     map_frame_ = declare_parameter("map_frame", "map");
     odom_frame_ = declare_parameter("odom_frame", "odom");
+    tracking_frame_ = declare_parameter("tracking_frame", "base_link");
+    if (tracking_frame_.empty()) throw std::invalid_argument("Empty tracking frame");
     map_version_ = declare_parameter<std::string>("map_version", "");
     max_age_ = declare_parameter("max_estimate_age", 0.8);
     quality_timeout_ = declare_parameter("quality_timeout", 1.0);
@@ -121,7 +123,7 @@ public:
         const auto stamp = rclcpp::Time(msg->header.stamp, get_clock()->get_clock_type()).nanoseconds();
         const auto & position = msg->pose.pose.position;
         const double age = (now().nanoseconds() - stamp) / 1e9;
-        if (msg->header.frame_id == odom_frame_ && msg->child_frame_id == "base_link" &&
+        if (msg->header.frame_id == odom_frame_ && msg->child_frame_id == tracking_frame_ &&
             stamp > odom_stamp_ && age >= -0.05 && age <= 0.2 &&
             std::isfinite(position.x) && std::isfinite(position.y) && std::isfinite(position.z)) {
           odom_position_ = Eigen::Vector3d(position.x, position.y, position.z);
@@ -504,7 +506,7 @@ private:
   std::chrono::steady_clock::time_point hint_at_{};
   rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr hint_sub_;
   rm_nav_registration::ValidatorConfig config_;
-  std::string map_frame_, odom_frame_, map_version_, reason_{"no verified estimate"};
+  std::string map_frame_, odom_frame_, tracking_frame_, map_version_, reason_{"no verified estimate"};
   double max_age_, quality_timeout_;
   bool has_transform_{false}, healthy_{false}, pending_{false};
   bool publish_accepted_transform_{false};

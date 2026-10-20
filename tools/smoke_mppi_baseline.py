@@ -26,8 +26,9 @@ from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 
 
 class IdealPlant(Node):
-    def __init__(self, publish_global_tf=True, publish_localization_health=True, publish_motion_permission=True, controller_profile="mppi"):
+    def __init__(self, publish_global_tf=True, publish_localization_health=True, publish_motion_permission=True, controller_profile="mppi", sensor_reference=False):
         super().__init__('baseline_acceptance_plant')
+        self.base_frame = 'nav_reference' if sensor_reference else 'base_link'
         self.x = self.y = self.yaw = 0.0
         self.latest = TwistStamped()
         self.received_at = 0.0
@@ -44,12 +45,12 @@ class IdealPlant(Node):
         self.motion_enabled = True
         self.publish_motion_permission = publish_motion_permission
         self.health = self.create_publisher(Bool, '/localization/healthy', 10) if publish_localization_health else None
-        self.chassis_health = self.create_publisher(Bool,'/state/chassis_healthy',10)
+        self.chassis_health = self.create_publisher(Bool,'/state/sensor_reference_healthy' if sensor_reference else '/state/chassis_healthy',10)
         self.chassis_healthy = True
         self.enable = self.create_publisher(Bool, '/nav/motion_enable', 10)
         self.raw = self.create_publisher(TwistStamped, '/nav/cmd_vel_raw', 10)
         self.create_subscription(TwistStamped, '/nav/cmd_vel_safe', self.command, 10)
-        self.odom = self.create_publisher(Odometry, '/odom', 10)
+        self.odom = self.create_publisher(Odometry, '/sensor_reference/odom' if sensor_reference else '/odom', 10)
         self.scan = self.create_publisher(LaserScan, '/scan', qos_profile_sensor_data)
         self.map = self.create_publisher(
             OccupancyGrid, '/map', QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
@@ -101,21 +102,21 @@ class IdealPlant(Node):
         t = TransformStamped()
         t.header.stamp = stamp
         t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_link'
+        t.child_frame_id = self.base_frame
         t.transform.translation.x, t.transform.translation.y = self.x, self.y
         t.transform.rotation.z = math.sin(self.yaw / 2.0)
         t.transform.rotation.w = math.cos(self.yaw / 2.0)
         self.tf.sendTransform(t)
         odom = Odometry()
         odom.header.stamp = stamp
-        odom.header.frame_id, odom.child_frame_id = 'odom', 'base_link'
+        odom.header.frame_id, odom.child_frame_id = 'odom', self.base_frame
         odom.pose.pose.position.x, odom.pose.pose.position.y = self.x, self.y
         odom.pose.pose.orientation = t.transform.rotation
         odom.twist.twist = twist
         self.odom.publish(odom)
         if self.scan_mode != 'dropout':
             scan = LaserScan()
-            scan.header.stamp, scan.header.frame_id = stamp, 'base_link'
+            scan.header.stamp, scan.header.frame_id = stamp, self.base_frame
             scan.angle_min, scan.angle_max = -math.pi, math.pi
             scan.angle_increment = 2.0 * math.pi / 359.0
             scan.range_min, scan.range_max = 0.05, 6.0
@@ -149,7 +150,7 @@ class IdealPlant(Node):
         while time.monotonic() < end:
             msg = TwistStamped()
             msg.header.stamp = self.get_clock().now().to_msg()
-            msg.header.frame_id = 'base_link'
+            msg.header.frame_id = self.base_frame
             msg.twist.linear.y = 0.2
             self.raw.publish(msg)
             rclpy.spin_once(self, timeout_sec=0.02)
@@ -168,25 +169,33 @@ def main():
     import argparse, tempfile, yaml
     from ament_index_python.packages import get_package_share_directory
     parser=argparse.ArgumentParser();parser.add_argument('--controller-profile',choices=['mppi','tdt'],default='mppi')
+    parser.add_argument('--sensor-reference',action='store_true')
     args=parser.parse_args()
+    if args.sensor_reference and args.controller_profile!='tdt': parser.error('sensor-reference requires tdt')
     require(os.environ.get('ROS_DOMAIN_ID') not in (None, '', '0'),
             'Set a dedicated nonzero ROS_DOMAIN_ID before running acceptance')
-    report = {'test': 'ideal_plant_'+args.controller_profile+'_omni', 'hardware_connected': False}
+    report = {'test': 'ideal_plant_'+args.controller_profile+'_omni', 'hardware_connected': False, 'sensor_reference': args.sensor_reference}
     log_path = Path('log/'+args.controller_profile+'_baseline_smoke.log')
     log_path.parent.mkdir(exist_ok=True)
     rclpy.init()
-    plant = IdealPlant(controller_profile=args.controller_profile)
+    plant = IdealPlant(controller_profile=args.controller_profile, sensor_reference=args.sensor_reference)
     params_path=None
     if args.controller_profile=='tdt':
         params=yaml.safe_load((Path(get_package_share_directory('rm_nav_bringup'))/'config/mppi_baseline.yaml').read_text())
         params['controller_server']['ros__parameters']['FollowPath']={'plugin':'rm_nav_control::TdtOmniController','map_bundle_version':'TEST_ONLY_TDT','solve_budget':0.1}
+        if args.sensor_reference:
+            import importlib.util
+            share=Path(get_package_share_directory('rm_nav_bringup'))
+            spec=importlib.util.spec_from_file_location('sensor_profile',share/'launch/sensor_reference_profile.py')
+            module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+            module.configure(params,'TEST_ONLY_TDT',share)
         fd,params_path=tempfile.mkstemp(prefix='test_only_tdt_',suffix='.yaml')
         with os.fdopen(fd,'w') as stream: yaml.safe_dump(params,stream)
     process = None
     try:
         with log_path.open('w') as log:
             process = subprocess.Popen(
-                ['ros2', 'launch', 'rm_nav_bringup', 'mppi_baseline.launch.py', 'enable_task_supervisor:=false']+(['params_file:='+params_path] if params_path else []),
+                ['ros2', 'launch', 'rm_nav_bringup', 'mppi_baseline.launch.py', 'enable_task_supervisor:=false']+(['params_file:='+params_path] if params_path else [])+(['navigation_frame:=nav_reference','state_health_topic:=/state/sensor_reference_healthy','odom_topic:=/sensor_reference/odom'] if args.sensor_reference else []),
                 stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             names = ['controller_server', 'planner_server', 'behavior_server',
                      'bt_navigator', 'velocity_smoother', 'collision_monitor']
@@ -199,7 +208,8 @@ def main():
             goal.pose.header.frame_id = 'map'
             goal.pose.header.stamp = plant.get_clock().now().to_msg()
             goal.pose.pose.position.y = 1.0
-            goal.pose.pose.orientation.w = 1.0
+            goal.pose.pose.orientation.w = math.cos(.5) if args.sensor_reference else 1.0
+            goal.pose.pose.orientation.z = math.sin(.5) if args.sensor_reference else 0.0
             sent = client.send_goal_async(goal)
             require(plant.wait(sent.done, 5.0), 'Goal response timeout')
             handle = sent.result()
@@ -212,6 +222,8 @@ def main():
             require(result.result().status == GoalStatus.STATUS_SUCCEEDED, 'Navigation failed')
             require(math.hypot(plant.x, plant.y - 1.0) < 0.2, 'Final position inaccurate')
             require(plant.max_lateral > 0.05, 'No Omni lateral velocity observed')
+            if args.sensor_reference:
+                require(abs(plant.yaw)<1e-9,'Sensor-reference navigation changed virtual yaw')
             print('PASS lateral NavigateToPose', flush=True)
             plant.inject_velocity(1.0)
             require(abs(plant.latest.twist.linear.y) > 0.05, 'Clear scan blocks motion')

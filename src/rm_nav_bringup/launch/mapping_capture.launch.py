@@ -10,10 +10,11 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('archive_root',description='Absolute persistent archive root; new session per run'),
         DeclareLaunchArgument('calibration_id',description='Same measured calibration ID as local_state'),
+        DeclareLaunchArgument('state_health_topic',default_value='/state/chassis_healthy'),
         DeclareLaunchArgument('body_frame',default_value='base_footprint'),
         DeclareLaunchArgument('sensor_frame',default_value='front_mid360'),
         DeclareLaunchArgument('use_sim_time',default_value='false'),
-        Node(package='rm_nav_mapping',executable='keyframe_recorder',parameters=[{
+        Node(package='rm_nav_mapping',executable='keyframe_recorder',remappings=[('/state/chassis_healthy',LaunchConfiguration('state_health_topic'))],parameters=[{
             'archive_root':LaunchConfiguration('archive_root'),
             'calibration_id':LaunchConfiguration('calibration_id'),
             'body_frame':LaunchConfiguration('body_frame'),

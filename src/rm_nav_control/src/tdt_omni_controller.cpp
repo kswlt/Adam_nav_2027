@@ -24,6 +24,8 @@ void TdtOmniController::configure(const rclcpp_lifecycle::LifecycleNode::WeakPtr
     if (!node_->has_parameter(full)) node_->declare_parameter(full,fallback);
     return node_->get_parameter(full).as_string();
   };
+  if (!node_->has_parameter(name_+".translation_only")) node_->declare_parameter(name_+".translation_only",false);
+  translation_only_=node_->get_parameter(name_+".translation_only").as_bool();
   map_version_=text("map_bundle_version","");
   if (map_version_.empty()) throw nav2_core::ControllerException("TDT requires explicit MapBundle version");
   environment_version_=text("environment_version",map_version_+"/costmap");
@@ -172,11 +174,12 @@ geometry_msgs::msg::TwistStamped TdtOmniController::computeVelocityCommands(
     }
     if (path.size()==1) fail("No safe local path segment");
     if (!final_goal) path.back().z()=current.z();
+    if (translation_only_) for (auto & point:path) point.z()=current.z();
     rm_nav_planning::TdtRequest request;
     request.path=path;request.grid=grid;request.footprint=footprint;request.map_version=map_version_;
     request.environment_version=environment_version_;request.trajectory_id=++next_id_;request.execution_epoch_ns=now.nanoseconds();
     const double c=std::cos(current.z()),s=std::sin(current.z());
-    request.initial_velocity={c*velocity.linear.x-s*velocity.linear.y,s*velocity.linear.x+c*velocity.linear.y,velocity.angular.z};
+    request.initial_velocity={c*velocity.linear.x-s*velocity.linear.y,s*velocity.linear.x+c*velocity.linear.y,translation_only_?0.:velocity.angular.z};
     auto options=options_;options.limits.max_velocity=speed_limit_;
     rm_nav_planning::TimedTrajectory trajectory;rm_nav_planning::TdtReport report;
     if (!rm_nav_planning::TdtMinimumJerkBackend(options).generate(request,trajectory,report)) fail("TDT rejected: "+report.reason);
@@ -193,7 +196,7 @@ geometry_msgs::msg::TwistStamped TdtOmniController::computeVelocityCommands(
   }
   const auto result=tracker_->update(current,node_->now().nanoseconds(),map_version_,environment_version_);
   if (result.status!=TrackingStatus::Tracking&&result.status!=TrackingStatus::Complete) fail("Trajectory tracking invalidated");
-  out.twist.linear.x=result.body_velocity.x();out.twist.linear.y=result.body_velocity.y();out.twist.angular.z=result.body_velocity.z();
+  out.twist.linear.x=result.body_velocity.x();out.twist.linear.y=result.body_velocity.y();out.twist.angular.z=translation_only_?0.:result.body_velocity.z();
   const double speed=std::hypot(out.twist.linear.x,out.twist.linear.y);
   if (speed>speed_limit_) {out.twist.linear.x*=speed_limit_/speed;out.twist.linear.y*=speed_limit_/speed;}
   return out;

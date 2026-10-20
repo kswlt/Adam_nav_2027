@@ -7,7 +7,9 @@
 int main(int argc,char ** argv) {
   rclcpp::init(argc,argv);
   using namespace std::chrono_literals;
+  const bool translation_only=argc>1 && std::string(argv[1])=="--translation-only";
   auto parent=std::make_shared<rclcpp_lifecycle::LifecycleNode>("test_only_tdt_parent");
+  parent->declare_parameter("FollowPath.translation_only",translation_only);
   parent->declare_parameter("FollowPath.map_bundle_version","TEST_ONLY");
   parent->declare_parameter("FollowPath.sensor_health_topic","/test_only/tdt/cloud_health");
   parent->declare_parameter("FollowPath.solve_budget",1.0);
@@ -39,7 +41,8 @@ int main(int argc,char ** argv) {
   nav_msgs::msg::Path path;path.header.frame_id="map";
   for (int i=0;i<10;++i) {
     geometry_msgs::msg::PoseStamped p;p.header.frame_id="map";p.pose.position.x=2.5+.08*i;p.pose.position.y=2;
-    p.pose.orientation.w=1;path.poses.push_back(p);
+    p.pose.orientation.w=translation_only?std::cos(.6):1.;
+    p.pose.orientation.z=translation_only?std::sin(.6):0.;path.poses.push_back(p);
   }
   plugin->setPlan(path);heartbeat(true);
   geometry_msgs::msg::PoseStamped pose;pose.header.frame_id="odom";pose.pose.position.x=pose.pose.position.y=2;pose.pose.orientation.w=1;
@@ -47,6 +50,7 @@ int main(int argc,char ** argv) {
   for (int i=0;i<8;++i) {
     heartbeat(true);pose.header.stamp=parent->now();
     const auto command=plugin->computeVelocityCommands(pose,geometry_msgs::msg::Twist{},nullptr);
+    if(translation_only)assert(command.twist.angular.z==0.);
     assert(command.header.frame_id=="base_footprint");assert(std::hypot(command.twist.linear.x,command.twist.linear.y)<=.500001);
     moving=moving||command.twist.linear.x>1e-5;
   }

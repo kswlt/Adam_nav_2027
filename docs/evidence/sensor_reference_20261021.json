@@ -1,0 +1,120 @@
+{
+  "baseline": "d6fb61b88432d7342bdb4e904735504f84a765c8",
+  "environment": "local WSL Ubuntu-24.04 ROS2 Jazzy; no hardware devices",
+  "asus_deployed": false,
+  "build": "14 packages finished [1min 9s]",
+  "colcon_test_result": "Summary: 53 tests, 0 errors, 0 failures, 1 skipped",
+  "sensor_navigation_default_40ms_budget": {
+    "test": "ideal_plant_tdt_omni",
+    "hardware_connected": false,
+    "sensor_reference": true,
+    "action_status": 4,
+    "position": [
+      -0.03888665820288319,
+      0.8636349882166031,
+      0.0
+    ],
+    "max_lateral_velocity": 0.11941663814316465,
+    "obstacle_stop": true,
+    "scan_dropout_stop": true,
+    "command_timeout_stop": true,
+    "localization_unhealthy_stop": true,
+    "localization_heartbeat_stop": true,
+    "motion_permission_stop": true,
+    "passed": true
+  },
+  "legacy_tdt_navigation": {
+    "test": "ideal_plant_tdt_omni",
+    "hardware_connected": false,
+    "sensor_reference": false,
+    "action_status": 4,
+    "position": [
+      -0.04478462112781385,
+      0.8704102487831067,
+      0.0
+    ],
+    "max_lateral_velocity": 0.1580922518126317,
+    "obstacle_stop": true,
+    "scan_dropout_stop": true,
+    "command_timeout_stop": true,
+    "localization_unhealthy_stop": true,
+    "localization_heartbeat_stop": true,
+    "motion_permission_stop": true,
+    "passed": true
+  },
+  "legacy_mppi_navigation": {
+    "test": "ideal_plant_mppi_omni",
+    "hardware_connected": false,
+    "sensor_reference": false,
+    "action_status": 4,
+    "position": [
+      0.021579926766015178,
+      0.8607610179190015,
+      -0.029428270929874312
+    ],
+    "max_lateral_velocity": 0.30277377367019653,
+    "obstacle_stop": true,
+    "scan_dropout_stop": true,
+    "command_timeout_stop": true,
+    "localization_unhealthy_stop": true,
+    "localization_heartbeat_stop": true,
+    "motion_permission_stop": true,
+    "passed": true
+  },
+  "online_mapping_nav_reference": {
+    "test_only": true,
+    "accepted_before_fault": {
+      "mode": "ONLINE_MAPPING_ONLY_NOT_PUBLISHED_MAP",
+      "frame": "mapping_odom",
+      "session": "/tmp/online_mapping_test_31zxm3dp/session",
+      "revision": "12",
+      "keyframes": "12",
+      "map_points": "22416",
+      "accepted_loops": "2",
+      "candidates_tested": "2",
+      "loops_rejected": "0",
+      "pending_keyframes": "0",
+      "last_work_ms": "1614.080027",
+      "last_graph_ms": "1.0481880000000001",
+      "upstream_healthy": "false",
+      "fault": "false",
+      "reason": "bidirectional loop and GTSAM post-audit accepted; historical map rebuilt",
+      "budget_semantics": "soft deadline, non-preemptible registration; overshoot rejected"
+    },
+    "fault_status": {
+      "mode": "ONLINE_MAPPING_ONLY_NOT_PUBLISHED_MAP",
+      "frame": "mapping_odom",
+      "session": "/tmp/online_mapping_test_31zxm3dp/session",
+      "revision": "12",
+      "keyframes": "12",
+      "map_points": "22416",
+      "accepted_loops": "2",
+      "candidates_tested": "2",
+      "loops_rejected": "0",
+      "pending_keyframes": "1",
+      "last_work_ms": "1614.080027",
+      "last_graph_ms": "1.0481880000000001",
+      "upstream_healthy": "false",
+      "fault": "true",
+      "reason": "No such node (schema)",
+      "budget_semantics": "soft deadline, non-preemptible registration; overshoot rejected"
+    },
+    "historical_pose_changed": true,
+    "partial_ignored": true,
+    "originals_unchanged": true,
+    "physical_output": false
+  },
+  "initial_failure": {
+    "evidence_kind": "captured tool output excerpt",
+    "message": "bt_navigator not active; spin action server unavailable while loading default navigate_through_poses_w_replanning_and_recovery.xml",
+    "fix": "Sensor profile navigators=[navigate_to_pose]; dedicated translation-only tree",
+    "retest": "PASS; all six lifecycle nodes active"
+  },
+  "not_verified": [
+    "real rotating offset installation",
+    "MCU axes and velocity application point",
+    "real stop feedback",
+    "official field map",
+    "ASUS deployment"
+  ]
+}

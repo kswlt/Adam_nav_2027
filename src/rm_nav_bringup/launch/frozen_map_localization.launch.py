@@ -23,17 +23,24 @@ def nodes(context):
     parameters={'map_version':ParameterValue(LaunchConfiguration('map_version'),value_type=str),
                 'use_sim_time':ParameterValue(LaunchConfiguration('use_sim_time'),value_type=bool)}
     return map_nodes+[
-        Node(package='rm_nav_localization',executable='initial_pose_hint',parameters=[parameters],output='screen'),
+        Node(package='rm_nav_localization',executable='initial_pose_hint',parameters=[parameters, {'body_frame':LaunchConfiguration('hint_body_frame')}],output='screen'),
         Node(package='rm_nav_localization',executable='frozen_map_matcher',name='frozen_map_matcher',parameters=[parameters],output='screen'),
         Node(package='rm_nav_localization',executable='map_odom_manager',name='map_odom_manager',parameters=[parameters,{
+            'tracking_frame':LaunchConfiguration('tracking_frame'),
             'enable_recovery':ParameterValue(LaunchConfiguration('enable_recovery'),value_type=bool),
             'enable_recovery_transaction':ParameterValue(LaunchConfiguration('enable_recovery_transaction'),value_type=bool),
             'enable_auto_recovery':ParameterValue(LaunchConfiguration('enable_auto_recovery'),value_type=bool),
             'recovery_timeout':ParameterValue(LaunchConfiguration('recovery_timeout'),value_type=float),
-            'field_bounds':ParameterValue(LaunchConfiguration('field_bounds'))}],output='screen')]
+            'field_bounds':ParameterValue(LaunchConfiguration('field_bounds'))}],
+            remappings=[('/odom',LaunchConfiguration('odom_topic')),
+                        ('/state/chassis_healthy',LaunchConfiguration('state_health_topic'))],output='screen')]
 
 def generate_launch_description():
     return LaunchDescription([
+        DeclareLaunchArgument('tracking_frame',default_value='base_link'),
+        DeclareLaunchArgument('hint_body_frame',default_value='base_footprint'),
+        DeclareLaunchArgument('odom_topic',default_value='/odom'),
+        DeclareLaunchArgument('state_health_topic',default_value='/state/chassis_healthy'),
         DeclareLaunchArgument('map_version',description='Frozen MapBundle version or content hash'),
         DeclareLaunchArgument('map_bundle',default_value='',description='Optional published MapBundle manifest; draft maps are rejected'),
         DeclareLaunchArgument('use_sim_time',default_value='false'),

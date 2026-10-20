@@ -16,6 +16,10 @@ from smoke_loop_enabled_mapping import pose
 
 
 def main():
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--body-frame',choices=['base_footprint','nav_reference'],default='base_footprint')
+    args=parser.parse_args()
     # A dedicated domain prevents the fixture being mistaken for live vehicle input.
     os.environ['ROS_DOMAIN_ID']='197'
     root=Path(tempfile.mkdtemp(prefix='online_mapping_test_'));session=root/'session';session.mkdir()
@@ -36,7 +40,7 @@ def main():
         raise RuntimeError('Timeout; status='+str(status()))
     log=(root/'node.log').open('w')
     proc=subprocess.Popen(['ros2','run','rm_nav_mapping','online_mapping','--ros-args',
-        '-p','session:='+str(session),'-p','calibration_id:=TEST_ONLY-online-fixture'],
+        '-p','session:='+str(session),'-p','calibration_id:=TEST_ONLY-online-fixture','-p','body_frame:='+args.body_frame],
         stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
     originals={}
     try:
@@ -55,7 +59,7 @@ def main():
             directory=session/f'keyframe_{i}.partial';directory.mkdir();payload=serialize_message(frame)
             (directory/'observation.cdr').write_bytes(payload)
             metadata={'schema':1,'id':i,'stamp_ns':(100+i)*10**9,'calibration_id':frame.calibration_id,
-              'source_id':frame.source_id,'sensor_frame':frame.sensor_frame,'body_frame':'base_footprint',
+              'source_id':frame.source_id,'sensor_frame':frame.sensor_frame,'body_frame':args.body_frame,
               'cloud_frame':'odom','observation_file':'observation.cdr','observation_bytes':len(payload),
               'recorded_odom_T_body':recorded.ravel().tolist()}
             (directory/'metadata.json').write_text(json.dumps(metadata))

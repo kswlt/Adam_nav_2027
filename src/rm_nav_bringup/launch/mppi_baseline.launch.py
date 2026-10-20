@@ -27,8 +27,8 @@ def generate_launch_description():
         parameters=[{
             'target_frame': LaunchConfiguration('scan_target_frame'),
             'transform_tolerance': 0.05,
-            'min_height': -0.25,
-            'max_height': 0.35,
+            'min_height': ParameterValue(LaunchConfiguration('scan_min_height'), value_type=float),
+            'max_height': ParameterValue(LaunchConfiguration('scan_max_height'), value_type=float),
             'angle_min': -3.141592653589793,
             'angle_max': 3.141592653589793,
             'angle_increment': 0.008726646259971648,
@@ -58,10 +58,13 @@ def generate_launch_description():
     nodes.append(Node(
         package='rm_nav_bringup', executable='task_supervisor', name='task_supervisor',
         output='screen', parameters=[{'use_sim_time': sim_time}],
+        remappings=[('/state/chassis_healthy', LaunchConfiguration('state_health_topic')),
+                    ('/odom', LaunchConfiguration('odom_topic'))],
         condition=IfCondition(LaunchConfiguration('enable_task_supervisor'))))
     nodes.append(Node(
         package='rm_nav_control', executable='motion_gate', name='motion_gate',
-        output='screen', parameters=[{'use_sim_time': sim_time}]))
+        output='screen', parameters=[{'use_sim_time': sim_time, 'base_frame': LaunchConfiguration('navigation_frame')}],
+        remappings=[('/state/chassis_healthy', LaunchConfiguration('state_health_topic'))]))
     nodes.append(Node(
         package='rm_nav_control', executable='omni_pid_adapter', name='omni_pid_adapter',
         output='screen', condition=IfCondition(LaunchConfiguration('enable_omni_adapter')),
@@ -76,6 +79,9 @@ def generate_launch_description():
                      'node_names': [name for _, name, _ in specs]}]))
     return LaunchDescription([
         DeclareLaunchArgument('params_file', default_value=default_params),
+        DeclareLaunchArgument('navigation_frame', default_value='base_link'),
+        DeclareLaunchArgument('state_health_topic', default_value='/state/chassis_healthy'),
+        DeclareLaunchArgument('odom_topic', default_value='/odom'),
         DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument('autostart', default_value='true'),
         DeclareLaunchArgument('enable_task_supervisor', default_value='true'),
@@ -96,6 +102,8 @@ def generate_launch_description():
             'pointcloud_topic', default_value='/sensors/front_mid360/guarded_points'),
         DeclareLaunchArgument('scan_topic', default_value='/scan'),
         DeclareLaunchArgument('scan_target_frame', default_value='base_link'),
+        DeclareLaunchArgument('scan_min_height', default_value='-0.25'),
+        DeclareLaunchArgument('scan_max_height', default_value='0.35'),
         scan_adapter,
         *nodes,
     ])

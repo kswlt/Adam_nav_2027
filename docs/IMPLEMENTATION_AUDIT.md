@@ -1,5 +1,7 @@
 # Adam_nav_2027 源码审计报告
 
+2026-10-21 传感器参考模式：本轮基线 `d6fb61b88432d7342bdb4e904735504f84a765c8`，开始前已检查 clean status 并通过 SSH fetch 确认 feature/main；未覆盖现有修改。按照用户最新要求仅本机 WSL 编译测试，ASUS未部署。新增雷达参考状态、平移影子坐标转换、独立 Nav2/TDT profile 和保守圆形包络；原协议、完整底盘模式、生产 map→odom authority 保持不变。详细问题、修复范围、测试、已知风险和未验收项见 [SENSOR_REFERENCE_MODE](SENSOR_REFERENCE_MODE.md)。
+
 2026-10-20 在线建图补齐：基线 feature `541413d`，SSH fetch 后确认未有更新覆盖；独立实现后台调度、
 复用 KISS/GICP/LoopValidator/GTSAM，历史地图事务替换，原始 CDR 读取器与离线链共用。
 全 14 包在 ASUS 构建，50 tests 零失败（1 skipped）；在线/原离线闭环 ROS 回归通过，真实 session 已接入。

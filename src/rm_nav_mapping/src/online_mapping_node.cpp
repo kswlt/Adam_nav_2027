@@ -27,6 +27,9 @@ public:
     if(!fs::is_directory(session_))throw std::invalid_argument("Session is not a directory");
     calibration_=declare_parameter<std::string>("calibration_id","");
     if(calibration_.empty())throw std::invalid_argument("Expected calibration_id is required");
+    body_=declare_parameter<std::string>("body_frame","base_footprint");
+    if(body_!="base_footprint" && body_!="nav_reference")
+      throw std::invalid_argument("Unsupported explicit mapping reference");
     OnlineMappingConfig config;
     config.max_keyframes=declare_parameter<int>("max_keyframes",500);
     config.max_cloud_points=declare_parameter<int>("max_cloud_points",20000);
@@ -110,7 +113,7 @@ private:
         if(committed>engine_->frames().size()) {
           const auto index=engine_->frames().size();const auto dir=session_/("keyframe_"+std::to_string(index));
           archive::ArchivedFrame frame;auto points=archive::load(dir,frame,true,false);
-          if(frame.calibration!=calibration_ || frame.body!="base_footprint" || frame.source!="mid360_main" || frame.sensor!="front_mid360" ||
+          if(frame.calibration!=calibration_ || frame.body!=body_ || frame.source!="mid360_main" || frame.sensor!="front_mid360" ||
              (!source_.empty() && (source_!=frame.source || frame.sequence<=last_sequence_)))
             throw std::runtime_error("Mixed calibration/source/body or nonmonotonic sequence");
           engine_->append({frame.id,frame.stamp,frame.pose},points);
@@ -145,7 +148,7 @@ private:
     std::ostringstream stream;boost::property_tree::write_json(stream,data,false);
     std_msgs::msg::String msg;msg.data=stream.str();status_->publish(msg);
   }
-  fs::path session_;std::string calibration_,source_;std::uint64_t last_sequence_{0};
+  fs::path session_;std::string calibration_,source_,body_;std::uint64_t last_sequence_{0};
   std::unique_ptr<OnlineMapping> engine_;std::thread worker_;std::atomic<bool> stop_{false};
   std::mutex mutex_,wait_mutex_;std::condition_variable cv_;
   bool upstream_{false},fault_{false};std::chrono::steady_clock::time_point upstream_at_{};

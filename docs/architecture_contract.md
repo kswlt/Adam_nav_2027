@@ -1,5 +1,9 @@
 # RM Nav V2 Architecture Contract
 
+## 雷达参考导航 profile（2026-10-21）
+
+新增独立传感器参考模式：LIO只观测雷达6DoF；nav_reference为雷达轴平面位置、odom对齐朝向；sensor_yaw_reference为水平雷达朝向。没有角度反馈时不发布真实 chassis/base_link 姿态。Nav2/TDT只控制平移，电控承担自旋和大yaw；影子输出不接串口。既有完整底盘 profile 的唯一 TF authority 和编码器要求保持不变。完整坐标、速度作用点与兼容合同见 [SENSOR_REFERENCE_MODE](SENSOR_REFERENCE_MODE.md)。
+
 ## Frozen interfaces
 
 第一阶段冻结以下 `my_serial_py` 接口：

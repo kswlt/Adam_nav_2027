@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-21：用户已批准传感器参考导航方案，并要求暂不部署 ASUS。本次接入 `sensor_reference_state.launch.py` / `sensor_reference_navigation.launch.py`，默认不依赖 contact_angle，不发布假 chassis TF，输出只到影子速度。主 README 已重写为按操作顺序的说明；先读 [雷达参考模式](SENSOR_REFERENCE_MODE.md)。本机14包构建、53 tests / 0 errors / 0 failures / 1 skipped通过；新参考模式、原TDT/MPPI导航和nav_reference在线回环回归通过。下方“尚未接入”属于此前状态，已被本条取代。
+
 2026-10-20 原版接口审计更正：原版及 ASUS 原 Docker 的 fake_vel_transform 都从 LIO 衍生 odometry 读取 yaw，
 把虚拟参考速度旋转后交 my_serial_py 发送，不依赖 contact_angle；原协议说明将其标为“大小yaw差角”。
 不能把该字段为0判成所有导航方案都不能运行。完整真实 chassis 方案与传感器参考兼容模式应区别处理；

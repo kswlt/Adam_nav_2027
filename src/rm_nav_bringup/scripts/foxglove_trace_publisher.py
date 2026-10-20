@@ -47,6 +47,7 @@ def main():
     if not 10 <= args.max_points <= 20000: raise ValueError('max-points must be 10..20000')
     rclpy.init(); node = TracePublisher([
         ('lio','/lio/sensor_odometry','/visualization/lio_path'),
+        ('sensor_reference','/sensor_reference/odom','/visualization/sensor_reference_path'),
         ('chassis','/state/chassis','/visualization/chassis_path'),
         ('nav','/odom','/visualization/nav_path'),
     ], args.max_points)

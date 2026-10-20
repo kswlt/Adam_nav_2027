@@ -32,4 +32,9 @@ ROS_DOMAIN_ID=179 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
 python3 tools/smoke_offline_mapping.py > "$report/offline_mapping.log" 2>&1
 python3 tools/smoke_loop_enabled_mapping.py > "$report/loop_mapping.log" 2>&1
 python3 tools/smoke_online_mapping.py > "$report/online_mapping.log" 2>&1
+ROS_DOMAIN_ID=201 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
+  python3 tools/smoke_sensor_reference.py > "$report/sensor_reference.log" 2>&1
+ROS_DOMAIN_ID=203 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
+  python3 tools/smoke_mppi_baseline.py --controller-profile tdt --sensor-reference > "$report/nav2_sensor_reference.log" 2>&1
+
 echo 'PASS software integration suite; hardware and field accuracy remain unverified'

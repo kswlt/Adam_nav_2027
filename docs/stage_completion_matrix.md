@@ -1,5 +1,7 @@
 # P0-P10 验收矩阵
 
+2026-10-21：新增雷达轴参考模式，保留完整 chassis 模式。支持独立状态链、nav_reference 关键帧/在线优化、TDT只跟踪平移和雷达水平坐标速度影子转换。当前只在本机测试，ASUS部署及物理控制未执行。详见 [模式与验收记录](SENSOR_REFERENCE_MODE.md)。
+
 2026-10-20 在线建图更新：后台读取已提交关键帧，双向 KISS/GICP + 既有 GTSAM 后验验收，
 回环接纳后修正历史轨迹并替换全历史体素地图；独立 mapping_odom 可视化，odom/生产 map TF 不变。
 ASUS 全 14 包构建、50 tests / 0 errors / 0 failures / 1 skipped；在线 ROS fixture 与原离线闭环回归通过。

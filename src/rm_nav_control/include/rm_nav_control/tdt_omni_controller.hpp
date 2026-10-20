@@ -35,6 +35,7 @@ private:
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr version_sub_;
   rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Path>::SharedPtr path_pub_;
   rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::OccupancyGrid>::SharedPtr costmap_pub_;
+  bool translation_only_{false};
   bool active_{false}, sensor_healthy_{false}, map_consistent_{false};
   std::chrono::steady_clock::time_point sensor_at_{};
   nav_msgs::msg::Path plan_;
