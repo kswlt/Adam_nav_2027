@@ -106,10 +106,19 @@ public:
       });
     guess_sub_ = create_subscription<geometry_msgs::msg::TransformStamped>(
       "/localization/initial_guess", 10,
-      [this](geometry_msgs::msg::TransformStamped::ConstSharedPtr msg) { update_seed(*msg); });
+      [this](geometry_msgs::msg::TransformStamped::ConstSharedPtr msg) {
+        if(have_accepted_seed_)return;  // Repositioning requires the recovery transaction.
+        const double age=(now()-rclcpp::Time(msg->header.stamp,get_clock()->get_clock_type())).seconds();
+        if(age<0||age>1||rclcpp::Time(msg->header.stamp).nanoseconds()<=0) {
+          RCLCPP_WARN(get_logger(),"Expired operator initial guess rejected");return;
+        }
+        update_seed(*msg);
+      });
     accepted_sub_ = create_subscription<geometry_msgs::msg::TransformStamped>(
       "/localization/map_to_odom", rclcpp::QoS(1).transient_local(),
-      [this](geometry_msgs::msg::TransformStamped::ConstSharedPtr msg) { update_seed(*msg); });
+      [this](geometry_msgs::msg::TransformStamped::ConstSharedPtr msg) {
+        update_seed(*msg);have_accepted_seed_=true;
+      });
     cloud_sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(
       "/localization/odom_submap", rclcpp::SensorDataQoS().keep_last(1),
       [this](sensor_msgs::msg::PointCloud2::ConstSharedPtr msg) { match(*msg); });
@@ -202,6 +211,7 @@ private:
   bool map_conflict_{false};
   std::chrono::steady_clock::time_point last_start_{};
   Eigen::Isometry3d seed_{Eigen::Isometry3d::Identity()};
+  bool have_accepted_seed_{false};
   std::vector<Eigen::Vector3d> map_points_;
   sensor_msgs::msg::PointCloud2::ConstSharedPtr map_msg_;
   std::unique_ptr<rm_nav_registration::SmallGicpBackend> backend_;

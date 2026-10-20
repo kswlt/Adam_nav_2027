@@ -21,18 +21,21 @@ from lifecycle_msgs.srv import GetState
 from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import OccupancyGrid, Odometry
 from sensor_msgs.msg import LaserScan
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 
 
 class IdealPlant(Node):
-    def __init__(self, publish_global_tf=True, publish_localization_health=True, publish_motion_permission=True):
+    def __init__(self, publish_global_tf=True, publish_localization_health=True, publish_motion_permission=True, controller_profile="mppi"):
         super().__init__('baseline_acceptance_plant')
         self.x = self.y = self.yaw = 0.0
         self.latest = TwistStamped()
         self.received_at = 0.0
         self.max_lateral = 0.0
         self.scan_mode = 'clear'
+        self.controller_profile = controller_profile
+        self.cloud_health = self.create_publisher(Bool,'/sensors/front_mid360/cloud_healthy',10) if controller_profile=='tdt' else None
+        self.map_version = self.create_publisher(String,'/localization/map_version',QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL)) if controller_profile=='tdt' else None
         self.output_count = 0
         self.state_clients = {}
         self.state_futures = {}
@@ -86,6 +89,9 @@ class IdealPlant(Node):
         self.y += (s * twist.linear.x + c * twist.linear.y) * dt
         self.yaw += twist.angular.z * dt
         stamp = self.get_clock().now().to_msg()
+        if self.cloud_health:
+            self.cloud_health.publish(Bool(data=self.scan_mode!='dropout'))
+            self.map_version.publish(String(data='TEST_ONLY_TDT'))
         # Ideal-plant commissioning inputs; no measured hardware health is implied.
         self.chassis_health.publish(Bool(data=self.chassis_healthy))
         if self.publish_health:
@@ -159,18 +165,28 @@ def require(condition, description):
 
 
 def main():
+    import argparse, tempfile, yaml
+    from ament_index_python.packages import get_package_share_directory
+    parser=argparse.ArgumentParser();parser.add_argument('--controller-profile',choices=['mppi','tdt'],default='mppi')
+    args=parser.parse_args()
     require(os.environ.get('ROS_DOMAIN_ID') not in (None, '', '0'),
             'Set a dedicated nonzero ROS_DOMAIN_ID before running acceptance')
-    report = {'test': 'ideal_plant_mppi_omni', 'hardware_connected': False}
-    log_path = Path('log/mppi_baseline_smoke.log')
+    report = {'test': 'ideal_plant_'+args.controller_profile+'_omni', 'hardware_connected': False}
+    log_path = Path('log/'+args.controller_profile+'_baseline_smoke.log')
     log_path.parent.mkdir(exist_ok=True)
     rclpy.init()
-    plant = IdealPlant()
+    plant = IdealPlant(controller_profile=args.controller_profile)
+    params_path=None
+    if args.controller_profile=='tdt':
+        params=yaml.safe_load((Path(get_package_share_directory('rm_nav_bringup'))/'config/mppi_baseline.yaml').read_text())
+        params['controller_server']['ros__parameters']['FollowPath']={'plugin':'rm_nav_control::TdtOmniController','map_bundle_version':'TEST_ONLY_TDT','solve_budget':0.1}
+        fd,params_path=tempfile.mkstemp(prefix='test_only_tdt_',suffix='.yaml')
+        with os.fdopen(fd,'w') as stream: yaml.safe_dump(params,stream)
     process = None
     try:
         with log_path.open('w') as log:
             process = subprocess.Popen(
-                ['ros2', 'launch', 'rm_nav_bringup', 'mppi_baseline.launch.py', 'enable_task_supervisor:=false'],
+                ['ros2', 'launch', 'rm_nav_bringup', 'mppi_baseline.launch.py', 'enable_task_supervisor:=false']+(['params_file:='+params_path] if params_path else []),
                 stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             names = ['controller_server', 'planner_server', 'behavior_server',
                      'bt_navigator', 'velocity_smoother', 'collision_monitor']
@@ -244,9 +260,10 @@ def main():
             except subprocess.TimeoutExpired:
                 os.killpg(process.pid, signal.SIGKILL)
                 process.wait()
+        if params_path: Path(params_path).unlink(missing_ok=True)
         plant.destroy_node()
         rclpy.shutdown()
-        Path('log/mppi_baseline_smoke.json').write_text(json.dumps(report, indent=2))
+        Path('log/'+args.controller_profile+'_baseline_smoke.json').write_text(json.dumps(report, indent=2))
         print(json.dumps(report, indent=2), flush=True)
 
 

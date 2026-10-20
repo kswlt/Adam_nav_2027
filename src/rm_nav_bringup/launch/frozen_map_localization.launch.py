@@ -6,39 +6,24 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 def nodes(context):
-    import hashlib
-    import json
+    import importlib.util
     from pathlib import Path
     bundle_path=LaunchConfiguration('map_bundle').perform(context)
     map_version=LaunchConfiguration('map_version').perform(context)
+    map_nodes=[]
     if bundle_path:
-        manifest_path=Path(bundle_path).resolve(strict=True)
-        if manifest_path.is_symlink():
-            raise ValueError('MapBundle manifest must not be a symlink')
-        bundle=json.loads(manifest_path.read_text())
-        if (bundle.get('status')!='published' or bundle.get('coordinate_frame')!='map' or
-                bundle.get('official_alignment_applied') is not True or
-                bundle.get('publishable_for_frozen_localization') is not True or
-                bundle.get('version')!=map_version):
-            raise ValueError('MapBundle is not an aligned published map or version does not match')
-        artifacts=bundle.get('artifacts')
-        if not isinstance(artifacts, dict) or not artifacts:
-            raise ValueError('Published MapBundle must contain artifact references')
-        root=manifest_path.parent
-        for name, entry in artifacts.items():
-            if not isinstance(entry, dict) or not isinstance(entry.get('path'), str) or not isinstance(entry.get('sha256'), str):
-                raise ValueError(f'Invalid MapBundle artifact entry: {name}')
-            path=(root / entry['path']).resolve()
-            try: path.relative_to(root)
-            except ValueError as error: raise ValueError(f'MapBundle artifact escapes manifest directory: {name}') from error
-            if path.is_symlink() or not path.is_file():
-                raise ValueError(f'MapBundle artifact missing or symlinked: {name}')
-            digest=hashlib.sha256(path.read_bytes()).hexdigest()
-            if digest != entry['sha256']:
-                raise ValueError(f'MapBundle artifact hash mismatch: {name}')
+        spec=importlib.util.spec_from_file_location('rm_nav_bundle_contract',Path(__file__).with_name('map_bundle_contract.py'))
+        contract=importlib.util.module_from_spec(spec);spec.loader.exec_module(contract)
+        bundle,artifacts=contract.load_published_bundle(bundle_path)
+        if bundle['version']!=map_version: raise ValueError('MapBundle version mismatch')
+        map_nodes.append(Node(package='rm_nav_bringup',executable='pcd_map_publisher',
+            name='frozen_map_bundle_publisher',output='screen',arguments=[
+                '--pcd',str(artifacts[bundle['localization_map']]),'--frame','map',
+                '--topic','/localization/frozen_map','--rate','0.2']))
     parameters={'map_version':ParameterValue(LaunchConfiguration('map_version'),value_type=str),
                 'use_sim_time':ParameterValue(LaunchConfiguration('use_sim_time'),value_type=bool)}
-    return [
+    return map_nodes+[
+        Node(package='rm_nav_localization',executable='initial_pose_hint',parameters=[parameters],output='screen'),
         Node(package='rm_nav_localization',executable='frozen_map_matcher',name='frozen_map_matcher',parameters=[parameters],output='screen'),
         Node(package='rm_nav_localization',executable='map_odom_manager',name='map_odom_manager',parameters=[parameters,{
             'enable_recovery':ParameterValue(LaunchConfiguration('enable_recovery'),value_type=bool),

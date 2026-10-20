@@ -67,6 +67,7 @@ def generate_launch_description():
         output='screen', condition=IfCondition(LaunchConfiguration('enable_omni_adapter')),
         parameters=[LaunchConfiguration('omni_params_file'), {'use_sim_time': sim_time,
                      'enable_physical_output': ParameterValue(LaunchConfiguration('enable_physical_output'), value_type=bool),
+                     'readiness_topic': LaunchConfiguration('readiness_topic'),
                      'require_measured_feedback': ParameterValue(LaunchConfiguration('require_measured_feedback'), value_type=bool)}]))
     nodes.append(Node(
         package='nav2_lifecycle_manager', executable='lifecycle_manager',
@@ -86,6 +87,8 @@ def generate_launch_description():
             get_package_share_directory('rm_nav_bringup'), 'config', 'omni_pid_adapter.yaml')),
         DeclareLaunchArgument('require_measured_feedback', default_value='true',
                               description='false 使用纯速度前馈；不伪造轮速，drive_ready 和真实 odom 仍必需'),
+        DeclareLaunchArgument('readiness_topic',default_value='/hardware/drive_ready',
+                              description='Legacy transport-only commissioning may explicitly use /hardware/serial_healthy; this is not measured drive readiness'),
         DeclareLaunchArgument(
             'enable_mid360_scan', default_value='false',
             description='启用 MID-360 PointCloud2 到 LaserScan 适配；需要已验证 TF'),

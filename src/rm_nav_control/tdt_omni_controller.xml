@@ -1,0 +1,5 @@
+<library path="tdt_omni_controller">
+  <class name="rm_nav_control::TdtOmniController" type="rm_nav_control::TdtOmniController" base_class_type="nav2_core::Controller">
+    <description>TDT OSQP corridor trajectory and full polygon validated omni tracking.</description>
+  </class>
+</library>
