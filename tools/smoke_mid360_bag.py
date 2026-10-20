@@ -24,6 +24,8 @@ def main():
     parser.add_argument('--bag', required=True)
     parser.add_argument('--output', required=True)
     parser.add_argument('--deps', default='/home/asus/nav_deps')
+    parser.add_argument('--max-bag-duration', type=float, default=60.0,
+                        help='Explicit bounded replay duration budget, seconds (not a motion tolerance)')
     parser.add_argument('--with-visualization', action='store_true')
     parser.add_argument('--max-speed', type=float, default=5.0)
     parser.add_argument('--max-displacement', type=float, default=10.0)
@@ -36,8 +38,10 @@ def main():
         raise RuntimeError('Use an isolated ROS domain')
     bag = Path(args.bag).resolve(strict=True)
     meta = yaml.safe_load((bag / 'metadata.yaml').read_text())['rosbag2_bagfile_information']
-    if meta['duration']['nanoseconds'] > 60*10**9:
-        raise ValueError('This smoke test accepts bags up to 60 seconds')
+    if not math.isfinite(args.max_bag_duration) or not 0 < args.max_bag_duration <= 3600:
+        raise ValueError('Replay duration budget must be 0..3600 seconds')
+    if meta['duration']['nanoseconds'] > args.max_bag_duration*10**9:
+        raise ValueError('Bag exceeds explicit replay duration budget')
     types = {t['topic_metadata']['name']: t['topic_metadata']['type'] for t in meta['topics_with_message_count']}
     if types.get('/livox/lidar') != 'sensor_msgs/msg/PointCloud2' or types.get('/livox/imu') != 'sensor_msgs/msg/Imu':
         raise ValueError('Expected pinned Livox PointCloud2 and raw IMU topics')
@@ -71,12 +75,17 @@ def main():
         node.create_subscription(RosPath, '/visualization/lio_path', path_cb, qos)
         node.create_subscription(PointCloud2, '/visualization/live_map_preview', preview_cb, qos)
     input_last = 0
+    input_end_last = None
     first_input = None
     def stamp(m):
         return m.header.stamp.sec*10**9 + m.header.stamp.nanosec
     def input_cb(m):
-        nonlocal input_last, first_input
+        nonlocal input_last, first_input, input_end_last
         input_last = stamp(m)
+        field=next((f for f in m.fields if f.name=='timestamp' and f.datatype==8 and f.count==1),None)
+        if field and not m.is_bigendian and m.height==1 and m.width:
+            values=np.ndarray((m.width,),dtype='<f8',buffer=m.data,offset=field.offset,strides=(m.point_step,))
+            if np.isfinite(values).all():input_end_last=int(values.max())
         if first_input is None: first_input = input_last
     def odom_cb(m):
         p, q = m.pose.pose.position, m.pose.pose.orientation
@@ -97,6 +106,22 @@ def main():
     node.create_subscription(PointCloud2,'/lio/deskewed_odom_cloud',cloud_cb,qos_profile_sensor_data)
     node.create_subscription(TFMessage,'/tf',lambda m: tf.extend(m.transforms),10)
     procs, files = [], []
+    resources={'peak_rss_kib':0,'cpu_seconds':0.0,'samples':0,
+               'scope':'0.5 s sampled sum over ros2 run launcher and LIO children; shared RSS may be counted twice'}
+    def sample_resources(process):
+        try:
+            pending=[process.pid];rss=cpu=0
+            while pending:
+                pid=pending.pop();directory=Path('/proc')/str(pid)
+                pending.extend(int(x) for x in (directory/'task'/str(pid)/'children').read_text().split())
+                status=(directory/'status').read_text()
+                rss+=next(int(line.split()[1]) for line in status.splitlines() if line.startswith('VmRSS:'))
+                stat=(directory/'stat').read_text().rsplit(')',1)[1].split()
+                cpu+=(int(stat[11])+int(stat[12]))/os.sysconf('SC_CLK_TCK')
+            resources['peak_rss_kib']=max(resources['peak_rss_kib'],rss)
+            resources['cpu_seconds']=cpu
+            resources['samples']+=1
+        except (OSError,StopIteration,ValueError):pass
     def launch(cmd, name):
         f = (output/name).open('w'); files.append(f)
         p = subprocess.Popen(cmd,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
@@ -118,6 +143,8 @@ def main():
         while player.poll() is None and time.monotonic()<deadline:
             if lio.poll() is not None: raise RuntimeError('LIO exited early')
             rclpy.spin_once(node,timeout_sec=.01)
+            if not resources['samples'] or time.monotonic()-last_resource>=.5:
+                sample_resources(lio);last_resource=time.monotonic()
         if player.poll() != 0: raise RuntimeError('Bag player failed or timed out')
         start = time.monotonic()
         while time.monotonic()-start < 3:
@@ -174,6 +201,8 @@ def main():
               'bag': str(bag), 'internal_extrinsics': 'unverified upstream example; not measured robot calibration',
               'raw_acc_norm': 1.0, 'odometry_count': len(odom), 'deskewed_cloud_count':len(clouds),
               'tf_count':len(tf), 'last_input_to_output_lag_s':lag_s,
+              'last_point_end_to_output_lag_s':(input_end_last-odom[-1]['stamp_ns'])/1e9 if input_end_last and odom else None,
+              'lio_resources':resources,
               'first_odometry':odom[0] if odom else None,'last_odometry':odom[-1] if odom else None,
               'errors':errors}
     (output/'report.json').write_text(json.dumps(report,indent=2)+'\n')

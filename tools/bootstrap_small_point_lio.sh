@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export MAKEFLAGS="${MAKEFLAGS:--j2}"
 dependency_root="${RM_NAV_DEPS_ROOT:-${HOME}/.local/share/adam_nav/deps}"
 revision=688d75cfa780049ae532e5100ca64f46ad8b1a93
 checkout="${dependency_root}/src/small_point_lio"

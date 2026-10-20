@@ -1,0 +1,117 @@
+{
+  "configById": {
+    "3D!scene": {
+      "followTf": "map",
+      "followMode": "follow-pose",
+      "scene": {
+        "enableStats": true,
+        "transforms": {
+          "showLabel": true,
+          "axisScale": 0.3,
+          "lineWidth": 1
+        }
+      },
+      "transforms": {
+        "frame:map": {
+          "visible": true
+        },
+        "frame:odom": {
+          "visible": true
+        },
+        "frame:base_footprint": {
+          "visible": true
+        },
+        "frame:chassis": {
+          "visible": true
+        },
+        "frame:base_link": {
+          "visible": true
+        },
+        "frame:front_mid360_imu": {
+          "visible": true
+        },
+        "frame:front_mid360": {
+          "visible": true
+        }
+      },
+      "topics": {
+        "/visualization/live_map_preview": {
+          "visible": true
+        },
+        "/visualization/lio_path": {
+          "visible": true
+        },
+        "/visualization/chassis_path": {
+          "visible": true
+        },
+        "/map": {
+          "visible": true
+        },
+        "/plan": {
+          "visible": true
+        },
+        "/visualization/tdt_path": {
+          "visible": true
+        },
+        "/local_costmap/costmap": {
+          "visible": true
+        },
+        "/global_costmap/costmap": {
+          "visible": true
+        },
+        "/livox/lidar": {
+          "visible": false
+        },
+        "/lio/deskewed_odom_cloud": {
+          "visible": false
+        },
+        "/localization/odom_submap": {
+          "visible": false
+        },
+        "/visualization/map_cloud": {
+          "visible": false
+        },
+        "/visualization/tdt_costmap": {
+          "visible": false
+        }
+      }
+    },
+    "RawMessages!tf": {
+      "topicPath": "/tf"
+    },
+    "RawMessages!odom": {
+      "topicPath": "/odom"
+    },
+    "RawMessages!state": {
+      "topicPath": "/localization/status_reason"
+    },
+    "RawMessages!tracking": {
+      "topicPath": "/nav/tdt/report"
+    }
+  },
+  "globalVariables": {},
+  "userNodes": {},
+  "linkedGlobalVariables": [],
+  "playbackConfig": {
+    "speed": 1
+  },
+  "layout": {
+    "direction": "row",
+    "splitPercentage": 72,
+    "first": "3D!scene",
+    "second": {
+      "direction": "column",
+      "splitPercentage": 50,
+      "first": {
+        "direction": "column",
+        "first": "RawMessages!state",
+        "second": "RawMessages!tracking"
+      },
+      "second": {
+        "direction": "column",
+        "first": "RawMessages!tf",
+        "second": "RawMessages!odom"
+      }
+    }
+  }
+}

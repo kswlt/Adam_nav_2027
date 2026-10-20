@@ -9,6 +9,7 @@ import subprocess
 import time
 import sys
 import json
+import tempfile
 
 import rclpy
 from rclpy.node import Node
@@ -59,7 +60,9 @@ def main():
         node.create_subscription(Bool,'/state/chassis_healthy',lambda m:health.update(chassis=m.data),10)
         node.create_subscription(Bool,'/localization/healthy',lambda m:health.update({'global':m.data}),10)
     frozen=node.create_publisher(PointCloud2,'/localization/frozen_map',QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
-    params = yaml.safe_load(Path('/home/asus/nav_deps/src/small_point_lio/config/mid360.yaml').read_text())
+    from ament_index_python.packages import get_package_share_directory
+    source_config=Path(os.environ.get('RM_NAV_LIO_CONFIG',str(Path(get_package_share_directory('small_point_lio'))/'config/mid360.yaml')))
+    params = yaml.safe_load(source_config.read_text())
     params['small_point_lio']['ros__parameters'].update({
         'lidar_topic':'/fixture/lidar','imu_topic':'/fixture/imu','lidar_type':'livox_pointcloud2',
         'lidar_frame':'front_mid360','state_frame':'front_mid360_imu','odom_frame':'odom','publish_tf':False,
@@ -102,8 +105,10 @@ def main():
                 processes.append(subprocess.Popen(['ros2','launch','rm_nav_bringup','frozen_map_localization.launch.py',
                     'map_version:=synthetic-lio-pipeline'],stdout=log,stderr=subprocess.STDOUT,start_new_session=True))
                 if mapping:
+                    archive_root=Path(tempfile.mkdtemp(prefix='lio_mapping_capture_'))
+                    print('Retained native-filesystem archive root: '+str(archive_root),flush=True)
                     processes.append(subprocess.Popen(['ros2','launch','rm_nav_bringup','mapping_capture.launch.py',
-                        'archive_root:='+str(Path('log/lio_mapping_capture').resolve()),
+                        'archive_root:='+str(archive_root),
                         'calibration_id:=synthetic-lio-pipeline'],stdout=log,stderr=subprocess.STDOUT,start_new_session=True))
             process = subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
             processes.append(process)
@@ -185,7 +190,13 @@ def main():
                     require(not health.get('mapping',True) and len(archives)==archive_count,
                             'Mapping dropout stayed healthy or replayed cached observation')
                 owners={tf.child_frame_id for group in transforms for tf in group.transforms}
-                require(owners=={'base_footprint','big_gimbal_yaw','odom'},'Unexpected duplicate/raw LIO TF '+str(owners))
+                require(owners=={'base_footprint','chassis','big_gimbal_yaw','odom'},
+                        'Unexpected duplicate/raw LIO TF '+str(owners))
+                parents={tf.child_frame_id:{t.header.frame_id for group in transforms for t in group.transforms
+                         if t.child_frame_id==tf.child_frame_id} for group in transforms for tf in group.transforms}
+                require(parents=={'base_footprint':{'odom'},'chassis':{'base_footprint'},
+                                  'big_gimbal_yaw':{'chassis'},'odom':{'map'}},
+                        'Projection/TF parent contract violated '+str(parents))
             # Core output is already odom XYZ: do not apply a second body extrinsic.
             last = clouds[-1]
             xyz = [struct.unpack_from('<fff',last.data,i*last.point_step) for i in range(last.width)]

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Offline mode deliberately tests a subset; full mode never hides missing dependencies.
 set -eo pipefail
+export MAKEFLAGS="${MAKEFLAGS:--j2}"
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 profile="${1:-offline}"
 case "$profile" in offline|full) ;; *) echo 'Usage: bash tools/local_build_test.bash offline|full' >&2; exit 2 ;; esac
