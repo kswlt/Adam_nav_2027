@@ -1,5 +1,11 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-20 原版接口审计更正：原版及 ASUS 原 Docker 的 fake_vel_transform 都从 LIO 衍生 odometry 读取 yaw，
+把虚拟参考速度旋转后交 my_serial_py 发送，不依赖 contact_angle；原协议说明将其标为“大小yaw差角”。
+不能把该字段为0判成所有导航方案都不能运行。完整真实 chassis 方案与传感器参考兼容模式应区别处理；
+后者尚未在新框架接入，需复用原电控速度坐标约定及覆盖偏心车体的避障包络，不能直接绕过现有动态健康门。
+源码位置、已确认事实和电控侧未知项见 [原版速度坐标审计](ADAM_CONTROL_FRAME_AUDIT_20261020.md)。
+
 2026-10-20 最新硬件澄清：用户确认雷达随 yaw 转，外轮廓 50×50 cm、轴左偏 16 cm、LiDAR 离地 25 cm。
 已准备 geometry YAML 与动态标定 draft；真实角度源/方向/零点/时间仍待验证，禁止把旧 fixed profile 当作该安装的实车定位验收。
 两轮串口只读均成功（12 秒3997帧、45秒14985帧，CRC错误0、TX=0），contact_angle 均为0。
