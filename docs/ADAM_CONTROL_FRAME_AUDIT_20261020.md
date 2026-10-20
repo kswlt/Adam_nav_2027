@@ -1,5 +1,7 @@
 # 原版 Adam 不依赖 contact_angle 的源码核对
 
+2026-10-21 实现更新：下文保留此前审计事实；其中“兼容profile尚未接入”描述当时状态。现已完成雷达参考影子模式，以及 [原Adam通信兼容入口](LEGACY_ADAM_REPLACEMENT.md)，本机测试通过，物理部署仍未执行。
+
 ## 结论与此前说明的修正
 
 原版上位机的 xy 导航命令链不依赖串口回传的 contact_angle，使用的是 LIO 衍生 odometry 的 yaw。

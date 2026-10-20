@@ -1,0 +1,41 @@
+{
+  "baseline": "b3e4be91de5622ed20cd809e79b45fe95490a337",
+  "environment": "local WSL Ubuntu 24.04, ROS 2 Jazzy; PTY only",
+  "asus_deployed": false,
+  "build_summary": "14 packages finished [10.2s]",
+  "colcon_test_result": "Summary: 56 tests, 0 errors, 0 failures, 1 skipped",
+  "compatibility_chain": {
+    "mode": "TEST_ONLY",
+    "physical_io": false,
+    "firmware_modified": false,
+    "observed_tx_hz": 50.82583288212786,
+    "passed": true,
+    "tx_bytes": 54,
+    "rx_bytes": 26,
+    "rotation_and_single_negation": true,
+    "contact_angle_not_required": true,
+    "cached_yaw_passthrough": true,
+    "global_cmd_vel_isolated": true,
+    "raw_quality_stop": true,
+    "rx_dropout_stop": true,
+    "permission_stop": true,
+    "lio_dropout_stop": true,
+    "command_timeout_stop": true,
+    "no_replay": true,
+    "full_chassis_stop": "NOT_VERIFIED"
+  },
+  "default_strict_yaw_regression": "PASS PTY: 54-byte TX, 26-byte RX, split/noise/CRC recovery, ROS fields, signs/yaw/reserved compatibility, watchdog/nonfinite stop",
+  "protocol_with_original_library": "..............                                                           [100%]\n- generated xml file: /root/adam_nav_sensor_reference/legacy_protocol_junit.xml -\n14 passed in 0.03s",
+  "initial_failure": {
+    "state_log": "/usr/bin/env: ‘python3\\r’: No such file or directory\n/usr/bin/env: use -[v]S to pass options in shebang lines\n[ros2run]: Process exited with failure 127\n",
+    "cause": "Working-tree CRLF copied through rsync caused python3\\r shebang failure; normalize script LF as required by .gitattributes",
+    "retained_logs": "/root/adam_nav_sensor_reference/legacy_transport_failure_evidence",
+    "retest": "Passed after LF normalization; no wire thresholds relaxed"
+  },
+  "not_verified": [
+    "current physical MCU firmware behavior",
+    "offset-axis velocity point compensation",
+    "physical wheel/chassis stop",
+    "ASUS deployment"
+  ]
+}

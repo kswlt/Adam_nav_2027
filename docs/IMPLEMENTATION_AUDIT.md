@@ -1,5 +1,7 @@
 # Adam_nav_2027 源码审计报告
 
+2026-10-21 电控兼容阶段：基线 b3e4be9，clean status + SSH fetch确认无新提交覆盖；复用原my_serial_py，协议编码未改。新增原缓存yaw策略的显式入口和私有速度适配，保留严格默认、超时归零和串口归属检查。WSL全14包构建、56 tests零失败（1 skipped）；原发送函数/libscrc黄金报文与新端到端PTY、旧严格模式回归通过。首次CRLF启动失败证据、修改/风险/未验收项见 [LEGACY_ADAM_REPLACEMENT](LEGACY_ADAM_REPLACEMENT.md)。本轮没有ASUS操作或物理串口输出，main不合并。
+
 2026-10-21 传感器参考模式：本轮基线 `d6fb61b88432d7342bdb4e904735504f84a765c8`，开始前已检查 clean status 并通过 SSH fetch 确认 feature/main；未覆盖现有修改。按照用户最新要求仅本机 WSL 编译测试，ASUS未部署。新增雷达参考状态、平移影子坐标转换、独立 Nav2/TDT profile 和保守圆形包络；原协议、完整底盘模式、生产 map→odom authority 保持不变。详细问题、修复范围、测试、已知风险和未验收项见 [SENSOR_REFERENCE_MODE](SENSOR_REFERENCE_MODE.md)。
 
 2026-10-20 在线建图补齐：基线 feature `541413d`，SSH fetch 后确认未有更新覆盖；独立实现后台调度、

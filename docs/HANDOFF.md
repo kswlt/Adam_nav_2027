@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-21 电控兼容补齐：新增 `legacy_adam_transport.launch.py`，默认不打开串口，使用独立候选速度避免原区域节点 `/cmd_vel` 混入。`my_serial_py` 保留54/26字节原协议，仅增加显式 legacy_cached yaw策略；默认 require_fresh 不变。不发布替代业务yaw目标。原发送函数/libscrc黄金报文逐字节通过，WSL14包构建、56 tests零失败（1 skipped），整链路PTY约50.8Hz，旧严格串口回归也通过。ASUS未部署、未动车、原代码未修改；先读 [原Adam兼容说明](LEGACY_ADAM_REPLACEMENT.md)。
+
 2026-10-21：用户已批准传感器参考导航方案，并要求暂不部署 ASUS。本次接入 `sensor_reference_state.launch.py` / `sensor_reference_navigation.launch.py`，默认不依赖 contact_angle，不发布假 chassis TF，输出只到影子速度。主 README 已重写为按操作顺序的说明；先读 [雷达参考模式](SENSOR_REFERENCE_MODE.md)。本机14包构建、53 tests / 0 errors / 0 failures / 1 skipped通过；新参考模式、原TDT/MPPI导航和nav_reference在线回环回归通过。下方“尚未接入”属于此前状态，已被本条取代。
 
 2026-10-20 原版接口审计更正：原版及 ASUS 原 Docker 的 fake_vel_transform 都从 LIO 衍生 odometry 读取 yaw，

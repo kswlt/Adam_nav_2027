@@ -1,5 +1,7 @@
 # 雷达参考导航模式
 
+2026-10-21 追加：独立的 [legacy_adam_transport](LEGACY_ADAM_REPLACEMENT.md) 可将影子xy接入原协议；默认仍关闭设备，不改此状态链的yaw/TF语义。
+
 本模式适用于全向底盘自旋、大 yaw 独立扫描、上位机暂时拿不到底盘实际朝向的分工。
 它不使用 `contact_angle`，也不将 LIO yaw 解释成云台相对底盘角度。部署暂缓，按用户要求先在本机 WSL 验证。
 

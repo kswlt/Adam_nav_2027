@@ -28,6 +28,9 @@ class SerialNode(Node):
         self.cmd_timeout = self.declare_parameter('cmd_vel_timeout', 0.3).value
         self.yaw_timeout = self.declare_parameter('yaw_timeout', 0.3).value
         self.rx_timeout = self.declare_parameter('rx_timeout', 0.3).value
+        self.yaw_policy = self.declare_parameter('yaw_policy', 'require_fresh').value
+        if self.yaw_policy not in ('require_fresh', 'legacy_cached'):
+            raise ValueError('yaw_policy must be require_fresh or legacy_cached')
         if not math.isfinite(self.cmd_timeout) or self.cmd_timeout <= 0:
             raise ValueError('cmd_vel_timeout must be positive and finite')
         if any(not math.isfinite(t) or t <= 0 for t in (self.yaw_timeout, self.rx_timeout)):
@@ -63,7 +66,11 @@ class SerialNode(Node):
         self.create_timer(0.02, self.periodic_send_to_stm32)
         self.get_logger().info(
             f'Serial {self.serial_port} @ {self.baud_rate}; RX 26 / TX 54 bytes; '
-            f'planar velocity timeout {self.cmd_timeout}s')
+            f'planar velocity timeout {self.cmd_timeout}s; yaw_policy={self.yaw_policy}')
+        if self.yaw_policy == 'legacy_cached':
+            self.get_logger().warning(
+                'Adam compatibility: TX repeats cached yaw, initially 0 degrees. '
+                'Zero is the ORIGINAL angle field value, NOT a yaw-disable command.')
 
     def disconnect_locked(self):
         if self.serial_conn is not None:
@@ -179,9 +186,11 @@ class SerialNode(Node):
                 self.last_rx is not None and at-self.last_rx <= self.rx_timeout))
             if self.serial_conn is None:
                 return
-            # This wire format has no yaw-disable bit. Never send an invented zero
-            # angle at startup or keep refreshing an expired yaw target indefinitely.
-            if self.last_yaw is None or at-self.last_yaw > self.yaw_timeout:
+            # Default: no invented startup angle or indefinitely refreshed stale target.
+            # legacy_cached is an EXPLICIT original-behavior profile: initial zero,
+            # then last received angle. Zero is not interpreted as a disable flag.
+            if self.yaw_policy == 'require_fresh' and (
+                    self.last_yaw is None or at-self.last_yaw > self.yaw_timeout):
                 self.last_command = None
                 self.latest_x = self.latest_y = 0.0
                 return

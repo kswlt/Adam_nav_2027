@@ -1,5 +1,7 @@
 # 串口通信说明
 
+2026-10-21：运行桥默认仍是 `yaw_policy=require_fresh`；新增显式 `legacy_cached` 保留原Adam的初始0度/缓存目标行为。两者不可混称。新传感器参考模式的私有速度映射及协议对照见 [兼容替换说明](LEGACY_ADAM_REPLACEMENT.md)。
+
 本文档总结当前工作区内串口通信节点的实际实现，便于上位机、下位机和行为树联调时对照。
 
 当前运行入口为 `src/my_serial_py/my_serial_py/serial_bridge.py`，
