@@ -1,0 +1,37 @@
+schema_version: 1
+bundle_id: vehicle164-yaw-user-geometry-20261020-pending-encoder
+status: draft
+sensor_mount: moving_big_gimbal_yaw
+source: user_confirmed_mount_geometry_and_pinned_factory_internal_extrinsics
+field_calibration_verified: false
+pending: [real_encoder_source, encoder_sign, encoder_zero_offset, encoder_timestamp_validation]
+# Chassis origin is defined at the planar vehicle centre, nominal ground
+# reference when level. The yaw reference plane is the chassis top at z=0.20.
+frames:
+  base_footprint: base_footprint
+  chassis: chassis
+  big_gimbal_yaw: big_gimbal_yaw
+  imu: front_mid360_imu
+  lidar: front_mid360
+encoder:
+  joint: big_gimbal_yaw
+  topic: /hardware/gimbal_joint_states
+  sign: null
+  zero_offset: null
+transforms:
+  # Nominal level reference only; production projection publishes this TF
+  # dynamically from full SE3 state, not as a static frozen chassis pose.
+  footprint_to_chassis:
+    translation: [0.0, 0.0, 0.0]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
+  chassis_to_yaw_zero:
+    translation: [0.0, 0.16, 0.20]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
+  # yaw_T_lidar = yaw_T_imu * imu_T_lidar = [0,0,0.05].
+  # The LiDAR measurement origin remains coaxial during yaw rotation.
+  yaw_to_imu:
+    translation: [0.011, 0.02329, 0.00588]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
+  imu_to_lidar:
+    translation: [-0.011, -0.02329, 0.04412]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]

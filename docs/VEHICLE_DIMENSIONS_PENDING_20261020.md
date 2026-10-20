@@ -1,5 +1,35 @@
 # 车载尺寸与安装位置待确认记录（2026-10-20）
 
+## 最新确认与实测（下文旧待确认项已由此更新）
+
+用户明确确认：外轮廓 50×50 cm、原点在车体平面中心；yaw 轴左偏 16 cm，雷达与轴同轴且随轴转动；
+底盘顶面离地 20 cm，LiDAR 测量原点再高 5 cm，即名义离地 25 cm。
+已写入 `src/rm_nav_bringup/config/vehicle_164_geometry.yaml`，50×50 cm footprint 相对平面中心为 ±0.25 m。
+
+动态外参草稿为 `src/rm_nav_frames/config/vehicle_164_yaw_mid360.draft.yaml`：
+chassis 的配置参考原点定义在车体平面中心的名义地面基准；yaw 参考平面定义在底盘顶面，
+chassis→yaw 平移 `[0,0.16,0.20]`，yaw→LiDAR 平移 `[0,0,0.05]`。
+工厂 imu→LiDAR 向量保持不变，yaw→IMU 为 `[0.011,0.02329,0.00588]`。
+已做 YAML 与组合数学检查，在 yaw=0/90/180/-90° 时 LiDAR 原点均为 `[0,0.16,0.25]`，符合同轴关系。
+这定义的是新配置参考，不把未经验证的 odom 原点宣称为实际地面或官方场地坐标。
+
+草稿继续保留 `status:draft`、encoder sign/zero_offset=null，未伪造 verified。
+原动态链的 `/hardware/gimbal_joint_states` 实测 6 秒无发布者、无消息。
+现有 my_serial_py 中 contact_angle 是无时间戳的 Float32，源码标注 yaw 差角，不能直接冒充经过验证的机械绝对角。
+
+随后获用户询问接收情况，对 `/dev/ttyUSB0` 做物理只读采集：115200、12 秒、103923 字节、3997 个有效 RX26 帧，
+约 333.08 帧/秒，CRC 错误 0；开始于一条报文尾部，丢弃 1 字节完成帧同步。
+**TX=0 字节**；复用原 FeedbackStream，没有启动会发控制帧的串口节点，采集后恢复串口 termios 并关闭端口。
+该段所有已解析字段均为零，contact_angle 范围 `[0,0]`；仅证明收包/原协议 CRC 解码成功，角度含义、单位、方向、零点与时间仍 NOT VERIFIED。
+证据见 [物理 RX 报告](evidence/serial_rx_20261020.json)，原始字节留在 ASUS 对应 runtime/serial_rx_* 目录，没有上传原始流。
+
+本次仅准备新配置和实测接收，不修改当前运行 TF。当前旧 fixed_chassis 配置不能作为新动态安装的车体定位验收依据；
+现有旧标定 session 保留，后续动态标定接入时必须建立新 ID、新 session，不将旧数据重标为新安装通过。
+已请求通过电控现有调试方式转动 yaw 再回正，待用户准备后继续只读采集。
+没有重新构建/运行 colcon 测试：本次配置未接入生产链，完成的是几何数学检查和真实串口接收检查。
+
+## 先前待确认记录（历史）
+
 本记录保存用户最新描述，不作为运行标定或已实测通过的 footprint。
 当前建图继续使用先前固定安装配置；本次没有切换 TF 或开启车辆控制。
 

@@ -1,0 +1,44 @@
+{
+  "port": "/dev/ttyUSB0",
+  "baud": 115200,
+  "duration_s": 12,
+  "tx_bytes": 0,
+  "raw_bytes": 103923,
+  "valid_frames": 3997,
+  "valid_frames_per_s": 333.0833333333333,
+  "crc_errors": 0,
+  "discarded_bytes": 1,
+  "first_64_bytes_hex": "9fa50000000000000000000000000000000000000000000000659fa50000000000000000000000000000000000000000000000659fa500000000000000000000",
+  "first_frame": {
+    "game_type": 0,
+    "game_progress": 0,
+    "remain_hp": 0,
+    "max_hp": 0,
+    "stage_remain_time": 0,
+    "bullet_17mm": 0,
+    "outpost_hp": 0,
+    "base_hp": 0,
+    "rfid_status": 0,
+    "contact_angle": 0.0,
+    "is_fire": 0
+  },
+  "last_frame": {
+    "game_type": 0,
+    "game_progress": 0,
+    "remain_hp": 0,
+    "max_hp": 0,
+    "stage_remain_time": 0,
+    "bullet_17mm": 0,
+    "outpost_hp": 0,
+    "base_hp": 0,
+    "rfid_status": 0,
+    "contact_angle": 0.0,
+    "is_fire": 0
+  },
+  "contact_angle_range": [
+    0.0,
+    0.0
+  ],
+  "output_dir": "/home/asus/nav_2027_vehicle_config_164/runtime_20261020/serial_rx_1792518527387157259",
+  "scope": "Physical RX only; contact_angle unit and mechanical yaw meaning not verified"
+}

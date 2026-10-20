@@ -1,0 +1,19 @@
+schema_version: 1
+status: user_confirmed_geometry
+source: user_confirmation_20261020
+field_precision_verified: false
+units: metres
+footprint:
+  frame: base_link
+  origin: vehicle_planar_geometric_center
+  length: 0.50
+  width: 0.50
+  polygon: [[0.25, 0.25], [-0.25, 0.25], [-0.25, -0.25], [0.25, -0.25]]
+mount:
+  sensor_moves_with_yaw: true
+  yaw_axis_offset_from_vehicle_center_xy: [0.0, 0.16]
+  lidar_coaxial_with_yaw: true
+  chassis_top_above_ground: 0.20
+  lidar_origin_above_chassis_top: 0.05
+  nominal_lidar_origin_above_ground: 0.25
+# This geometry file is not a CalibrationBundle or an output-enable profile.
