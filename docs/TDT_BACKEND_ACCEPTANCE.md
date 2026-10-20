@@ -36,7 +36,8 @@ colcon test --packages-select rm_nav_planning
 colcon test-result --verbose
 ```
 
-当前核心已实现并测试；ROS Path/环境快照适配与统一命令来源接线随后实施。
+当前核心已实现并测试；ROS Path/真实 Costmap 快照与 Nav2 命令来源现已接线，见
+[导航集成验收](NAVIGATION_INTEGRATION_ACCEPTANCE.md) 和 [完整使用说明](SOFTWARE_USAGE_20261013.md)。
 默认物理输出不变，没有向车辆发送运动指令。
 
 Git 已恢复，专用 SSH 身份为 kswlt；此前六个步骤已独立中文 commit/push，远端为 fb2aef2。

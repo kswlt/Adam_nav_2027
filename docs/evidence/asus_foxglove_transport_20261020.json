@@ -1,0 +1,73 @@
+{
+  "url": "ws://192.168.1.164:8765",
+  "channel_count": 33,
+  "topics": [
+    "/diagnostics",
+    "/foxglove_bridge/sysinfo",
+    "/lio/deskewed_odom_cloud",
+    "/lio/sensor_odometry",
+    "/livox/imu",
+    "/livox/lidar",
+    "/localization/odom_submap",
+    "/localization/submap_healthy",
+    "/localization/submap_reason",
+    "/odom",
+    "/parameter_events",
+    "/rosout",
+    "/sensors/front_mid360/cloud_healthy",
+    "/sensors/front_mid360/cloud_reason",
+    "/sensors/front_mid360/guarded_points",
+    "/sensors/localization_healthy",
+    "/sensors/localization_observations",
+    "/sensors/localization_reason",
+    "/set_pose",
+    "/state/chassis",
+    "/state/chassis_healthy",
+    "/state/chassis_reason",
+    "/state/gimbal_healthy",
+    "/state/lio_healthy",
+    "/state/lio_pose",
+    "/state/lio_reason",
+    "/tf",
+    "/tf_static",
+    "/visualization/chassis_path",
+    "/visualization/lio_path",
+    "/visualization/live_map_preview",
+    "/visualization/live_map_status",
+    "/visualization/nav_path"
+  ],
+  "actual_pointcloud_messages": [
+    {
+      "bytes": 144570,
+      "frame": "odom",
+      "points": 12037,
+      "source_age_s": -28798.959987358
+    },
+    {
+      "bytes": 145650,
+      "frame": "odom",
+      "points": 12127,
+      "source_age_s": -28799.929605511
+    },
+    {
+      "bytes": 146778,
+      "frame": "odom",
+      "points": 12221,
+      "source_age_s": -28800.043637163
+    },
+    {
+      "bytes": 147498,
+      "frame": "odom",
+      "points": 12281,
+      "source_age_s": -28800.018329114
+    },
+    {
+      "bytes": 147642,
+      "frame": "odom",
+      "points": 12293,
+      "source_age_s": -28800.008751454
+    }
+  ],
+  "passed": true,
+  "timing_scope": "Windows receipt minus ROS source header; includes inter-host clock offset, not GUI render latency"
+}

@@ -1,10 +1,10 @@
 # Adam_nav_2027 开发交接文档
 
-2026-10-13 本机接续：优先阅读 [轨迹跟踪验收](TRAJECTORY_TRACKER_ACCEPTANCE.md) 和
-[本机开发记录](LOCAL_DEVELOPMENT_20261013.md)。时序轨迹 ROS 候选输出入口已实现，
-Omni 未就绪恢复缓存故障已修复；WSL 9 包构建、25 tests 零失败（1 skipped）。
-没有接通串口或改动车载原代码；TDT 上游、生产环境快照/执行路径、HardwareInterface 仍需接续。
-Git CLI 网络及 kswlt 身份仍阻塞推送，本地补丁和首次失败证据保存在 `log/development_20261013`。
+2026-10-20 最新接续：优先阅读 [ASUS 现场启动报告](ASUS_LIVE_20261020.md)、
+[完整使用与架构说明](SOFTWARE_USAGE_20261013.md)、[导航集成验收](NAVIGATION_INTEGRATION_ACCEPTANCE.md)。
+全 14 包在本机 WSL 和 ASUS 构建测试通过，49 tests 零失败（1 skipped）；真实 MID360/LIO/TF/EKF/
+子图/Foxglove 已在独立 release 启动。TDT、正式地图软件发布契约与 ros2_control 反馈接口已接入，
+真实车辆运动、官方地图和反馈验收仍未完成。Git SSH 身份为 kswlt；旧“推送阻塞”只描述历史状态。
 
 交接日期：2026-10-10。代码基线：以远端 `main` 最新提交为准。
 本文随后独立提交；上面的 SHA 指交接前的已验证代码。

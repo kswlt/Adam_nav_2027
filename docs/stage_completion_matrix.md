@@ -1,9 +1,10 @@
 # P0-P10 验收矩阵
 
-2026-10-13 接续：新增时序轨迹核心、ROS 消息/候选输出节点，修复 Omni 未就绪恢复时旧命令缓存。
-本机 WSL 离线 9 包构建通过，25 tests / 0 failures / 1 skipped；地图回归 8 项通过。
-见 [轨迹跟踪验收](TRAJECTORY_TRACKER_ACCEPTANCE.md)。以下历史矩阵不代表新增模块已完成实车验收；
-TDT 上游、生产 Costmap 快照/命令来源接入、HardwareInterface 实际读写仍未完成，Git 推送受阻。
+2026-10-20 更新：本机 WSL 与 ASUS 完整 14 包构建、49 tests / 0 failures / 1 skipped。
+TDT 上游/Nav2 控制器、真实 Costmap 快照、Omni PID/YawManager、HardwareInterface 实际 ROS 读写、
+租约与标准控制器、正式地图软件发布/坐标拟合均已实现。参见
+[导航集成验收](NAVIGATION_INTEGRATION_ACCEPTANCE.md) 与 [ASUS 现场启动](ASUS_LIVE_20261020.md)。
+下面旧阶段记录保留为历史证据；实车验收不能由软件通过替代，Git 已恢复 kswlt 身份推送。
 
 第一阶段基础自主导航审计矩阵见 [phase1_function_audit.md](phase1_function_audit.md)。
 当前软件闭环可以继续回归，但真实标定、硬件速度/停车反馈、正式地图和独立急停仍是 BLOCKED，
@@ -17,11 +18,11 @@ TDT 上游、生产 Costmap 快照/命令来源接入、HardwareInterface 实际
 | P3 | TF 所有权、显式标定模板、绝对编码器时间戳 TF、ObservationBatch；MID-360 固定驱动及字段/时间/原始几何质量门 | 主 LIO 观测/源原点及退化输入拒绝验收通过；原始 IMU 为 g、frame 待适配；真实外参及多源待接入 |
 | P4 | 固定上游 small_point_lio、完整 SE(3) ROS resolver、60 秒静止及明确约 1 m 移动的 MID-360/Foxglove 回放 | 静止链通过（最大变化 1.16 cm）；约 1 m 移动被捕获（估计最大位移 0.773 m），外部真值、实测标定及轮速待接入 |
 | P5 | 真实GICP/KISS、双次候选、受限自动触发、停车/取消/TF/清图及新任务放行 | 主 LIO→滚动子地图→GICP 与恢复链已接入；真实回放与实车稳定性待验证 |
-| P6 | 原始关键帧采集、真实 VGICP 相邻因子、GTSAM Pose3 优化与原始点云离线重建；有界回环候选和双向质量门 | 合成漂移归档及回环门单测通过；回环边接入、真实回环、官方对齐、清理及 MapBundle 发布待接入 |
+| P6 | 原始关键帧、VGICP/KISS/GTSAM、后验残差/形变/移除回环对照、100/300/500 帧归档优化、官方坐标拟合与 Bundle 发布软件 | 软件通过；真实场地回环、官方测量资料、地图清理与正式场地 Bundle 未验收 |
 | P7 | TimedTrajectory、路径预处理、Nav2 Smac2D + MPPI Omni launch；PointCloud2→LaserScan；legacy 动态 TF；测试地图下 map_server、global/local Costmap 激活；复用原版 0.2 m 方形 footprint 基线 | 仍需正式场地地图、实测标定、footprint、障碍物位置和制动距离验收 |
-| P8 | SweptFootprint、CommandSynthesizer、MPPI → smoother → collision monitor | 横移导航及三种停车集成通过；TDT/Omni PID/串口适配待接入 |
+| P8 | 真 TDT/Nav2、polygon swept 碰撞、Omni PID/YawManager、互斥 direct/ros2_control、原协议 PTY | 软件和 ASUS 理想底盘通过；实车 yaw、速度反馈与制动未验收 |
 | P9 | 本地/全局健康联锁、许可输出门、任务监管、恢复后新规划、外部抢占与故障保持 | 软件监管已接入；实车反馈、最终控制和运行验收待完成 |
-| P10 | 全量构建、CTest、版本化配置、远端推送；Foxglove Bridge、实时话题清单和 PCD 可视化发布器 | 工程验证完成；框架完成后自行寻找公开 rosbag 系统测试、实车及长期验收待完成 |
+| P10 | 本机及 ASUS 14 包/49 tests、中文提交、SDK WebSocket 实际点云、公开 Koide 277 秒 MID360 回放 | 软件/传感器链证据已补齐；无真值精度、全车及长期运行验收仍待完成 |
 
 ## 不得误报为完成的项目
 

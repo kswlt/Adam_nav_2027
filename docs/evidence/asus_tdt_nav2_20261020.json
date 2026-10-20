@@ -1,0 +1,18 @@
+{
+  "test": "ideal_plant_tdt_omni",
+  "hardware_connected": false,
+  "action_status": 4,
+  "position": [
+    -0.034756605816343565,
+    0.8637092360076093,
+    0.0
+  ],
+  "max_lateral_velocity": 0.1539070694307091,
+  "obstacle_stop": true,
+  "scan_dropout_stop": true,
+  "command_timeout_stop": true,
+  "localization_unhealthy_stop": true,
+  "localization_heartbeat_stop": true,
+  "motion_permission_stop": true,
+  "passed": true
+}

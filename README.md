@@ -1,12 +1,15 @@
 # Adam_nav_2027
 
-最新接续：已恢复 kswlt SSH 推送，并接入 [TDT Polynomial 核心](docs/TDT_BACKEND_ACCEPTANCE.md)。
-独立 Git 工作区位于本机 `.dev/Adam_nav_2027`；早期“网络阻塞”记录为当时状态。
+2026-10-20：新版本已在 ASUS `192.168.1.164:2233` 的独立目录
+`/home/asus/nav_2027_vehicle_config_164/releases/20261020` 构建测试，真实 MID360、
+small_point_lio、TF、EKF、滚动子图和 Foxglove 已启动。原车工作区没有覆盖。
 
-本机离线开发与最新缺口见 [2026-10-13 本机验收记录](docs/LOCAL_DEVELOPMENT_20261013.md)。
-后续新增的时序轨迹 ROS 入口、接线边界和恢复缓存修复见 [轨迹跟踪验收](docs/TRAJECTORY_TRACKER_ACCEPTANCE.md)。
-WSL Ubuntu 24.04/Jazzy 可执行 `bash tools/local_build_test.bash offline`；这只构建明确列出的 9 个包，
-不代表 TDT、HardwareInterface、完整定位建图或实车导航已完成。
+**当前使用以 [最新完整使用与架构说明](docs/SOFTWARE_USAGE_20261013.md) 和
+[ASUS 现场启动报告](docs/ASUS_LIVE_20261020.md) 为准。** 下文保留早期接口与历史验收记录。
+TDT/Nav2、Omni PID/YawManager、ros2_control 反馈/租约接口、正式 MapBundle 软件交付已接入；
+不等于官方场地地图、实际速度反馈、制动或实车自主运动已经验收。
+Foxglove 当前连接 `ws://192.168.1.164:8765`，建图视图选择 `odom`。
+完整软件回归为 `bash tools/run_software_acceptance.bash`；offline 构建仍只是子集。
 
 面向 ASUS NUC 15 Pro、Ubuntu 24.04、ROS 2 Jazzy 的 RoboMaster 全向哨兵导航框架。
 架构依据 `RM_Nav_V2` 技术方案 v2.5，通信复用此前实车运行的 `my_serial_py`。
@@ -284,7 +287,7 @@ ros2 launch rm_nav_bringup foxglove_visualization.launch.py \
 | TF 与定位 | 上游 small_point_lio、时间对齐云台 TF/SE(3) resolver、真实 EKF、独占 map→odom | 实测标定、硬件同步与真实回放 |
 | Sensor Hub | 主 LIO 原生观测、源原点、角色约束、有界定位子地图；MID-360 实机传输/时间字段及无遮挡静止回放通过 | 动态真实回放、多源及感知适配 |
 | 优化建图 | 原始关键帧采集、真实 VGICP 相邻因子、GTSAM 位姿链与原始点云重建 | KISS 回环复核、官方对齐、地图清理与 MapBundle 发布 |
-| 最终规划控制 | 时序轨迹、路径与足迹验证基础接口 | TDT 后端、Omni PID、YawManager、ros2_control 适配 |
+| 最终规划控制 | 真 TDT QP/Nav2 插件、polygon 时序验证、Omni PID/YawManager、ros2_control 反馈/租约/标准控制器 | 真实反馈、yaw 标定、实际制动与整车控制验收 |
 
 **P0–P10 尚未全部完成。** 数据结构和单元测试不等于完整导航功能。
 详细进度见 [阶段验收矩阵](docs/stage_completion_matrix.md)。
@@ -296,8 +299,8 @@ Nav2 使用的 `/scan`；默认关闭，必须先完成实测 TF、传感器高�
 详见 [MPPI 点云适配说明](docs/mppi_pointcloud_scan_adapter.md)。
 已用原版静态 TF 完成现场接口联调，`/scan` 已收到 `base_link` 帧的 360 线束；证据仅覆盖
 消息接口和 Costmap 输入，不代表实测标定或整车验收。
-当前 Nav2 Costmap 联调已确认 `/scan` 输入正常，但因尚未启动真实 LIO→EKF 动态
-`odom→base_link` TF，Costmap 不能激活；不能用静态 TF 绕过该前置条件。
+早期曾因缺少真实 LIO→EKF 动态 TF 导致 Costmap 不能激活；2026-10-20 已在新现场实例确认
+真实动态 TF 和状态链输出。正式导航仍需要实际地图与实测 footprint，不能用静态 map→odom 绕过。
 已增加显式 legacy 联调模式，Point-LIO→resolver→EKF 可输出 `/state/chassis`
 和动态 `odom→base_link`；该模式使用原版外参假设，不能替代实测标定。
 

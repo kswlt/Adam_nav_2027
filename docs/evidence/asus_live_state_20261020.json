@@ -1,0 +1,201 @@
+{
+  "scope": "real live read-only state probe; no motion commands or ground truth",
+  "passed": true,
+  "duration_s": 30.003245681000408,
+  "counts": {
+    "/livox/imu": 5731,
+    "/livox/lidar": 285,
+    "/odom": 276,
+    "/localization/odom_submap": 138,
+    "/lio/sensor_odometry": 271,
+    "/lio/deskewed_odom_cloud": 271,
+    "/state/chassis": 269,
+    "/visualization/live_map_preview": 27
+  },
+  "last_points": {
+    "/livox/lidar": 20064,
+    "/localization/odom_submap": 14822,
+    "/lio/deskewed_odom_cloud": 18093,
+    "/visualization/live_map_preview": 8730
+  },
+  "last_health": {
+    "/state/chassis_healthy": true,
+    "/sensors/front_mid360/cloud_healthy": true,
+    "/state/lio_healthy": true,
+    "/sensors/localization_healthy": true
+  },
+  "reasons": {
+    "/sensors/front_mid360/cloud_reason": "accepted native scan; valid_points=9178; eigen_ratio=0.414656",
+    "/state/lio_reason": "vehicle164-user-mount-mid360-factory-20261013: time-aligned SE3 body pose accepted",
+    "/localization/submap_reason": "fresh primary observation added; bounded rolling window",
+    "/state/chassis_reason": "vehicle164-user-mount-mid360-factory-20261013: fresh state converted to body reference"
+  },
+  "tf_parents": {
+    "base_footprint": [
+      "odom"
+    ],
+    "chassis": [
+      "base_footprint"
+    ],
+    "base_link": [
+      "chassis"
+    ],
+    "front_mid360": [
+      "front_mid360_imu"
+    ],
+    "front_mid360_imu": [
+      "chassis"
+    ]
+  },
+  "publishers": {
+    "/livox/lidar": [
+      {
+        "node": "nav20261020_livox",
+        "namespace": "/"
+      }
+    ],
+    "/livox/imu": [
+      {
+        "node": "nav20261020_livox",
+        "namespace": "/"
+      }
+    ],
+    "/lio/sensor_odometry": [
+      {
+        "node": "small_point_lio",
+        "namespace": "/"
+      }
+    ],
+    "/lio/deskewed_odom_cloud": [
+      {
+        "node": "small_point_lio",
+        "namespace": "/"
+      }
+    ],
+    "/state/chassis": [
+      {
+        "node": "chassis_ekf",
+        "namespace": "/"
+      }
+    ],
+    "/odom": [
+      {
+        "node": "chassis_state_bridge",
+        "namespace": "/"
+      }
+    ],
+    "/localization/odom_submap": [
+      {
+        "node": "observation_submap",
+        "namespace": "/"
+      }
+    ],
+    "/visualization/live_map_preview": [
+      {
+        "node": "live_map_preview",
+        "namespace": "/"
+      }
+    ]
+  },
+  "raw_cloud_layout": {
+    "frame": "front_mid360",
+    "point_step": 26,
+    "fields": [
+      [
+        "x",
+        0,
+        7,
+        1
+      ],
+      [
+        "y",
+        4,
+        7,
+        1
+      ],
+      [
+        "z",
+        8,
+        7,
+        1
+      ],
+      [
+        "intensity",
+        12,
+        7,
+        1
+      ],
+      [
+        "tag",
+        16,
+        2,
+        1
+      ],
+      [
+        "line",
+        17,
+        2,
+        1
+      ],
+      [
+        "timestamp",
+        18,
+        8,
+        1
+      ]
+    ]
+  },
+  "imu_acc_norm_median": 0.9983527007024927,
+  "message_source_age_s": {
+    "/livox/imu": {
+      "min": 0.000102415,
+      "p50": 0.000453479,
+      "p95": 0.001023474,
+      "max": 0.02565934
+    },
+    "/livox/lidar": {
+      "min": 0.100859356,
+      "p50": 0.101526657,
+      "p95": 0.1027819144,
+      "max": 0.189868739
+    },
+    "/odom": {
+      "min": 0.017162868,
+      "p50": 0.0181170785,
+      "p95": 0.0196673845,
+      "max": 0.588785506
+    },
+    "/localization/odom_submap": {
+      "min": 0.068792665,
+      "p50": 0.0760658855,
+      "p95": 0.0964098178,
+      "max": 0.589313046
+    },
+    "/lio/sensor_odometry": {
+      "min": 0.004187576,
+      "p50": 0.005835067,
+      "p95": 0.010447263,
+      "max": 0.01268991
+    },
+    "/lio/deskewed_odom_cloud": {
+      "min": 0.004557775,
+      "p50": 0.006308505,
+      "p95": 0.0110343265,
+      "max": 0.013191986
+    },
+    "/state/chassis": {
+      "min": 0.016996651,
+      "p50": 0.01773382,
+      "p95": 0.0193136528,
+      "max": 0.021307589
+    },
+    "/visualization/live_map_preview": {
+      "min": 0.060305433,
+      "p50": 0.060922605,
+      "p95": 0.0624868448,
+      "max": 0.062842195
+    }
+  },
+  "observed_odom_position_span_m": 0.008706832036398594,
+  "position_span_is_drift_measurement": false
+}

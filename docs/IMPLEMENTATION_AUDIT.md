@@ -1,5 +1,18 @@
 # Adam_nav_2027 源码审计报告
 
+2026-10-20 现场接续：开始前检查本机和 ASUS `git status` 并 fetch GitHub，feature 最新为 `45b973f`，
+main 仍为 `7e2afa1`。保留两端未提交修改，在 ASUS 新建独立 release。
+最新完整审计/结果见 [现场启动报告](ASUS_LIVE_20261020.md)、[导航集成](NAVIGATION_INTEGRATION_ACCEPTANCE.md)、
+[建图后端](MAPPING_BACKEND_REVIEW_20261013.md)。下文为较早 P0 阶段的历史基线。
+
+本轮 P0 环境故障是 ROS 消息预编译库与 Fast-CDR 不匹配，实际复现 controller_manager 退出；
+同版本原始接口在私有 overlay 重建后 manager/标准控制器回归通过，系统包未升级。
+另修复测试夹具 DDS 端点就绪竞态，保留失败证据，未放宽生产 watchdog。
+ASUS 最终 14 包构建与全量测试：49 tests、0 errors、0 failures、1 skipped。
+真实雷达/LIO/TF/EKF/子图/Foxglove/关键帧录制实际启动，传感器/状态健康检查通过。
+真实地图、实测 footprint、yaw/制动反馈与跨主机时钟仍有未验收项目；没有接通电机输出。
+各功能使用独立中文提交推送 feature，最新提交及远端 SHA 以 Git 历史和现场报告为准，main 不合并。
+
 审计基线：远端 `main` 最新提交 `7e2afa1`（开始前已执行 `git fetch origin`）。
 审计分支：`audit-p0-tf-costmap`。本轮范围只覆盖源码审计和 P0 TF/Costmap 前置问题，未进入建图 P1 修复。
 
