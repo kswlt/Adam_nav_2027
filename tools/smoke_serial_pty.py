@@ -7,6 +7,8 @@ import pty
 import signal
 import struct
 import subprocess
+import sys
+from types import SimpleNamespace
 import time
 
 import rclpy
@@ -15,6 +17,8 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool, Float32, UInt8, UInt32
 from pb_rm_interfaces.msg import RobotStatus, GameStatus, GameRobotHP, RfidStatus
 from my_serial_py.protocol import RX_FORMAT, TX_FORMAT, TX_SIZE, rm_crc16, modbus_crc16
+from my_serial_py.serial_bridge import SerialNode
+import serial
 
 
 def require(value, description):
@@ -81,6 +85,16 @@ def main():
                 stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             require(wait(lambda: all(p.get_subscription_count() for p in pubs.values()), 10),
                     'ROS subscription discovery timeout')
+            # Actual first bridge owns the PTY. A second owner must be rejected
+            # even if the first process did not use an advisory flock.
+            require(wait(lambda: process.poll() is None, .1), 'Bridge exited')
+            time.sleep(.15)
+            try:
+                SerialNode.reject_existing_owner(SimpleNamespace(serial_port=path))
+            except serial.SerialException:
+                pass
+            else:
+                raise RuntimeError('Existing serial owner was not detected')
             wait(lambda: False, .3)
             require(not received, 'Bridge sent an invented yaw before first actual target')
             require(not healthy[0], 'Serial health fabricated before CRC-valid RX')

@@ -1,0 +1,17 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50
+    hardware_components_initial_state:
+      inactive: [AdamSerial]
+    omni_velocity_controller:
+      type: forward_command_controller/ForwardCommandController
+    omni_yaw_controller:
+      type: forward_command_controller/ForwardCommandController
+omni_velocity_controller:
+  ros__parameters:
+    joints: [command_vx, command_vy]
+    interface_name: velocity
+omni_yaw_controller:
+  ros__parameters:
+    joints: [command_yaw]
+    interface_name: position
