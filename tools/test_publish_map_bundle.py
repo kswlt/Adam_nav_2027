@@ -93,6 +93,21 @@ class PublishBundleTest(unittest.TestCase):
         second=json.loads((self.output/'map_bundle.json').read_text())['version']
         self.assertNotEqual(first, second)
 
+    def test_official_mask_enables_navigation_without_inventing_free_space(self):
+        from PIL import Image
+        mask=self.root/'official.pgm'; metadata=self.root/'official.yaml'
+        image=Image.new('L',(21,21),255); image.putpixel((20,0),205);image.save(mask)
+        metadata.write_text('status: verified\ncoordinate_frame: map\nofficial_source: TEST_ONLY\nresolution: 0.05\norigin: [0, 0, 0]\n')
+        self.run_publish('--free-space-mask',str(mask),'--free-space-metadata',str(metadata))
+        manifest=json.loads((self.output/'map_bundle.json').read_text())
+        self.assertTrue(manifest['navigation_ready'])
+        self.assertEqual(manifest['free_space_evidence'],'verified_official_mask')
+        payload=(self.output/'maps/occupancy.pgm').read_bytes().split(b'255\n',1)[1]
+        self.assertIn(255,payload);self.assertIn(205,payload);self.assertIn(0,payload)
+        self.output=self.root/'reject_wrong_frame'
+        metadata.write_text(metadata.read_text().replace('coordinate_frame: map','coordinate_frame: mapping_odom'))
+        with self.assertRaises(ValueError): self.run_publish('--free-space-mask',str(mask),'--free-space-metadata',str(metadata))
+
     def test_staging_failure_rolls_back(self):
         with patch.object(publisher, 'write_pcd', side_effect=OSError('TEST_ONLY disk failure')):
             with self.assertRaises(OSError): self.run_publish()
