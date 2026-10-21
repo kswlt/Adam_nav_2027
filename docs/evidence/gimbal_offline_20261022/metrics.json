@@ -1,0 +1,3266 @@
+{
+  "source": "original local MCAP and original frames.jsonl",
+  "angle_unit": "degree hypothesis; firmware semantics NOT VERIFIED",
+  "serial_time": "host RX batch; not MCU acquisition time",
+  "control_output": false,
+  "runs": {
+    "run_20261021_202129": {
+      "lio_count": 1043,
+      "imu_count": 31088,
+      "lio_duration_s": 106.2985827922821,
+      "xy_max_from_start_m": 0.012095326004920682,
+      "xy_end_from_start_m": 0.002805209524725732,
+      "z_span_m": 0.010154997750366497,
+      "yaw_span_deg": 0.10240484451207751,
+      "yaw_end_delta_deg": 0.002359956055125485,
+      "imu_gz_integral_same_lio_window_deg": 23.026892455555572,
+      "gyro_minus_lio_rate_median_rad_s": 0.003703125931993563,
+      "imu_bias_corrected_integral_deg": 0.4733344104081958,
+      "imu_first_run_bias_corrected_integral_deg": -1.8827284175045023,
+      "imu_acc_norm_g_p50_p99_max": [
+        0.9985349941516558,
+        1.0175394303675491,
+        1.186986285605405
+      ],
+      "lio_record_minus_source_ms_p50_p95_max": [
+        12.231111526489258,
+        22.348713874816895,
+        25.360107421875
+      ],
+      "lio_source_nonmonotonic_count": 0,
+      "imu_source_nonmonotonic_count": 0,
+      "imu_point_lever_fit": {
+        "horizontal_lever_m": [
+          0.5720467912543494,
+          0.16538109138809695
+        ],
+        "radius_m": 0.5954732880433138,
+        "residual_xy_rms_m": 0.0024086727170751863,
+        "residual_p95_m": 0.004293748059959672,
+        "condition": 8286.297956050843,
+        "identifiable_yaw_excitation": false,
+        "mechanical_calibration_verified": false
+      },
+      "lidar_reference_lever_fit": {
+        "horizontal_lever_m": [
+          0.5649830638657192,
+          0.13671360703381435
+        ],
+        "radius_m": 0.5812886312351992,
+        "residual_xy_rms_m": 0.002401348233672032,
+        "residual_p95_m": 0.004288287443282066,
+        "condition": 8286.297956050843,
+        "identifiable_yaw_excitation": false,
+        "mechanical_calibration_verified": false
+      },
+      "serial_overlaps": {
+        "gimbal_rotation_rx_20261021_2021": {
+          "duration_s": 106.2985827922821,
+          "lio_delta_deg": 0.002359956055125485,
+          "encoder_delta_deg_if_degrees": 0.0,
+          "correlation": 0.0013016516802376009,
+          "delta_difference_rms_deg": 0.014890831290570106,
+          "sensor_minus_encoder_delta_deg": 0.002359956055125485,
+          "sensor_minus_encoder_span_deg": 0.10240484451207751,
+          "chassis_interpretation": "hypothesis only: requires actual relative-yaw semantics and mounting rotation"
+        }
+      },
+      "cloud_samples": {
+        "/livox/lidar": [
+          {
+            "record_ns": 1792585292525125854,
+            "source_ns": 1792585292424400347,
+            "frame": "front_mid360",
+            "points": 19872,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.605999946594238,
+                -6.302999973297119,
+                -0.23600000143051147
+              ],
+              [
+                17.346290512084963,
+                2.115000009536743,
+                6.443999767303467
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925852924244004e+18,
+              1.7925852925240056e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99605248.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585302625099423,
+            "source_ns": 1792585302523645560,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.544179887771607,
+                -6.209370083808899,
+                -0.2403699953854084
+              ],
+              [
+                15.786740198135375,
+                2.115999937057495,
+                6.445370144844055
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925853025236454e+18,
+              1.7925853026239224e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100276992.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585312625354804,
+            "source_ns": 1792585312524059579,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -16.97106077194214,
+                -6.337740015983582,
+                -0.2409999966621399
+              ],
+              [
+                17.25585010528564,
+                2.1153699827194203,
+                6.454999923706055
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925853125240596e+18,
+              1.7925853126244585e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100398848.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585322724650025,
+            "source_ns": 1792585322623904857,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -16.75691972732544,
+                -6.18633002281189,
+                -0.24300000071525574
+              ],
+              [
+                16.63511016845703,
+                2.1153699827194203,
+                6.435999870300293
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925853226239048e+18,
+              1.792585322724087e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100182272.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585332725061281,
+            "source_ns": 1792585332624681863,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.05177018165588,
+                -6.326990141868591,
+                -0.2409999966621399
+              ],
+              [
+                17.253639888763413,
+                2.117000102996826,
+                6.443999767303467
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585332624682e+18,
+              1.7925853327241482e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99466240.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585342725574480,
+            "source_ns": 1792585342624943205,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -16.53066032409668,
+                -6.359660158157348,
+                -0.24400000274181366
+              ],
+              [
+                17.23798959732055,
+                2.117000102996826,
+                6.388999938964844
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585342624943e+18,
+              1.7925853427242217e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99278592.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585352824547238,
+            "source_ns": 1792585352724807130,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.301440229415892,
+                -6.36666012763977,
+                -0.241329997330904
+              ],
+              [
+                17.257329788208008,
+                2.118000030517578,
+                6.4253301668167095
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925853527248072e+18,
+              1.7925853528240963e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99289088.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585362824729920,
+            "source_ns": 1792585362725213776,
+            "frame": "front_mid360",
+            "points": 19872,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.00361006736755,
+                -6.436289849281311,
+                -0.24400000274181366
+              ],
+              [
+                16.214319725036628,
+                2.117000102996826,
+                6.439290108680726
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925853627252137e+18,
+              1.7925853628240302e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 98816512.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585372824816047,
+            "source_ns": 1792585372725010681,
+            "frame": "front_mid360",
+            "points": 19872,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.225290222167969,
+                -6.459580068588257,
+                -0.23000000417232513
+              ],
+              [
+                16.141409778594998,
+                2.119289937019349,
+                6.437579894065859
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925853727250107e+18,
+              1.7925853728241014e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99090688.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585382826009863,
+            "source_ns": 1792585382725003858,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -16.756620788574217,
+                -6.322000026702881,
+                -0.24199999868869781
+              ],
+              [
+                15.161649885177603,
+                2.11899995803833,
+                6.446000099182129
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925853827250038e+18,
+              1.792585382824313e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99309312.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585392924654604,
+            "source_ns": 1792585392824198559,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.910060300827025,
+                -6.477990164756775,
+                -0.24300000071525574
+              ],
+              [
+                15.575550079345637,
+                2.1193299341201763,
+                6.447659978866573
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925853928241987e+18,
+              1.7925853929242094e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100010752.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585402935562229,
+            "source_ns": 1792585402823690125,
+            "frame": "front_mid360",
+            "points": 20160,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.879020013809203,
+                -6.323999881744385,
+                -0.2409999966621399
+              ],
+              [
+                19.451100387573227,
+                2.11899995803833,
+                6.449409852027893
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925854028236902e+18,
+              1.792585402924189e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100498688.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585413024587014,
+            "source_ns": 1792585412923901020,
+            "frame": "front_mid360",
+            "points": 19872,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -16.29036064147949,
+                -6.4292898797988896,
+                -0.24300000071525574
+              ],
+              [
+                14.673029794692999,
+                2.118000030517578,
+                6.399290146827699
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585412923901e+18,
+              1.7925854130238659e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99964928.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585423124760147,
+            "source_ns": 1792585423023802791,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.692740335464478,
+                -6.4147399806976315,
+                -0.20399999618530273
+              ],
+              [
+                16.405649967193558,
+                2.117000102996826,
+                6.433370060920715
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585423023803e+18,
+              1.7925854231241162e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100313344.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585433124826653,
+            "source_ns": 1792585433024052618,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -13.957309913635255,
+                -6.380000114440918,
+                -0.2053699989616871
+              ],
+              [
+                19.26288932800283,
+                2.11899995803833,
+                6.449999809265137
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925854330240527e+18,
+              1.7925854331242452e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100192512.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585443224981803,
+            "source_ns": 1792585443124002768,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.284520349502563,
+                -6.413320083618164,
+                -0.23499999940395355
+              ],
+              [
+                19.600610466003197,
+                2.121000051498413,
+                6.4303299617767316
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925854431240028e+18,
+              1.7925854432241162e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100113408.0,
+            "point_start_minus_header_ns": 0.0
+          }
+        ],
+        "/lio/deskewed_odom_cloud": [
+          {
+            "record_ns": 1792585341638482254,
+            "source_ns": 1792585341625018596,
+            "frame": "odom",
+            "points": 19601,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -18.35797882080078,
+                -6.3960418701171875,
+                -0.24533456563949585
+              ],
+              [
+                17.245588302612305,
+                2.1136624813079834,
+                6.414388179779053
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585351645189081,
+            "source_ns": 1792585351623395204,
+            "frame": "odom",
+            "points": 19556,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.015269756317137,
+                -6.440630841255188,
+                -0.24156048223376275
+              ],
+              [
+                16.34774045944216,
+                2.11691484451294,
+                6.448315405845643
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585361736080285,
+            "source_ns": 1792585361724028825,
+            "frame": "odom",
+            "points": 19483,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.596863346099854,
+                -6.459184923171997,
+                -0.24108095705509186
+              ],
+              [
+                17.214103317260744,
+                2.116927843093872,
+                6.4477898693084725
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585371833527720,
+            "source_ns": 1792585371821998357,
+            "frame": "odom",
+            "points": 19509,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.806178283691406,
+                -6.462380828857422,
+                -0.24116689801216126
+              ],
+              [
+                17.242660369873047,
+                2.1130341148376464,
+                6.437681446075436
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585381836091930,
+            "source_ns": 1792585381824210882,
+            "frame": "odom",
+            "points": 19637,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -16.72483528137207,
+                -6.465831489562988,
+                -0.24110300421714784
+              ],
+              [
+                17.28468360900878,
+                2.1160137462615967,
+                6.432424926757813
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585391837244778,
+            "source_ns": 1792585391824318408,
+            "frame": "odom",
+            "points": 20049,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -16.975980072021486,
+                -6.401929588317871,
+                -0.2405838167667389
+              ],
+              [
+                14.833120193481447,
+                2.1146565151214602,
+                6.4642374801635745
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585401936510456,
+            "source_ns": 1792585401924002885,
+            "frame": "odom",
+            "points": 19533,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.619355659484864,
+                -6.413878936767579,
+                -0.23555001497268677
+              ],
+              [
+                15.29050685882569,
+                2.1170540714263915,
+                6.439652328491211
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585412034164864,
+            "source_ns": 1792585412020394086,
+            "frame": "odom",
+            "points": 18787,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.916883430480956,
+                -6.4601172256469725,
+                -0.2434401524066925
+              ],
+              [
+                14.98823535919189,
+                2.1190479898452756,
+                6.429962072372437
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585422035804704,
+            "source_ns": 1792585422022583484,
+            "frame": "odom",
+            "points": 19577,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.22955924987793,
+                -6.430078773498535,
+                -0.20848242402076722
+              ],
+              [
+                15.225966682434102,
+                2.1140217781066895,
+                6.45523578643799
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585432045148776,
+            "source_ns": 1792585432024015903,
+            "frame": "odom",
+            "points": 19425,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.64678207397461,
+                -6.258066787719726,
+                -0.2157569169998169
+              ],
+              [
+                16.240671005248956,
+                2.1169760227203365,
+                6.443071193695068
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585442135791911,
+            "source_ns": 1792585442122423887,
+            "frame": "odom",
+            "points": 19245,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.551924629211426,
+                -6.4107441902160645,
+                -0.23832638263702394
+              ],
+              [
+                15.54577579498296,
+                2.1166828727722167,
+                6.45714502334595
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          }
+        ]
+      }
+    },
+    "run_20261021_202408": {
+      "lio_count": 1173,
+      "imu_count": 23906,
+      "lio_duration_s": 119.59941077232361,
+      "xy_max_from_start_m": 0.3544993634627038,
+      "xy_end_from_start_m": 0.004825958077814802,
+      "z_span_m": 0.020779633714779665,
+      "yaw_span_deg": 360.49317583067824,
+      "yaw_end_delta_deg": 1.650832838357008,
+      "imu_gz_integral_same_lio_window_deg": 26.792801586402373,
+      "gyro_minus_lio_rate_median_rad_s": 0.0035528782842723728,
+      "imu_bias_corrected_integral_deg": 2.4698498779209537,
+      "imu_first_run_bias_corrected_integral_deg": -1.2070984650273502,
+      "imu_acc_norm_g_p50_p99_max": [
+        0.9987476804974548,
+        1.0310231662419356,
+        1.1889360962512556
+      ],
+      "lio_record_minus_source_ms_p50_p95_max": [
+        11.61503791809082,
+        21.09675407409668,
+        26.133298873901367
+      ],
+      "lio_source_nonmonotonic_count": 0,
+      "imu_source_nonmonotonic_count": 0,
+      "imu_point_lever_fit": {
+        "horizontal_lever_m": [
+          0.0265313036931632,
+          0.17576111978289888
+        ],
+        "radius_m": 0.17775230322838967,
+        "residual_xy_rms_m": 0.002687053351982636,
+        "residual_p95_m": 0.004575187275874421,
+        "condition": 7.523313348789364,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false
+      },
+      "lidar_reference_lever_fit": {
+        "horizontal_lever_m": [
+          0.0162252118035858,
+          0.1521138301492753
+        ],
+        "radius_m": 0.15297671332838142,
+        "residual_xy_rms_m": 0.002684088425358756,
+        "residual_p95_m": 0.004546631930097657,
+        "condition": 7.523313348789364,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false
+      },
+      "serial_overlaps": {
+        "gimbal_rotation_rx_20261021_2021": {
+          "duration_s": 62.69740653038025,
+          "lio_delta_deg": -0.004061726254622721,
+          "encoder_delta_deg_if_degrees": 0.0,
+          "correlation": -0.0679368266960475,
+          "delta_difference_rms_deg": 0.016798518068716642,
+          "sensor_minus_encoder_delta_deg": -0.004061726254622721,
+          "sensor_minus_encoder_span_deg": 0.10209033608816556,
+          "chassis_interpretation": "hypothesis only: requires actual relative-yaw semantics and mounting rotation"
+        }
+      },
+      "cloud_samples": {
+        "/lio/deskewed_odom_cloud": [
+          {
+            "record_ns": 1792585448836962690,
+            "source_ns": 1792585448823576450,
+            "frame": "odom",
+            "points": 19236,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.746560907363891,
+                -6.5214293718338014,
+                -0.23502818644046783
+              ],
+              [
+                18.630100631713873,
+                2.1140097975730905,
+                6.449905133247376
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585458941829009,
+            "source_ns": 1792585458919849872,
+            "frame": "odom",
+            "points": 18789,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.386819305419921,
+                -6.304018955230713,
+                -0.2433893221616745
+              ],
+              [
+                11.279015312194822,
+                2.1098365211486816,
+                6.435353927612304
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585469036298692,
+            "source_ns": 1792585469022199630,
+            "frame": "odom",
+            "points": 19524,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.848046064376831,
+                -6.423125758171081,
+                -0.24105805575847625
+              ],
+              [
+                17.262370624542243,
+                2.1106319761276247,
+                6.443125715255738
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585479135100045,
+            "source_ns": 1792585479124067544,
+            "frame": "odom",
+            "points": 19547,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -10.137239284515381,
+                -6.364065675735474,
+                -0.1999984613060951
+              ],
+              [
+                17.25640525817872,
+                2.113863134384155,
+                6.456516389846802
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585489236080972,
+            "source_ns": 1792585489223969459,
+            "frame": "odom",
+            "points": 19437,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -9.620932731628418,
+                -6.13744930267334,
+                -0.19898425221443175
+              ],
+              [
+                16.483483047485326,
+                2.1130869770050045,
+                6.448537521362304
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585499334341106,
+            "source_ns": 1792585499324145078,
+            "frame": "odom",
+            "points": 19292,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -8.802310676574708,
+                -6.153812251091003,
+                -0.18450112655758857
+              ],
+              [
+                16.413804588317877,
+                2.112746284008026,
+                6.438635311126709
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585509432229108,
+            "source_ns": 1792585509420593738,
+            "frame": "odom",
+            "points": 19256,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -10.040576314926147,
+                -6.302713942527771,
+                -0.18497040942311288
+              ],
+              [
+                15.773788642883305,
+                2.1160695910453797,
+                6.444410347938538
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585519433334420,
+            "source_ns": 1792585519422840118,
+            "frame": "odom",
+            "points": 19282,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -10.576531352996826,
+                -6.058672413825989,
+                -0.18491631776094436
+              ],
+              [
+                11.292705821990928,
+                2.1107549858093257,
+                6.427485289573666
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585529434679648,
+            "source_ns": 1792585529423756599,
+            "frame": "odom",
+            "points": 19285,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.70502285003662,
+                -6.103257350921631,
+                -0.22750088930130005
+              ],
+              [
+                17.154290161132813,
+                2.1120845031738282,
+                6.436920032501221
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585539534256735,
+            "source_ns": 1792585539522386789,
+            "frame": "odom",
+            "points": 19359,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.77142328262329,
+                -6.089921865463257,
+                -0.21213792264461515
+              ],
+              [
+                17.288453102111806,
+                2.116490955352783,
+                6.446064710617063
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585549534909175,
+            "source_ns": 1792585549524232149,
+            "frame": "odom",
+            "points": 19472,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.845184936523438,
+                -6.086941432952881,
+                -0.2345539066195488
+              ],
+              [
+                17.20270755767824,
+                2.112729651927948,
+                6.451514110565186
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585559537005567,
+            "source_ns": 1792585559521353483,
+            "frame": "odom",
+            "points": 19514,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -16.966430950164796,
+                -6.296635279655456,
+                -0.2392606095969677
+              ],
+              [
+                16.8497478675842,
+                2.1189658856391906,
+                6.455100078582761
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          }
+        ],
+        "/livox/lidar": [
+          {
+            "record_ns": 1792585449025247353,
+            "source_ns": 1792585448924855762,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.383520326614379,
+                -6.190660009384155,
+                -0.23932999327778814
+              ],
+              [
+                15.719589815139727,
+                2.1153299856185894,
+                6.441999912261963
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925854489248558e+18,
+              1.7925854490240287e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99172864.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585459125119966,
+            "source_ns": 1792585459024955120,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.829700241088865,
+                -6.253649892807006,
+                -0.23800000548362732
+              ],
+              [
+                9.357940120696988,
+                2.115999937057495,
+                6.395999908447266
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925854590249551e+18,
+              1.7925854591242547e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99299584.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585469225048801,
+            "source_ns": 1792585469123985008,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.39024977684021,
+                -6.426740064620971,
+                -0.2403699953854084
+              ],
+              [
+                16.199690361022913,
+                2.11899995803833,
+                6.448999881744385
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585469123985e+18,
+              1.7925854692243543e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100369408.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585479325218177,
+            "source_ns": 1792585479224349496,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -9.898110055923462,
+                -6.456369824409485,
+                -0.1979999989271164
+              ],
+              [
+                17.259439544677722,
+                2.117000102996826,
+                6.439000129699707
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925854792243494e+18,
+              1.7925854793243036e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99954176.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585489326047938,
+            "source_ns": 1792585489224044385,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -9.490099992752075,
+                -6.334370083808899,
+                -0.19937000170350075
+              ],
+              [
+                15.936510362625098,
+                2.117000102996826,
+                6.461999893188477
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925854892240443e+18,
+              1.79258548932424e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100195584.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585499424800467,
+            "source_ns": 1792585499324112176,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -8.98693983078003,
+                -6.4019999504089355,
+                -0.1850000023841858
+              ],
+              [
+                16.900640525817856,
+                2.115999937057495,
+                6.434999942779541
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925854993241121e+18,
+              1.7925854994240384e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99926272.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585509424990090,
+            "source_ns": 1792585509324152830,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -9.743849668502808,
+                -6.273369913101196,
+                -0.1860000044107437
+              ],
+              [
+                16.089399957656536,
+                2.11899995803833,
+                6.4670000076293945
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925855093241528e+18,
+              1.7925855094241206e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99967744.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585519524658516,
+            "source_ns": 1792585519424357948,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -10.399649801254272,
+                -6.235330109596252,
+                -0.18232999697327612
+              ],
+              [
+                11.52869959831183,
+                2.117000102996826,
+                6.426000118255615
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585519424358e+18,
+              1.7925855195241121e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99754240.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585529525117148,
+            "source_ns": 1792585529423718480,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.596580305099486,
+                -6.046659955978393,
+                -0.22100000083446503
+              ],
+              [
+                16.074959487915017,
+                2.11899995803833,
+                6.438000202178955
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925855294237184e+18,
+              1.7925855295241539e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100435456.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585539625472391,
+            "source_ns": 1792585539523868257,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.642320013046264,
+                -6.337989978790283,
+                -0.21299999952316284
+              ],
+              [
+                15.212799978256113,
+                2.138000011444092,
+                6.438000202178955
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925855395238682e+18,
+              1.7925855396241004e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100232192.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585549725043393,
+            "source_ns": 1792585549624047001,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.624399795532227,
+                -6.250109992027283,
+                -0.2403699953854084
+              ],
+              [
+                17.720880680082878,
+                2.134000062942505,
+                6.440740003585813
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585549624047e+18,
+              1.792585549724499e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100451840.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585559824676664,
+            "source_ns": 1792585559724002813,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.92498987197876,
+                -6.327660093307495,
+                -0.241329997330904
+              ],
+              [
+                16.68986989974968,
+                2.134000062942505,
+                6.4506599187850915
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925855597240028e+18,
+              1.7925855598241408e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100137984.0,
+            "point_start_minus_header_ns": 0.0
+          }
+        ]
+      },
+      "imu_point_spin_only_fit": {
+        "horizontal_lever_m": [
+          0.025621987002856922,
+          0.17635721970180723
+        ],
+        "radius_m": 0.1782087404111428,
+        "residual_xy_rms_m": 0.005409361547118036,
+        "residual_p95_m": 0.009611440121175397,
+        "condition": 1.216015649907785,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false,
+        "sample_count": 50,
+        "selection": "abs(LIO yaw rate)>0.2rad/s; does not prove stationary chassis"
+      },
+      "lidar_reference_spin_only_fit": {
+        "horizontal_lever_m": [
+          0.015293518836158204,
+          0.15267217555738066
+        ],
+        "radius_m": 0.1534362568228761,
+        "residual_xy_rms_m": 0.005419896679310624,
+        "residual_p95_m": 0.009667769458053083,
+        "condition": 1.216015649907785,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false
+      },
+      "diagnostic_only_pivot_hypothesis": {
+        "max_from_start_m": 0.012764928026281836,
+        "end_from_start_m": 0.0021474899756798436,
+        "production_applied": false,
+        "peak_rotation_induced_speed_m_s": 0.548045386297472
+      }
+    },
+    "run_20261021_202751": {
+      "lio_count": 1180,
+      "imu_count": 23827,
+      "lio_duration_s": 119.00174927711487,
+      "xy_max_from_start_m": 1.0825068270358507,
+      "xy_end_from_start_m": 0.19425577665816995,
+      "z_span_m": 0.024955930587808327,
+      "yaw_span_deg": 1803.733548078668,
+      "yaw_end_delta_deg": 1799.5557867072712,
+      "imu_gz_integral_same_lio_window_deg": 1824.0554352668871,
+      "gyro_minus_lio_rate_median_rad_s": 0.0035577317850961077,
+      "imu_bias_corrected_integral_deg": 1799.7984856828593,
+      "imu_first_run_bias_corrected_integral_deg": 1796.1696091610659,
+      "imu_acc_norm_g_p50_p99_max": [
+        0.9985132548411627,
+        1.1674311395637593,
+        1.7829732948307795
+      ],
+      "lio_record_minus_source_ms_p50_p95_max": [
+        11.303067207336426,
+        21.989226341247555,
+        26.290416717529297
+      ],
+      "lio_source_nonmonotonic_count": 0,
+      "imu_source_nonmonotonic_count": 0,
+      "imu_point_lever_fit": {
+        "horizontal_lever_m": [
+          0.005364997661286716,
+          0.18344502278934227
+        ],
+        "radius_m": 0.1835234578632604,
+        "residual_xy_rms_m": 0.1866369828953067,
+        "residual_p95_m": 0.17817913176529218,
+        "condition": 2.5375659857383686,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false
+      },
+      "lidar_reference_lever_fit": {
+        "horizontal_lever_m": [
+          -0.004933382804355235,
+          0.15986208249433145
+        ],
+        "radius_m": 0.15993818707650387,
+        "residual_xy_rms_m": 0.1866709206498241,
+        "residual_p95_m": 0.17822662259645627,
+        "condition": 2.5375659857383686,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false
+      },
+      "serial_overlaps": {
+        "gimbal_motion_rx_20261021_second": {
+          "duration_s": 117.70192670822144,
+          "lio_delta_deg": 1799.5676979891437,
+          "encoder_delta_deg_if_degrees": 1796.9112243652344,
+          "correlation": 0.9999993182501569,
+          "delta_difference_rms_deg": 1.6536115026369227,
+          "sensor_minus_encoder_delta_deg": 2.6564736239092195,
+          "sensor_minus_encoder_span_deg": 12.702393955101737,
+          "chassis_interpretation": "hypothesis only: requires actual relative-yaw semantics and mounting rotation"
+        }
+      },
+      "cloud_samples": {
+        "/livox/lidar": [
+          {
+            "record_ns": 1792585672024686566,
+            "source_ns": 1792585671924426971,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.969819946289062,
+                -6.319329900741577,
+                -0.23399999737739563
+              ],
+              [
+                14.666809949874581,
+                2.125999927520752,
+                6.447659978866573
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585671924427e+18,
+              1.792585672024053e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99625984.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585682026244204,
+            "source_ns": 1792585681924777808,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -13.913070278167725,
+                -9.49495976448059,
+                -0.24300000071525574
+              ],
+              [
+                14.591379909515306,
+                5.735589790344231,
+                6.346740140914915
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925856819247777e+18,
+              1.7925856820252762e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100498432.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585692124967397,
+            "source_ns": 1792585692024004198,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.186959638595582,
+                -9.797959699630738,
+                -0.24199999868869781
+              ],
+              [
+                7.857960119247414,
+                7.964959993362404,
+                6.349329953193663
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585692024004e+18,
+              1.792585692124291e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100286976.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585702224991229,
+            "source_ns": 1792585702124136877,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.480439863204957,
+                -6.63280978679657,
+                -0.22137000158429146
+              ],
+              [
+                7.447620210647557,
+                7.975590038299553,
+                6.261000156402588
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585702124137e+18,
+              1.7925857022245865e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100449536.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585712225660135,
+            "source_ns": 1792585712124868526,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.393659915924072,
+                -12.731550216674805,
+                -0.22499999403953552
+              ],
+              [
+                10.473320026397698,
+                8.017320013046257,
+                6.399660120010372
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925857121248686e+18,
+              1.7925857122250278e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100159232.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585722325202733,
+            "source_ns": 1792585722224618303,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -10.886300134658814,
+                -13.214840154647826,
+                -0.21899999678134918
+              ],
+              [
+                10.663330059051322,
+                7.763269987106288,
+                6.408329968452452
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925857222246182e+18,
+              1.7925857223247974e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100179200.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585732325473502,
+            "source_ns": 1792585732224488321,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -8.855469913482667,
+                -8.38700008392334,
+                -0.24400000274181366
+              ],
+              [
+                7.060739889144895,
+                12.24086998939509,
+                6.188370175361633
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925857322244884e+18,
+              1.7925857323249272e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100438784.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585742424660001,
+            "source_ns": 1792585742324592529,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.063630313873292,
+                -4.3769700145721435,
+                -0.2460000067949295
+              ],
+              [
+                9.980919628143265,
+                7.712300028800946,
+                6.1763300943374615
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925857423245926e+18,
+              1.7925857424240202e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99427584.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585752424750421,
+            "source_ns": 1792585752324708327,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.074120178222655,
+                -3.7093300867080687,
+                -0.1853300030529499
+              ],
+              [
+                10.425970277786238,
+                4.334969878196699,
+                6.164000034332275
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925857523247084e+18,
+              1.7925857524242668e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99558400.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585762536035851,
+            "source_ns": 1792585762423595030,
+            "frame": "front_mid360",
+            "points": 20160,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -13.473280029296875,
+                -8.830510082244873,
+                -0.23999999463558197
+              ],
+              [
+                18.652969989776608,
+                2.3018200588226314,
+                6.638000011444092
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585762423595e+18,
+              1.7925857625246659e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 101070848.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585772624403610,
+            "source_ns": 1792585772523952888,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.989070348739606,
+                -6.936989955902099,
+                -0.22699999809265137
+              ],
+              [
+                18.91315992355337,
+                2.000999927520752,
+                6.461999893188477
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585772523953e+18,
+              1.7925857726240468e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100093952.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585782624793610,
+            "source_ns": 1792585782524090048,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.576320028305053,
+                -6.979640202522278,
+                -0.22366000130772587
+              ],
+              [
+                17.110649604797352,
+                2.0033299970626812,
+                6.4589901113510075
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.79258578252409e+18,
+              1.7925857826242893e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100199168.0,
+            "point_start_minus_header_ns": 0.0
+          }
+        ],
+        "/lio/deskewed_odom_cloud": [
+          {
+            "record_ns": 1792585672046121635,
+            "source_ns": 1792585672023072242,
+            "frame": "odom",
+            "points": 19394,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.19477635383606,
+                -6.233372759819031,
+                -0.23448372706770898
+              ],
+              [
+                15.396141014099108,
+                2.1156268906593323,
+                6.451131463050842
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585682132689842,
+            "source_ns": 1792585682124229907,
+            "frame": "odom",
+            "points": 18426,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -15.3981294631958,
+                -5.58508825302124,
+                -0.241429153829813
+              ],
+              [
+                17.306154251098633,
+                1.606620967388153,
+                6.375854253768921
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585692133819715,
+            "source_ns": 1792585692122545003,
+            "frame": "odom",
+            "points": 19373,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.667516250610351,
+                -6.268375720977783,
+                -0.23959118068218233
+              ],
+              [
+                12.297234039306625,
+                2.117671594619751,
+                6.405121345520018
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585702134453587,
+            "source_ns": 1792585702124058246,
+            "frame": "odom",
+            "points": 19524,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.689897651672362,
+                -6.0598743581771854,
+                -0.21887705624103546
+              ],
+              [
+                9.072992668151864,
+                2.1140936589241033,
+                6.328412041664124
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585712137000094,
+            "source_ns": 1792585712123693704,
+            "frame": "odom",
+            "points": 19618,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.700846757888794,
+                -6.159163818359375,
+                -0.22428347691893577
+              ],
+              [
+                15.474428367614712,
+                2.1108316826820372,
+                6.4280475425720205
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585722234177870,
+            "source_ns": 1792585722223629951,
+            "frame": "odom",
+            "points": 19515,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.54633457183838,
+                -6.180597877502441,
+                -0.21080071717500687
+              ],
+              [
+                16.85340110778814,
+                2.056732029914856,
+                6.443759756088258
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585732334601376,
+            "source_ns": 1792585732323517799,
+            "frame": "odom",
+            "points": 19251,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.87553882598877,
+                -4.4456562995910645,
+                -0.15502528846263885
+              ],
+              [
+                15.686902046203613,
+                2.112552046775818,
+                6.368738412857056
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585742345360804,
+            "source_ns": 1792585742323689460,
+            "frame": "odom",
+            "points": 18786,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -10.950574064254761,
+                -4.140629315376282,
+                -0.22719837203621865
+              ],
+              [
+                15.034638881683389,
+                2.124972689151764,
+                6.347511649131775
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585752443105897,
+            "source_ns": 1792585752423810482,
+            "frame": "odom",
+            "points": 18737,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.35276165008545,
+                -4.162898063659668,
+                -0.24345264077186585
+              ],
+              [
+                15.584558639526362,
+                2.073730773925781,
+                6.339710807800293
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585762636504355,
+            "source_ns": 1792585762624076604,
+            "frame": "odom",
+            "points": 19574,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.65270604133606,
+                -7.502170968055725,
+                -0.22106027856469154
+              ],
+              [
+                20.11926710128785,
+                2.1218726229667664,
+                6.5614020013809204
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585772646751648,
+            "source_ns": 1792585772623873949,
+            "frame": "odom",
+            "points": 19466,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.162188005447387,
+                -6.7382114887237545,
+                -0.234533654153347
+              ],
+              [
+                19.18829851150505,
+                2.1160475134849546,
+                6.487620973587034
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585782735992823,
+            "source_ns": 1792585782724391460,
+            "frame": "odom",
+            "points": 19848,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.340646953582764,
+                -6.647778449058532,
+                -0.23053136676549912
+              ],
+              [
+                18.776435089111203,
+                2.109880187511444,
+                6.478974623680115
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          }
+        ]
+      },
+      "imu_point_spin_only_fit": {
+        "horizontal_lever_m": [
+          0.025169623771847838,
+          0.1755077626219611
+        ],
+        "radius_m": 0.17730336912022573,
+        "residual_xy_rms_m": 0.005800638241467035,
+        "residual_p95_m": 0.009962321784816793,
+        "condition": 1.0322506748130753,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false,
+        "sample_count": 271,
+        "selection": "abs(LIO yaw rate)>0.2rad/s; does not prove stationary chassis"
+      },
+      "lidar_reference_spin_only_fit": {
+        "horizontal_lever_m": [
+          0.014883174352779721,
+          0.15194238904771054
+        ],
+        "radius_m": 0.15266957283080695,
+        "residual_xy_rms_m": 0.005806704214722873,
+        "residual_p95_m": 0.00997008405289002,
+        "condition": 1.0322506748130753,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false
+      },
+      "diagnostic_only_pivot_hypothesis": {
+        "max_from_start_m": 1.0897676942925938,
+        "end_from_start_m": 0.19568122226201054,
+        "production_applied": false,
+        "peak_rotation_induced_speed_m_s": 0.19083124704749563
+      }
+    },
+    "run_20261021_203205": {
+      "lio_count": 1057,
+      "imu_count": 21447,
+      "lio_duration_s": 107.00015664100647,
+      "xy_max_from_start_m": 2.6707650185591327,
+      "xy_end_from_start_m": 0.7938578439681909,
+      "z_span_m": 0.055605109461688736,
+      "yaw_span_deg": 382.70885604504235,
+      "yaw_end_delta_deg": 358.31942336249307,
+      "imu_gz_integral_same_lio_window_deg": 380.15361172895496,
+      "gyro_minus_lio_rate_median_rad_s": 0.0037050571650668745,
+      "imu_bias_corrected_integral_deg": 357.4401808808767,
+      "imu_first_run_bias_corrected_integral_deg": 355.0804928920687,
+      "imu_acc_norm_g_p50_p99_max": [
+        0.9987507547828236,
+        1.816094153154974,
+        4.457117023511178
+      ],
+      "lio_record_minus_source_ms_p50_p95_max": [
+        12.342691421508789,
+        23.214960098266598,
+        27.114391326904297
+      ],
+      "lio_source_nonmonotonic_count": 0,
+      "imu_source_nonmonotonic_count": 0,
+      "imu_point_lever_fit": {
+        "horizontal_lever_m": [
+          -0.1974227023551287,
+          0.10560205685946979
+        ],
+        "radius_m": 0.22389175468996717,
+        "residual_xy_rms_m": 0.6396230578796743,
+        "residual_p95_m": 1.3861648165513443,
+        "condition": 2.5572109751573127,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false
+      },
+      "lidar_reference_lever_fit": {
+        "horizontal_lever_m": [
+          -0.208036356239927,
+          0.08210886089684005
+        ],
+        "radius_m": 0.2236537291335927,
+        "residual_xy_rms_m": 0.6394895019043579,
+        "residual_p95_m": 1.3866232886409136,
+        "condition": 2.558604342907164,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false
+      },
+      "serial_overlaps": {
+        "gimbal_motion_rx_20261021_third": {
+          "duration_s": 104.70016646385193,
+          "lio_delta_deg": 358.3118865228519,
+          "encoder_delta_deg_if_degrees": 2.05322265625,
+          "correlation": 0.1095683189669535,
+          "delta_difference_rms_deg": 211.77710988939057,
+          "sensor_minus_encoder_delta_deg": 356.2586638666019,
+          "sensor_minus_encoder_span_deg": 380.9728541825938,
+          "chassis_interpretation": "hypothesis only: requires actual relative-yaw semantics and mounting rotation"
+        }
+      },
+      "cloud_samples": {
+        "/livox/lidar": [
+          {
+            "record_ns": 1792585925525453279,
+            "source_ns": 1792585925424474620,
+            "frame": "front_mid360",
+            "points": 19872,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -13.755699939727783,
+                -7.126999855041504,
+                -0.2255799952149391
+              ],
+              [
+                8.775869693756107,
+                2.003000020980835,
+                6.4039998054504395
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925859254244746e+18,
+              1.7925859255246697e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100195072.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585935625023509,
+            "source_ns": 1792585935524296847,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.335470056533813,
+                -6.96999979019165,
+                -0.22237000361084938
+              ],
+              [
+                15.496069860458363,
+                2.003000020980835,
+                6.414999961853027
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792585935524297e+18,
+              1.792585935624076e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99779072.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585945625225447,
+            "source_ns": 1792585945524731511,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.567230205535887,
+                -7.0323300409317016,
+                -0.22499999403953552
+              ],
+              [
+                17.41165956497192,
+                2.003000020980835,
+                6.400330071449278
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925859455247314e+18,
+              1.7925859456241206e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99389184.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585955625500703,
+            "source_ns": 1792585955524188684,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.54064959526062,
+                -6.991330151557922,
+                -0.2296600034832954
+              ],
+              [
+                7.538990035057062,
+                2.003999948501587,
+                6.38932991504669
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925859555241887e+18,
+              1.7925859556244398e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100251136.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585965724950887,
+            "source_ns": 1792585965624273146,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.534660348892212,
+                -6.90033007144928,
+                -0.2280000001192093
+              ],
+              [
+                16.475500011443998,
+                2.0023300695419293,
+                6.454329972267149
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925859656242732e+18,
+              1.7925859657243766e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100103424.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585975725277198,
+            "source_ns": 1792585975624987371,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -6.415650072097778,
+                -10.85547981262207,
+                -0.18799999356269836
+              ],
+              [
+                3.301990046501154,
+                11.436989955902094,
+                6.210999965667725
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925859756249874e+18,
+              1.7925859757243123e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99324928.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585985725860208,
+            "source_ns": 1792585985624788838,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -10.034309577941894,
+                -7.832329912185669,
+                -0.23000000417232513
+              ],
+              [
+                17.183609561920132,
+                2.743000030517578,
+                6.501329903602598
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925859856247887e+18,
+              1.79258598572505e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100261376.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792585995825730638,
+            "source_ns": 1792585995724354609,
+            "frame": "front_mid360",
+            "points": 20064,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.653960161209106,
+                -6.26154999256134,
+                -0.22499999403953552
+              ],
+              [
+                11.360649890899612,
+                10.99195003509518,
+                6.291999816894531
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925859957243546e+18,
+              1.792585995824795e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100440320.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792586005925056680,
+            "source_ns": 1792586005824340985,
+            "frame": "front_mid360",
+            "points": 19872,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.060800161361694,
+                -4.29915991306305,
+                -0.2460000067949295
+              ],
+              [
+                16.317439556121858,
+                2.430000066757202,
+                6.4232898378372205
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792586005824341e+18,
+              1.7925860059244467e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100105728.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792586016024894965,
+            "source_ns": 1792586015924892684,
+            "frame": "front_mid360",
+            "points": 19872,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.740770330429077,
+                -4.327450108528137,
+                -0.24500000476837158
+              ],
+              [
+                15.759509725570695,
+                2.431289973258973,
+                6.441999912261963
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.7925860159248927e+18,
+              1.7925860160244262e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 99533568.0,
+            "point_start_minus_header_ns": 0.0
+          },
+          {
+            "record_ns": 1792586026125211013,
+            "source_ns": 1792586026023973147,
+            "frame": "front_mid360",
+            "points": 19968,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.581319828033447,
+                -4.27932993888855,
+                -0.2373300041258335
+              ],
+              [
+                14.879939794540372,
+                2.4323299765586834,
+                6.442320046424858
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity",
+              "tag",
+              "line",
+              "timestamp"
+            ],
+            "point_timestamp_min_max": [
+              1.792586026023973e+18,
+              1.7925860261245325e+18
+            ],
+            "point_span_ns_assuming_absolute_ns": 100559360.0,
+            "point_start_minus_header_ns": 0.0
+          }
+        ],
+        "/lio/deskewed_odom_cloud": [
+          {
+            "record_ns": 1792585925634534643,
+            "source_ns": 1792585925624475717,
+            "frame": "odom",
+            "points": 19259,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -13.737297554016113,
+                -6.620930662155152,
+                -0.23910509407520295
+              ],
+              [
+                8.217856140136698,
+                2.113484978675842,
+                6.393143672943114
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585935636936828,
+            "source_ns": 1792585935624061346,
+            "frame": "odom",
+            "points": 19626,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.523015022277832,
+                -6.820556044578552,
+                -0.22765632346272469
+              ],
+              [
+                18.840445041656494,
+                2.114791452884674,
+                6.434337854385376
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585945638771980,
+            "source_ns": 1792585945623463630,
+            "frame": "odom",
+            "points": 19454,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -13.47538140296936,
+                -6.930571494102478,
+                -0.23368360713124275
+              ],
+              [
+                18.22297243118382,
+                2.1116997170448313,
+                6.418703484535217
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585955733388173,
+            "source_ns": 1792585955722780227,
+            "frame": "odom",
+            "points": 19502,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -14.448858270645141,
+                -6.912236037254334,
+                -0.2275740373134613
+              ],
+              [
+                7.483641796112071,
+                2.10007510662079,
+                6.417177596092225
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585965736332258,
+            "source_ns": 1792585965722312211,
+            "frame": "odom",
+            "points": 19133,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.69803997039795,
+                -6.7365669250488285,
+                -0.23644606173038482
+              ],
+              [
+                16.633764953613284,
+                2.1216368198394777,
+                6.47911714553833
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585975736492013,
+            "source_ns": 1792585975724307298,
+            "frame": "odom",
+            "points": 19565,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.029593353271485,
+                -5.724908790588379,
+                -0.2433025747537613
+              ],
+              [
+                11.292360801696779,
+                2.1193083477020265,
+                6.368874549865723
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585985736632368,
+            "source_ns": 1792585985725050210,
+            "frame": "odom",
+            "points": 19094,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -8.593885726928711,
+                -8.39152208328247,
+                -0.20495974615216256
+              ],
+              [
+                19.017867279052698,
+                2.13214497089386,
+                6.497639770507813
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792585995836793034,
+            "source_ns": 1792585995824785232,
+            "frame": "odom",
+            "points": 20320,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.021076459884643,
+                -5.805077095031738,
+                -0.1808333583176136
+              ],
+              [
+                15.404201068878182,
+                2.1217886543273927,
+                6.469265041351319
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792586005845069337,
+            "source_ns": 1792586005824552059,
+            "frame": "odom",
+            "points": 19602,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.714302730560302,
+                -4.598685641288758,
+                -0.2214112138748169
+              ],
+              [
+                17.08503761291505,
+                2.1153826689720154,
+                6.389305653572083
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792586015935005519,
+            "source_ns": 1792586015924415349,
+            "frame": "odom",
+            "points": 19472,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -11.948638916015625,
+                -4.623722438812256,
+                -0.22479670882225036
+              ],
+              [
+                17.107551746368422,
+                2.116176011562348,
+                6.3939912080764785
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          },
+          {
+            "record_ns": 1792586026032250247,
+            "source_ns": 1792586026020638227,
+            "frame": "odom",
+            "points": 18571,
+            "finite_xyz_fraction": 1.0,
+            "xyz_p01_p99": [
+              [
+                -12.112728691101074,
+                -4.61778712272644,
+                -0.2293768897652626
+              ],
+              [
+                15.532930374145167,
+                2.1200406551361084,
+                6.412286329269409
+              ]
+            ],
+            "fields": [
+              "x",
+              "y",
+              "z",
+              "intensity"
+            ]
+          }
+        ]
+      },
+      "imu_point_spin_only_fit": {
+        "horizontal_lever_m": [
+          -0.0601266425487137,
+          0.18031191308321498
+        ],
+        "radius_m": 0.19007261544975296,
+        "residual_xy_rms_m": 0.9317078205459374,
+        "residual_p95_m": 1.8233107655520815,
+        "condition": 1.4364236512339277,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false,
+        "sample_count": 155,
+        "selection": "abs(LIO yaw rate)>0.2rad/s; does not prove stationary chassis"
+      },
+      "lidar_reference_spin_only_fit": {
+        "horizontal_lever_m": [
+          -0.07049666037963712,
+          0.156732583199849
+        ],
+        "radius_m": 0.17185715510615054,
+        "residual_xy_rms_m": 0.9317344203523718,
+        "residual_p95_m": 1.823311163229572,
+        "condition": 1.4364236512339277,
+        "identifiable_yaw_excitation": true,
+        "mechanical_calibration_verified": false
+      },
+      "diagnostic_only_pivot_hypothesis": {
+        "max_from_start_m": 2.669378533421167,
+        "end_from_start_m": 0.7933733643982048,
+        "production_applied": false,
+        "peak_rotation_induced_speed_m_s": 0.4271041421545607
+      }
+    }
+  },
+  "first_recording_static_gz_bias_hypothesis_rad_s": 0.004089973866939545,
+  "diagnostic_only_lever_source": "run_20261021_202408",
+  "diagnostic_only_lidar_horizontal_lever_m": [
+    0.015293518836158204,
+    0.15267217555738066
+  ]
+}
