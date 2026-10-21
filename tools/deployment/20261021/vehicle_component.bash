@@ -40,6 +40,10 @@ case "$nav_component" in
       /livox/lidar /livox/imu /lio/sensor_odometry /lio/deskewed_odom_cloud \
       /sensor_reference/odom /tf /tf_static /state/sensor_reference_healthy \
       /mapping/online_status /hardware/legacy_adam/adapter_status ;;
+  physical)
+    exec ros2 launch rm_nav_bringup legacy_adam_transport.launch.py transport:=physical \
+      enable_physical_output:=true \
+      serial_port:=/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0 ;;
   candidate)
     exec ros2 launch rm_nav_bringup legacy_adam_transport.launch.py transport:=disabled ;;
   *) echo "Unsupported component: $nav_component" >&2; exit 2 ;;

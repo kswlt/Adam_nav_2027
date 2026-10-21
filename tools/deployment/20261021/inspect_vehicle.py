@@ -73,7 +73,8 @@ def main():
     correct_tf = correct_tf and all(len(v) == 1 for v in authorities.values())
     authority_names = {bytes(e.endpoint_gid): e.node_name for topic in ('/tf', '/tf_static') for e in node.get_publishers_info_by_topic(topic)}
     endpoints = {t:[e.node_name for e in node.get_publishers_info_by_topic(t)] for t,_ in topics}
-    no_physical = node.count_publishers('/cmd_vel') == 0 and node.count_publishers('/cmd_yaw_angle') == 0
+    physical_transport_present = node.count_publishers('/hardware/legacy_adam/serial_healthy') > 0
+    no_physical = not physical_transport_present and node.count_publishers('/cmd_vel') == 0 and node.count_publishers('/cmd_yaw_angle') == 0
     report = {'scope':'REAL_SENSOR_READ_ONLY_NO_MOTION',
         'passed':bool(healthy and correct_tf and no_physical and maximum_candidate_speed == 0. and all(counts[t] >= 5 for t,_ in topics)),
         'counts':dict(counts), 'health_and_reasons':latest, 'points':points, 'publishers':endpoints,
@@ -81,6 +82,7 @@ def main():
         'actual_tf_authorities':{child:[authority_names.get(gid,gid.hex()) for gid in ids] for child,ids in authorities.items()},
         'publisher_gid_available_in_python':bool(authorities),
         'tf_publishers':{t:[e.node_name for e in node.get_publishers_info_by_topic(t)] for t in ('/tf','/tf_static')}, 'maximum_candidate_speed':maximum_candidate_speed,
+        'physical_transport_present':physical_transport_present,
         'physical_publishers':{'cmd_vel':node.count_publishers('/cmd_vel'),'cmd_yaw_angle':node.count_publishers('/cmd_yaw_angle')},
         'source_age_s':{t:{'p50':float(np.median(v)),'p95':float(np.quantile(v,.95)),'max':max(v)} for t,v in ages.items()},
         'observed_position_span_m':float(np.max(np.linalg.norm(np.asarray(positions)-positions[0],axis=1))) if positions else None,

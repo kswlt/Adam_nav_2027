@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Manage only processes tagged as this isolated session; no global process kills.
 
-No physical serial transport is exposed here. Candidate means device-free output.
+Physical is an explicit operator-selected component. Candidate remains device-free.
 """
 import argparse
 import fcntl
@@ -15,7 +15,7 @@ import time
 ROOT = Path('/home/asus/nav_2027_vehicle_config_164')
 RUNTIME = ROOT/'runtime_20261021_sensor_reference'
 RUNNER = Path(__file__).with_name('vehicle_component.bash')
-COMPONENTS = ('driver', 'state', 'foxglove', 'capture', 'online', 'candidate', 'bag')
+COMPONENTS = ('driver', 'state', 'foxglove', 'capture', 'online', 'candidate', 'bag', 'physical')
 MARKER = b'NAV_MANAGED_SESSION=20261021_sensor_reference'
 
 

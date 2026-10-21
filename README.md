@@ -6,7 +6,7 @@
 
 本机与ASUS均已通过14包构建、56项测试（0失败、1跳过）；本机新模式和原有TDT/MPPI导航回归通过。
 
-2026-10-21 已在 ASUS 独立目录部署并通过同样的56项测试。雷达参考状态、Foxglove、新关键帧会话与在线建图已启动；**物理串口发送及自动导航尚未开启**。实际运行状态以话题和下面的会话查询命令为准。现场目录与实测记录见 [ASUS部署记录](docs/ASUS_SENSOR_REFERENCE_20261021.md)。
+2026-10-21 已在 ASUS 独立目录部署并通过同样的56项测试。雷达参考状态、Foxglove、新关键帧会话与在线建图已启动。**按用户要求，真实串口发送已开启：约50Hz发送原Adam的54字节报文；当前xy为0，yaw缓存值为0°。自动导航尚未开启。** 内核写入抓取2.013秒共100包；这不是下位机执行确认。实际运行状态以话题和下面的会话查询命令为准。现场目录与实测记录见 [ASUS部署记录](docs/ASUS_SENSOR_REFERENCE_20261021.md)。
 
 ## 先弄清三个状态
 
@@ -14,7 +14,7 @@
 | --- | --- | --- |
 | 建图 | 看扫描、雷达轨迹、累积点云；录制关键帧；在线检测回环并更新历史地图 | 有点云不代表已有正式导航地图 |
 | 导航影子运行 | 在正式地图上定位、规划，查看将要发送的平移速度 | 不向串口发车速，不会让车自动跑 |
-| 实车控制 | 需另行接通已核对的电控接口 | 本模式尚未接通；不能把影子测试当作上车验收 |
+| 真实串口发送 | 已接通电控串口，当前发送零平移报文 | 不代表非零速度方向、停车或自动导航已验收 |
 
 ## 1. 连接车载电脑
 
@@ -44,7 +44,7 @@ ROS Domain 是 **97**。这些路径属于当前独立部署，不要混用旧 `
 只停止新会话、保留原车程序：
 
 ```bash
-for component in bag online capture candidate foxglove state driver; do
+for component in physical bag online capture candidate foxglove state driver; do
   python3 "$NAV_RUNTIME/vehicle_session.py" stop "$component"
 done
 ```
@@ -115,7 +115,7 @@ python3 "$NAV_RUNTIME/vehicle_session.py" start online "$NAV_SESSION"
 python3 "$NAV_RUNTIME/vehicle_session.py" start bag
 ```
 
-再用遥控器低速前进约1米、返回起点，然后停车。不要同时开启新串口发送。观察雷达轴轨迹是否往返、地图是否重影；关键帧也会随平移保存。
+纯遥控采样时先执行 `python3 "$NAV_RUNTIME/vehicle_session.py" stop physical`，避免与串口命令叠加。再用遥控器低速前进约1米、返回起点，然后停车。观察雷达轴轨迹是否往返、地图是否重影；关键帧也会随平移保存。
 结束后运行 `python3 "$NAV_RUNTIME/vehicle_session.py" stop bag`，MCAP保存在 `$NAV_RUNTIME/bags`；不手动停止时3分钟自动结束。任务完成不等于自动导航已通过，后续还要受控检查电控速度方向和停车。
 
 ## 4. Foxglove 中每项是什么意思
@@ -190,7 +190,29 @@ ros2 topic echo /hardware/legacy_adam/adapter_status --once
 
 它不占用全局 `/cmd_vel`，避免旧业务节点的速度混入。真正接入传输时采用原版缓存yaw逻辑；不发布新的yaw目标，也不把 LIO yaw 发成电控角度。原默认0度仍是角度字段值，不是“禁用yaw”的标志。
 
-兼容格式已经按原源码实现，是否能直接控制当前这台车还要上车确认速度作用点、自旋和停止行为。连接方式、协议逐项对照和本机测试见 [Adam 无需改协议的替换说明](docs/LEGACY_ADAM_REPLACEMENT.md)。ASUS 已部署并启动 device-free 候选输出；默认不发送车辆命令。
+### 真实发送的启动、查看和停止
+
+当前ASUS已开启真实发送，串口为 `/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0`（ttyUSB0）。重启后需要真实发送时执行：
+
+```bash
+python3 "$NAV_RUNTIME/vehicle_session.py" stop candidate
+python3 "$NAV_RUNTIME/vehicle_session.py" start physical
+python3 "$NAV_RUNTIME/vehicle_session.py" status physical
+ros2 topic echo /hardware/legacy_adam/serial_healthy std_msgs/msg/Bool --once
+ros2 topic echo /hardware/legacy_adam/adapter_status std_msgs/msg/String --once
+```
+
+关闭本工程的串口发送并释放串口：
+
+```bash
+python3 "$NAV_RUNTIME/vehicle_session.py" stop physical
+```
+
+physical组件同时启动适配器和真实my_serial_py；不要再并行启动candidate或第二个串口节点。新速度走私有 `/hardware/legacy_adam/cmd_vel`，全局 `/cmd_vel` 没有发布者不等于串口没发。
+
+当前没有正式地图定位与任务运动许可，适配器保持xy=0；不是让车自行驶向目标。yaw沿用原版缓存策略，初值0°是角度指令，不是禁用yaw。遥控优先级由电控实现，尚未实测确认。停止串口也不等于电控自旋停车。
+
+实测 [100个真实写入报文](docs/evidence/asus_serial_tx_20261021.json)。非零速度方向、速度作用点、偏心自旋补偿、停车行为仍需现场验证。连接方式和协议对照见 [Adam兼容说明](docs/LEGACY_ADAM_REPLACEMENT.md)。
 
 ## 6. 架构和安装几何
 

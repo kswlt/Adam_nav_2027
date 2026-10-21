@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-21最新：用户明确要求真实串口发送，已停candidate并启动physical（只管理本项目进程组）。ttyUSB0实测2.013秒成功写入100个54字节报文；xy=0，原版缓存yaw=0°。尚未启动自动导航，非零运动与电控执行未验收。README新增启动/停止/查询命令；下方TX=0为此前只读快照。
+
 2026-10-21 ASUS已完成部署：独立新release `20261021_sensor_reference`、新运行目录 `runtime_20261021_sensor_reference`；ASUS14包构建、56 tests零失败（1 skipped）。真实雷达/LIO/参考TF/子图、Foxglove、新关键帧及在线地图已运行。电控只读1664帧、CRC0、TX0，没有物理发送或自动导航。操作入口已更新README；请先读 [ASUS现场记录](ASUS_SENSOR_REFERENCE_20261021.md)。下方“ASUS未部署”属于此前历史状态。
 
 2026-10-21 电控兼容补齐：新增 `legacy_adam_transport.launch.py`，默认不打开串口，使用独立候选速度避免原区域节点 `/cmd_vel` 混入。`my_serial_py` 保留54/26字节原协议，仅增加显式 legacy_cached yaw策略；默认 require_fresh 不变。不发布替代业务yaw目标。原发送函数/libscrc黄金报文逐字节通过，WSL14包构建、56 tests零失败（1 skipped），整链路PTY约50.8Hz，旧严格串口回归也通过。ASUS未部署、未动车、原代码未修改；先读 [原Adam兼容说明](LEGACY_ADAM_REPLACEMENT.md)。

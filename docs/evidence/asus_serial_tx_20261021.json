@@ -1,0 +1,27 @@
+{
+  "pid": 50294,
+  "port": "/dev/ttyUSB0",
+  "successful_54_byte_writes": 100,
+  "trace_duration_s": 2.0133802419995845,
+  "first_fields": [
+    170,
+    -0.0,
+    -0.0,
+    0.0,
+    0.0,
+    3,
+    0,
+    0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "verification": "kernel write() returned 54; not a firmware actuation acknowledgement",
+  "strace_result": 124,
+  "strace_stderr": "strace: Process 50294 attached\nstrace: Process 50294 detached\n"
+}

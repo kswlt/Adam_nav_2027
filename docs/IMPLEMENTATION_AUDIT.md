@@ -119,3 +119,6 @@ LaserScan 未能证明障碍代价变化，因此障碍层实际 marking 仍为 
 
 构建与测试：`colcon build --symlink-install --parallel-workers 2` 成功；
 `colcon test` / `colcon test-result --verbose` 为 38 tests、0 errors、0 failures、1 skipped。
+# 2026-10-21 真实串口启用与默认README同步
+
+基线883f618。按用户明确要求，新增会话physical组件，停止本工程candidate后打开真实ttyUSB0；复用现有legacy_adam_transport及my_serial_py，协议与控制算法未修改。实测2.013秒100次54字节成功write，xy=0、缓存yaw=0°；不视为固件执行回执。保留此前56项构建测试结果，本次未重跑全包构建；新增运维脚本执行语法/会话测试，现场物理组件启动成功。检查器补充私有serial_healthy发布者检查，避免将全局cmd_vel无人发布误报为未接通串口。未确认非零速度方向、遥控优先级、停车反馈；未启动自动导航。证据见evidence/asus_serial_tx_20261021.json。Git SHA与远端结果由本次提交及最终报告记录。
