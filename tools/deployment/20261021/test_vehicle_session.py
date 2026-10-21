@@ -60,6 +60,20 @@ class SessionTest(unittest.TestCase):
                 os.killpg(pid, 15)
                 os.waitpid(pid, 0)
 
+    def test_stop_then_start_actually_creates_new_process(self):
+        self.invoke('start')
+        first = json.loads((self.root/'driver.process.json').read_text())['pid']
+        self.invoke('stop')
+        os.waitpid(first,0)
+        self.invoke('start')
+        second = json.loads((self.root/'driver.process.json').read_text())['pid']
+        try:
+            self.assertNotEqual(first,second)
+            self.assertTrue(session.owned(second))
+        finally:
+            self.invoke('stop')
+            os.waitpid(second,0)
+
 
 if __name__ == '__main__':
     unittest.main()

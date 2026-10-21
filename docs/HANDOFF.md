@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+**最新完整交接（2026-10-21）：请先读 [LIO修复与实车部署完整交接](HANDOFF_20261021_LIO_REPAIR.md)。** 已修输入断流继续预测及异常位姿未拦截；ASUS14包/57 tests零失败、1跳过；静止60秒LIO三维最大变化9.2mm。当前driver/state/Foxglove运行，capture/online/physical/Nav2均未运行；新contact_angle收到115.624～115.646，语义尚待确认。下方记录均保留为历史，不得把旧运行状态覆盖到当前。
+
 2026-10-21地图交付实际检查：用户选择本地场地坐标。原16帧会话第0→1帧估计跳4762.076m，在线fault，离线优化返回1拒绝；已停本项目capture，原始档案保留。导出故障前2806点/1帧检查包、占据PGM/YAML及最低观测z地形，navigation_ready=false；不是完整地图。详见 [地图导出报告](MAP_EXPORT_20261021.md)。正式发布受LIO异常阻塞，本地场地契约也尚需与官方契约分开实现。
 
 2026-10-21电控ZIP源码审计：新增 [yaw链路说明](ELECTRICAL_YAW_AUDIT_20261021.md)。contact_angle在云台板写死0；底盘板内部大yaw编码器用于xy变换，因此雷达参考方案不需要角度回传。上位机yaw_degrees与电控yaw_speed含义冲突：后者在Navigation、无自瞄跟踪、running_state=5时作为deg/s；默认导航扫描80°/s。发现Navigation_online递减但消费无断流清零门控、底盘Navigation W_set=0。只做源码审计，未改动/烧录电控；待确认ZIP与实车固件一致，不能按旧字段名直接发非零yaw。

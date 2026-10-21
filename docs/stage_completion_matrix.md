@@ -1,5 +1,7 @@
 # P0-P10 验收矩阵
 
+2026-10-21最新：LIO双输入/位姿连续性修复在ASUS14包构建、57 tests零失败（1 skipped）、实际small_point_lio断流隔离回归通过；用户确认静止60秒，LIO三维最大估计变化0.009214m。旧地图失败证据保留，正式地图与动态运动仍未验收。串口最新收到非零角度，但单位/零点/方向未确认；重启后physical关闭。详见 [完整交接](HANDOFF_20261021_LIO_REPAIR.md)，下方阶段历史不是当前进程快照。
+
 2026-10-21 ASUS新参考模式已部署：新release隔离，ASUS56 tests / 0 errors / 0 failures / 1 skipped；真实状态及WebSocket预览通过，关键帧与在线地图运行。只读电控接收正常；物理发送、正式地图定位和自动行驶尚未验收。见 [ASUS现场记录](ASUS_SENSOR_REFERENCE_20261021.md)。
 
 2026-10-21：新增雷达轴参考模式，保留完整 chassis 模式。支持独立状态链、nav_reference 关键帧/在线优化、TDT只跟踪平移和雷达水平坐标速度影子转换。当前只在本机测试，ASUS部署及物理控制未执行。详见 [模式与验收记录](SENSOR_REFERENCE_MODE.md)。

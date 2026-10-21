@@ -21,6 +21,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--seconds', type=float, default=15.)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--stationary-confirmed', action='store_true')
     args = parser.parse_args()
     if not 5 <= args.seconds <= 60:
         raise ValueError('Probe duration must be 5..60 seconds')
@@ -30,6 +31,7 @@ def main():
     authorities = defaultdict(set)
     latest, health_at, positions, points = {}, {}, [], {}
     maximum_candidate_speed = 0.
+    lio_positions, lio_rotations = [], []
     topics = [('/livox/lidar', PointCloud2), ('/lio/sensor_odometry', Odometry),
               ('/lio/deskewed_odom_cloud', PointCloud2), ('/sensor_reference/odom', Odometry),
               ('/localization/odom_submap', PointCloud2), ('/visualization/live_map_preview', PointCloud2)]
@@ -42,13 +44,17 @@ def main():
         if topic == '/sensor_reference/odom':
             p = m.pose.pose.position
             positions.append((p.x,p.y,p.z))
+        if topic == '/lio/sensor_odometry':
+            p,q = m.pose.pose.position,m.pose.pose.orientation
+            lio_positions.append((p.x,p.y,p.z))
+            lio_rotations.append(np.array([q.x,q.y,q.z,q.w]))
     for topic, typ in topics:
         node.create_subscription(typ, topic, lambda m, t=topic: message(t,m), qos_profile_sensor_data)
     def health(topic, m):
         latest[topic], health_at[topic] = m.data, time.monotonic()
-    for topic in ('/sensors/front_mid360/cloud_healthy', '/state/sensor_reference_healthy', '/localization/submap_healthy'):
+    for topic in ('/lio/input_healthy', '/sensors/front_mid360/cloud_healthy', '/state/sensor_reference_healthy', '/localization/submap_healthy'):
         node.create_subscription(Bool, topic, lambda m, t=topic: health(t,m), 10)
-    for topic in ('/state/sensor_reference_reason', '/sensors/front_mid360/cloud_reason', '/localization/submap_reason', '/mapping/online_status', '/mapping/recorder_status'):
+    for topic in ('/lio/input_reason', '/state/sensor_reference_reason', '/sensors/front_mid360/cloud_reason', '/localization/submap_reason', '/mapping/online_status', '/mapping/recorder_status'):
         node.create_subscription(String, topic, lambda m, t=topic: latest.update({t:m.data}), 10)
     def transforms(message, info):
         for tf in message.transforms:
@@ -66,7 +72,7 @@ def main():
     while time.monotonic()-start < args.seconds:
         rclpy.spin_once(node, timeout_sec=.02)
     healthy = all(latest.get(t) is True and time.monotonic()-health_at.get(t,0) < .5 for t in (
-        '/sensors/front_mid360/cloud_healthy', '/state/sensor_reference_healthy', '/localization/submap_healthy'))
+        '/lio/input_healthy', '/sensors/front_mid360/cloud_healthy', '/state/sensor_reference_healthy', '/localization/submap_healthy'))
     correct_tf = all(parents[key] == {parent} for key, parent in {
         'front_mid360_imu':'odom', 'front_mid360':'front_mid360_imu',
         'nav_reference':'odom', 'sensor_yaw_reference':'odom'}.items())
@@ -86,6 +92,9 @@ def main():
         'physical_publishers':{'cmd_vel':node.count_publishers('/cmd_vel'),'cmd_yaw_angle':node.count_publishers('/cmd_yaw_angle')},
         'source_age_s':{t:{'p50':float(np.median(v)),'p95':float(np.quantile(v,.95)),'max':max(v)} for t,v in ages.items()},
         'observed_position_span_m':float(np.max(np.linalg.norm(np.asarray(positions)-positions[0],axis=1))) if positions else None,
+        'operator_confirmed_stationary':args.stationary_confirmed,
+        'lio_3d_span_m':float(np.max(np.linalg.norm(np.asarray(lio_positions)-lio_positions[0],axis=1))) if lio_positions else None,
+        'lio_orientation_span_rad':max(2*math.acos(min(1.,abs(float(np.dot(q,lio_rotations[0])))/(np.linalg.norm(q)*np.linalg.norm(lio_rotations[0])))) for q in lio_rotations) if lio_rotations else None,
         'stationary_drift_or_ground_truth_verified':False}
     args.output.write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps(report,indent=2))

@@ -1,5 +1,7 @@
 # Adam_nav_2027 源码审计报告
 
+2026-10-21 LIO修复：检查基线77920aa，clean status/fetch后处理。旧session 0→1帧跳4762.076m；上游预测没有长dt限制，参考状态未检查物理连续性。新增双输入门与位姿连续性锁存，不改滤波算法、单位、时间戳或地图门限；明确restart/new session恢复。ASUS14包构建、57 tests零失败（1 skipped）、实际small_point_lio失流/恢复fixture通过；用户确认静止60秒三维估计变化9.2mm，未录该段MCAP。会话stop等待退出修复、3项测试通过。保留首次模块安装/异步回调误判与fixture稳定等待失败证据；旧异常原始断流原因、动态精度、角度标定、正式本地地图和物理停车未验证。完整文件/命令/风险见 [交接审计](HANDOFF_20261021_LIO_REPAIR.md)，Git SHA与远端状态见本阶段提交。
+
 2026-10-21 ASUS部署：基线3f3bb43，检查clean status并fetch后，在新release克隆/快进，保留旧工作区和配置。ASUS14包构建、56 tests零失败（1 skipped）；真实状态、只读串口和Windows实际WebSocket接收通过，物理输出关闭。新增会话管理、只读检查与限时MCAP入口，不改导航/串口算法。实测、探针API修复、原地转动关键帧限制及未验证项见 [ASUS部署记录](ASUS_SENSOR_REFERENCE_20261021.md)。
 
 2026-10-21 电控兼容阶段：基线 b3e4be9，clean status + SSH fetch确认无新提交覆盖；复用原my_serial_py，协议编码未改。新增原缓存yaw策略的显式入口和私有速度适配，保留严格默认、超时归零和串口归属检查。WSL全14包构建、56 tests零失败（1 skipped）；原发送函数/libscrc黄金报文与新端到端PTY、旧严格模式回归通过。首次CRLF启动失败证据、修改/风险/未验收项见 [LEGACY_ADAM_REPLACEMENT](LEGACY_ADAM_REPLACEMENT.md)。本轮没有ASUS操作或物理串口输出，main不合并。

@@ -49,7 +49,12 @@ def main():
                 print('No live owned instance; no signal sent')
                 return
             os.killpg(pid, signal.SIGINT)
-            print('SIGINT sent only to owned process group '+str(pid))
+            deadline = time.monotonic()+8.
+            while owned(pid) and time.monotonic() < deadline:
+                time.sleep(.05)
+            if owned(pid):
+                raise SystemExit('Owned component still stopping; restart refused until exit: '+str(pid))
+            print('Owned process group stopped: '+str(pid))
             return
         if running:
             print('Already running: '+str(pid))
