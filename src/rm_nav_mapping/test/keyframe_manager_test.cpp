@@ -38,5 +38,11 @@ int main()
   assert(sensor_heading.keyframes().back().odom_T_chassis.matrix().isApprox(Eigen::Matrix4d::Identity()));
   try {sensor_heading.consider(3,pose,std::numeric_limits<double>::quiet_NaN());assert(false);}
   catch(const std::invalid_argument &){}
+  rm_nav_mapping::KeyframeManager bounded({.15,.1745,.5,2.});
+  assert(bounded.consider(0,pose,0.));
+  assert(!bounded.consider(100000000,pose,.4));
+  assert(bounded.consider(500000000,pose,.4));
+  assert(!bounded.consider(1000000000,pose,.4));
+  assert(bounded.consider(2500000000,pose,.4));
   return 0;
 }

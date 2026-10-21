@@ -14,6 +14,9 @@ export ROS_DOMAIN_ID=97
 export ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
 case "$nav_component" in
   driver)
+    # Keep DDS network writes out of the Livox acquisition/publish thread.
+    # Only this isolated release is affected; sensor timestamps stay unchanged.
+    export RMW_FASTRTPS_PUBLICATION_MODE=ASYNCHRONOUS
     exec ros2 run livox_ros_driver2 livox_ros_driver2_node --ros-args \
       -r __node:=nav20261021_livox -p xfer_format:=0 -p multi_topic:=0 -p data_src:=0 \
       -p publish_freq:=10.0 -p output_data_type:=0 -p frame_id:=front_mid360 \
@@ -28,7 +31,7 @@ case "$nav_component" in
     exec ros2 launch rm_nav_bringup mapping_capture.launch.py \
       archive_root:="$nav_runtime/keyframes" calibration_id:=vehicle164_sensor_axis_factory_v1 \
       body_frame:=nav_reference state_health_topic:=/state/sensor_reference_healthy \
-      rotation_trigger_source:=sensor ;;
+      rotation_trigger_source:=sensor min_keyframe_interval_s:=0.5 max_keyframe_interval_s:=2.0 ;;
   online)
     nav_session="${1:?Explicit new sensor-reference session directory required}"
     exec nice -n 10 ros2 launch rm_nav_bringup online_mapping.launch.py session:="$nav_session" \

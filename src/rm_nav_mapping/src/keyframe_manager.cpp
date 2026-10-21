@@ -8,7 +8,10 @@ namespace rm_nav_mapping {
 KeyframeManager::KeyframeManager(KeyframeTriggerConfig config) : config_(config)
 {
   if (!std::isfinite(config.translation_threshold_m) || config.translation_threshold_m<=0 ||
-      !std::isfinite(config.yaw_threshold_rad) || config.yaw_threshold_rad<=0 || config.yaw_threshold_rad>M_PI)
+      !std::isfinite(config.yaw_threshold_rad) || config.yaw_threshold_rad<=0 || config.yaw_threshold_rad>M_PI ||
+      !std::isfinite(config.min_interval_s) || config.min_interval_s<0 ||
+      !std::isfinite(config.max_interval_s) || config.max_interval_s<0 ||
+      (config.max_interval_s>0 && config.max_interval_s<config.min_interval_s))
     throw std::invalid_argument("Keyframe thresholds must be positive and finite");
 }
 
@@ -33,9 +36,12 @@ bool KeyframeManager::consider(
     return true;
   }
   const auto & previous = keyframes_.back().odom_T_chassis;
+  const double elapsed=(stamp_ns-keyframes_.back().stamp_ns)*1e-9;
+  if(elapsed<config_.min_interval_s)return false;
   const double translation = (odom_T_chassis.translation() - previous.translation()).norm();
   const double yaw=std::abs(std::remainder(trigger_yaw-last_trigger_yaw_,2*M_PI));
-  if (translation < config_.translation_threshold_m && yaw < config_.yaw_threshold_rad) {
+  const bool periodic=config_.max_interval_s>0 && elapsed>=config_.max_interval_s;
+  if (!periodic && translation < config_.translation_threshold_m && yaw < config_.yaw_threshold_rad) {
     return false;
   }
   keyframes_.push_back({static_cast<std::uint64_t>(keyframes_.size()), stamp_ns, odom_T_chassis});

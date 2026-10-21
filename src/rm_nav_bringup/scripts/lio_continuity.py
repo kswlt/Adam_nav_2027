@@ -16,8 +16,10 @@ class InputContinuity:
         return False
 
     def tick(self, now):
-        if self.armed and any(now-t > self.max_gap for t in self.seen.values()):
-            self.fail('LIO input arrival gap')
+        if self.armed:
+            for stream,at in self.seen.items():
+                if now-at > self.max_gap:
+                    self.fail(f'LIO input arrival gap: stream={stream} gap_s={now-at:.6f} limit_s={self.max_gap:.6f}')
         return self.armed and not self.fault
 
     def observe(self, stream, stamp, source_now, arrival_now):
@@ -32,13 +34,13 @@ class InputContinuity:
             # cannot initialize the filter, but do not poison a never-armed run.
             if not self.armed:
                 return False
-            return self.fail('LIO input source age invalid')
+            return self.fail(f'LIO input source age invalid: stream={stream} age_s={source_now-stamp:.6f} stamp_s={stamp:.9f} now_s={source_now:.9f} limit_s={self.max_age:.6f}')
         if stream in self.stamps:
             dt = stamp-self.stamps[stream]
             if dt <= 0:
                 return self.fail('Nonmonotonic LIO input timestamp')
             if self.armed and (dt > self.max_gap or arrival_now-self.seen[stream] > self.max_gap):
-                return self.fail('LIO input source/arrival gap')
+                return self.fail(f'LIO input source/arrival gap: stream={stream} source_gap_s={dt:.6f} arrival_gap_s={arrival_now-self.seen[stream]:.6f} limit_s={self.max_gap:.6f}')
         self.seen[stream], self.stamps[stream] = arrival_now, stamp
         if not self.armed:
             if len(self.seen) != 2 or max(arrival_now-t for t in self.seen.values()) > self.max_skew:

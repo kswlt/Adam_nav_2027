@@ -44,6 +44,8 @@ public:
     KeyframeTriggerConfig config;
     config.translation_threshold_m=declare_parameter("translation_threshold_m",.15);
     config.yaw_threshold_rad=declare_parameter("yaw_threshold_rad",.17453292519943295);
+    config.min_interval_s=declare_parameter("min_keyframe_interval_s",0.);
+    config.max_interval_s=declare_parameter("max_keyframe_interval_s",0.);
     manager_=KeyframeManager(config);
     if(calibration_.empty() || source_.empty() || sensor_.empty() || body_.empty() || body_=="odom" ||
        root.empty() || !fs::path(root).is_absolute() || !std::isfinite(max_age_) || max_age_<=0 || max_age_>1 ||

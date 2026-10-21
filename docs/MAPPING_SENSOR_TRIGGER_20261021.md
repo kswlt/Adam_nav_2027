@@ -18,3 +18,9 @@ ros2 launch rm_nav_bringup mapping_capture.launch.py \
 部署脚本capture已选sensor。用户当前不能移动，尚未执行真实云台转动采集，不能把隔离fixture说成实车旋转验收。当前不因此启动串口或自动运动。
 
 ASUS日志：runtime_20261021_sensor_reference/mapping_heading_{build,test,test_result,smoke}.log。原档案与原车工作区保留。
+
+## 后续采集节拍与实车回归
+
+新增最小/最大关键帧间隔，通用默认均为0，保持原行为；车载显式配置 min=0.5s、max=2s。前者限制扫描时频繁触发，后者允许静止时周期补充 MID-360 非重复扫描；不改变已归档 body 姿态和原始 CDR。C++与真实 ROS recorder 回归覆盖过早旋转被限流、静止周期触发。随后实际约1米往返成功录制60帧，见 [实车报告](VEHICLE_MOTION_COMMISSION_20261021.md)。
+
+LIO guard 仅增加具体 fault 数值，11项原连续性测试通过。车载独立 Livox 进程启用 Fast DDS 异步发布，60秒含中途录包的实验初始化后未再次锁止，仍需长时验证，不提高门限。最终 ASUS 全14包构建、58项测试（0错误/0失败/1跳过）；命令和限制见实车报告。原故障样本仍保留。

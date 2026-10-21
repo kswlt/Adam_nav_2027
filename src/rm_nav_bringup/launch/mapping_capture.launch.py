@@ -14,6 +14,8 @@ def generate_launch_description():
         DeclareLaunchArgument('body_frame',default_value='base_footprint'),
         DeclareLaunchArgument('sensor_frame',default_value='front_mid360'),
         DeclareLaunchArgument('rotation_trigger_source',default_value='body'),
+        DeclareLaunchArgument('min_keyframe_interval_s',default_value='0.0'),
+        DeclareLaunchArgument('max_keyframe_interval_s',default_value='0.0'),
         DeclareLaunchArgument('use_sim_time',default_value='false'),
         Node(package='rm_nav_mapping',executable='keyframe_recorder',remappings=[('/state/chassis_healthy',LaunchConfiguration('state_health_topic'))],parameters=[{
             'archive_root':LaunchConfiguration('archive_root'),
@@ -21,4 +23,6 @@ def generate_launch_description():
             'body_frame':LaunchConfiguration('body_frame'),
             'sensor_frame':LaunchConfiguration('sensor_frame'),
             'rotation_trigger_source':LaunchConfiguration('rotation_trigger_source'),
+            'min_keyframe_interval_s':ParameterValue(LaunchConfiguration('min_keyframe_interval_s'),value_type=float),
+            'max_keyframe_interval_s':ParameterValue(LaunchConfiguration('max_keyframe_interval_s'),value_type=float),
             'use_sim_time':ParameterValue(LaunchConfiguration('use_sim_time'),value_type=bool)}],output='screen')])

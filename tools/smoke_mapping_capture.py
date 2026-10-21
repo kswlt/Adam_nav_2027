@@ -167,6 +167,18 @@ def main():
                     'Sensor heading corrupted fixed navigation reference pose')
             require(saved==originals[saved.sequence],'Sensor-heading archive changed original observation')
             stop(process);process=None
+            archives.clear();feed.update(x=0.,yaw=0.,origin_yaw=0.)
+            process=start(log,extra=('-p','body_frame:=nav_reference','-p','rotation_trigger_source:=sensor',
+                '-p','min_keyframe_interval_s:=0.3','-p','max_keyframe_interval_s:=0.6'))
+            require(wait(lambda:len(archives)==1 and healthy['value'],6),'Periodic session did not initialize')
+            feed['origin_yaw']=1.
+            wait(lambda:False,.15)
+            require(len(archives)==1,'Minimum capture interval not enforced')
+            require(wait(lambda:len(archives)==2,1),'Bounded sensor-turn trigger missing')
+            require(wait(lambda:len(archives)==3,1),'Stationary periodic capture missing')
+            stamps=[json.loads((Path(p)/'metadata.json').read_text())['stamp_ns'] for p in archives]
+            require(all(b-a>=300000000 for a,b in zip(stamps,stamps[1:])), 'Recorder exceeded configured cadence')
+            stop(process);process=None
             archives.clear();feed.update(x=0.,yaw=0.)
             feed['body']='base_footprint'
             process=start(log)

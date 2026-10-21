@@ -9,6 +9,8 @@ namespace rm_nav_mapping {
 struct KeyframeTriggerConfig {
   double translation_threshold_m{0.15};
   double yaw_threshold_rad{0.17453292519943295};
+  double min_interval_s{0.};
+  double max_interval_s{0.};  // zero disables periodic stationary capture
 };
 
 struct Keyframe {
