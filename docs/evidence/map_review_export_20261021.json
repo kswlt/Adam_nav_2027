@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "status": "draft_mapping_review",
+  "coordinate_frame": "mapping_odom",
+  "official_alignment_applied": false,
+  "navigation_ready": false,
+  "publishable_for_frozen_localization": false,
+  "free_space_evidence": "unavailable_endpoint_only_pcd",
+  "source_topic": "/mapping/optimized_map",
+  "source_stamp_ns": 1792568087575208902,
+  "source_status": {
+    "mode": "ONLINE_MAPPING_ONLY_NOT_PUBLISHED_MAP",
+    "frame": "mapping_odom",
+    "session": "/home/asus/nav_2027_vehicle_config_164/runtime_20261021_sensor_reference/keyframes/session_1792568087261746637_4085448541",
+    "revision": "1",
+    "keyframes": "1",
+    "map_points": "2806",
+    "accepted_loops": "0",
+    "candidates_tested": "0",
+    "loops_rejected": "0",
+    "pending_keyframes": "1",
+    "last_work_ms": "1.1849069999999999",
+    "last_graph_ms": "0",
+    "upstream_healthy": "false",
+    "fault": "true",
+    "reason": "LIO adjacent jump exceeds online mapping limits",
+    "budget_semantics": "soft deadline, non-preemptible registration; overshoot rejected"
+  },
+  "source_session": "/home/asus/nav_2027_vehicle_config_164/runtime_20261021_sensor_reference/keyframes/session_1792568087261746637_4085448541",
+  "point_count": 2806,
+  "pose_count": 1,
+  "obstacle_height_range_mapping_odom_m": [
+    -0.1,
+    1.5
+  ],
+  "floor_height_verified": false,
+  "terrain_traversability_verified": false,
+  "localization_map": "maps/retained_map.pcd",
+  "map_yaml": "maps/map.yaml",
+  "base_occupancy": "maps/occupancy.pgm",
+  "terrain_reference": "maps/terrain_reference.json",
+  "occupancy_counts": {
+    "occupied": 467,
+    "unknown": 183993,
+    "free": 0
+  }
+}

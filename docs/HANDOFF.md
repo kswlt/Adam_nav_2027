@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-21地图交付实际检查：用户选择本地场地坐标。原16帧会话第0→1帧估计跳4762.076m，在线fault，离线优化返回1拒绝；已停本项目capture，原始档案保留。导出故障前2806点/1帧检查包、占据PGM/YAML及最低观测z地形，navigation_ready=false；不是完整地图。详见 [地图导出报告](MAP_EXPORT_20261021.md)。正式发布受LIO异常阻塞，本地场地契约也尚需与官方契约分开实现。
+
 2026-10-21电控ZIP源码审计：新增 [yaw链路说明](ELECTRICAL_YAW_AUDIT_20261021.md)。contact_angle在云台板写死0；底盘板内部大yaw编码器用于xy变换，因此雷达参考方案不需要角度回传。上位机yaw_degrees与电控yaw_speed含义冲突：后者在Navigation、无自瞄跟踪、running_state=5时作为deg/s；默认导航扫描80°/s。发现Navigation_online递减但消费无断流清零门控、底盘Navigation W_set=0。只做源码审计，未改动/烧录电控；待确认ZIP与实车固件一致，不能按旧字段名直接发非零yaw。
 
 2026-10-21最新：用户明确要求真实串口发送，已停candidate并启动physical（只管理本项目进程组）。ttyUSB0实测2.013秒成功写入100个54字节报文；xy=0，原版缓存yaw=0°。尚未启动自动导航，非零运动与电控执行未验收。README新增启动/停止/查询命令；下方TX=0为此前只读快照。
