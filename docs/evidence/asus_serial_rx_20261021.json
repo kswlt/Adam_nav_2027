@@ -1,0 +1,38 @@
+{
+  "scope": "REAL_MCU_RX_READ_ONLY",
+  "tx_bytes": 0,
+  "rx_bytes": 43269,
+  "valid_frames": 1664,
+  "crc_errors": 0,
+  "discarded_bytes": 5,
+  "duration_s": 5.006080142999963,
+  "valid_hz": 332.3957972040825,
+  "first": {
+    "game_type": 0,
+    "game_progress": 0,
+    "remain_hp": 0,
+    "max_hp": 0,
+    "stage_remain_time": 0,
+    "bullet_17mm": 0,
+    "outpost_hp": 0,
+    "base_hp": 0,
+    "rfid_status": 0,
+    "contact_angle": 0.0,
+    "is_fire": 0
+  },
+  "last": {
+    "game_type": 0,
+    "game_progress": 0,
+    "remain_hp": 0,
+    "max_hp": 0,
+    "stage_remain_time": 0,
+    "bullet_17mm": 0,
+    "outpost_hp": 0,
+    "base_hp": 0,
+    "rfid_status": 0,
+    "contact_angle": 0.0,
+    "is_fire": 0
+  },
+  "contact_angle_semantics_verified": false,
+  "wheel_or_stop_feedback_verified": false
+}

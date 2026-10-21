@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+2026-10-21 ASUS已完成部署：独立新release `20261021_sensor_reference`、新运行目录 `runtime_20261021_sensor_reference`；ASUS14包构建、56 tests零失败（1 skipped）。真实雷达/LIO/参考TF/子图、Foxglove、新关键帧及在线地图已运行。电控只读1664帧、CRC0、TX0，没有物理发送或自动导航。操作入口已更新README；请先读 [ASUS现场记录](ASUS_SENSOR_REFERENCE_20261021.md)。下方“ASUS未部署”属于此前历史状态。
+
 2026-10-21 电控兼容补齐：新增 `legacy_adam_transport.launch.py`，默认不打开串口，使用独立候选速度避免原区域节点 `/cmd_vel` 混入。`my_serial_py` 保留54/26字节原协议，仅增加显式 legacy_cached yaw策略；默认 require_fresh 不变。不发布替代业务yaw目标。原发送函数/libscrc黄金报文逐字节通过，WSL14包构建、56 tests零失败（1 skipped），整链路PTY约50.8Hz，旧严格串口回归也通过。ASUS未部署、未动车、原代码未修改；先读 [原Adam兼容说明](LEGACY_ADAM_REPLACEMENT.md)。
 
 2026-10-21：用户已批准传感器参考导航方案，并要求暂不部署 ASUS。本次接入 `sensor_reference_state.launch.py` / `sensor_reference_navigation.launch.py`，默认不依赖 contact_angle，不发布假 chassis TF，输出只到影子速度。主 README 已重写为按操作顺序的说明；先读 [雷达参考模式](SENSOR_REFERENCE_MODE.md)。本机14包构建、53 tests / 0 errors / 0 failures / 1 skipped通过；新参考模式、原TDT/MPPI导航和nav_reference在线回环回归通过。下方“尚未接入”属于此前状态，已被本条取代。

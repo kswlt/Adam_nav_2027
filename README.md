@@ -4,9 +4,9 @@
 
 **现在默认开发的是“雷达参考导航模式”：上位机负责定位、建图、规划和平移；电控负责底盘自旋、轮子控制和大 yaw。** 不再要求用 `contact_angle` 推算底盘朝向。原有完整底盘模式仍保留，两种模式不能同时启动。
 
-本机已通过14包构建、56项测试（0失败、1跳过），新模式和原有TDT/MPPI导航回归通过。
+本机与ASUS均已通过14包构建、56项测试（0失败、1跳过）；本机新模式和原有TDT/MPPI导航回归通过。
 
-本次按用户要求只在本机 WSL 编译测试，**尚未部署 ASUS**。下面的车载命令需新版本构建部署后使用；当前后台是否运行，应以实际话题和日志为准。
+2026-10-21 已在 ASUS 独立目录部署并通过同样的56项测试。雷达参考状态、Foxglove、新关键帧会话与在线建图已启动；**物理串口发送及自动导航尚未开启**。实际运行状态以话题和下面的会话查询命令为准。现场目录与实测记录见 [ASUS部署记录](docs/ASUS_SENSOR_REFERENCE_20261021.md)。
 
 ## 先弄清三个状态
 
@@ -29,35 +29,48 @@ ssh -p 2233 asus@192.168.1.164
 ```bash
 export NAV_BASE=/home/asus/nav_2027_vehicle_config_164
 source "$NAV_BASE/remote_env_20261020.bash"
-source "$NAV_BASE/releases/20261020/install_online/local_setup.bash"
+export NAV_RELEASE="$NAV_BASE/releases/20261021_sensor_reference"
+export NAV_RUNTIME="$NAV_BASE/runtime_20261021_sensor_reference"
+source "$NAV_RELEASE/install/local_setup.bash"
 ```
 
 ROS Domain 是 **97**。这些路径属于当前独立部署，不要混用旧 `.145` 主机或原车工作区的环境。
 
-## 2. 启动建图：按顺序开三个终端
+## 2. 启动建图：按顺序执行
 
-先运行 `ros2 node list`。已有本工程实例就检查它，不要重复启动；切换模式前只在本工程对应终端按 Ctrl+C。
+当前已启动，可以直接连接Foxglove。以下后台启动命令会识别本会话已有实例，不会重复创建；先前台运行的实例需自行停止后再切换。
 
-**终端 1：雷达驱动**
+查询某个组件：`python3 "$NAV_RUNTIME/vehicle_session.py" status state`。日志和PID记录在 `$NAV_RUNTIME`。
+只停止新会话、保留原车程序：
 
 ```bash
-bash "$NAV_BASE/start_driver_20261020.bash"
+for component in bag online capture candidate foxglove state driver; do
+  python3 "$NAV_RUNTIME/vehicle_session.py" stop "$component"
+done
 ```
 
-驱动应使用 `runtime_20261020/mid360_identity.json`：车体安装位移不能再在驱动里重复应用。
+需要重启时再按下列顺序启动：
 
-**终端 2：雷达参考状态链**
+**第一步：雷达驱动**
 
 ```bash
-bash "$NAV_BASE/releases/20261020/tools/deployment/20261020/start_sensor_reference_state.bash"
+python3 "$NAV_RUNTIME/vehicle_session.py" start driver
 ```
 
-这个入口启动质量门、small_point_lio、传感器 TF、虚拟平面参考点及滚动子图；不启动底盘 EKF、机械 yaw TF 或串口。它复用已有的 `runtime_20261020/small_point_lio_live.yaml`，缺文件会报错退出。
+驱动使用 `runtime_20261021_sensor_reference/mid360_identity.json`：车体安装位移不能再在驱动里重复应用。
 
-**终端 3：Foxglove**
+**第二步：雷达参考状态链**
 
 ```bash
-ros2 launch rm_nav_bringup foxglove_visualization.launch.py
+python3 "$NAV_RUNTIME/vehicle_session.py" start state
+```
+
+这个入口启动质量门、small_point_lio、传感器 TF、虚拟平面参考点及滚动子图；不启动底盘 EKF、机械 yaw TF 或串口。它使用新运行目录中的 `small_point_lio_live.yaml`，保留旧目录配置。
+
+**第三步：Foxglove**
+
+```bash
+python3 "$NAV_RUNTIME/vehicle_session.py" start foxglove
 ```
 
 如果 8765 已有本工程 Bridge，不要再开一次。电脑上的 Foxglove 连接：`ws://192.168.1.164:8765`。
@@ -66,8 +79,8 @@ ros2 launch rm_nav_bringup foxglove_visualization.launch.py
 
 ```bash
 ros2 topic hz /lio/deskewed_odom_cloud
-ros2 topic echo /state/sensor_reference_healthy --once
-ros2 topic echo /state/sensor_reference_reason --once
+ros2 topic echo /state/sensor_reference_healthy std_msgs/msg/Bool --once
+ros2 topic echo /state/sensor_reference_reason std_msgs/msg/String --once
 ros2 run tf2_ros tf2_echo odom front_mid360
 ```
 
@@ -78,28 +91,32 @@ ros2 run tf2_ros tf2_echo odom front_mid360
 仅看累积预览不会自动留下完整建图档案。要保存，另开终端：
 
 ```bash
-ros2 launch rm_nav_bringup mapping_capture.launch.py \
-  archive_root:="$NAV_BASE/runtime_20261020/sensor_axis_keyframes" \
-  calibration_id:=vehicle164_sensor_axis_factory_v1 \
-  body_frame:=nav_reference \
-  state_health_topic:=/state/sensor_reference_healthy
+python3 "$NAV_RUNTIME/vehicle_session.py" start capture
+ros2 topic echo /mapping/recorder_status std_msgs/msg/String --once
 ```
 
-启动日志和 `/mapping/keyframe_archive` 会给出新的 `session_...` 完整路径。复制它，再开一个终端：
+当前部署已启动录制；组件日志和 `/mapping/recorder_status` 会给出 `session_...` 完整路径，新档案位于 `$NAV_RUNTIME/keyframes`。复制它，再开一个终端：
 
 ```bash
-# 把下面路径换成刚才日志中的真实 session，不要使用旧 fixed-mount 数据目录。
+# 把下面路径换成 recorder_status 中的完整 session。
 export NAV_SESSION=/实际完整路径/session_实际编号
-ros2 launch rm_nav_bringup online_mapping.launch.py \
-  session:="$NAV_SESSION" \
-  calibration_id:=vehicle164_sensor_axis_factory_v1 \
-  body_frame:=nav_reference \
-  state_health_topic:=/state/sensor_reference_healthy
+python3 "$NAV_RUNTIME/vehicle_session.py" start online "$NAV_SESSION"
 ```
 
 后端边读取关键帧，边做双向 KISS/GICP 回环验证和 GTSAM 优化；回环通过后，重建历史点云地图。默认最多 500 个关键帧，达到容量或遇到错误会报 fault，保留已有档案，不静默覆盖旧数据。
 
-查看 `ros2 topic echo /mapping/online_status --once`：`keyframes` 是帧数，`accepted_loops` 是通过门限的回环数，`pending_keyframes` 是积压，`fault` 应为 false。没有回环不一定是故障，也可能还没回到旧区域。详情见 [在线建图指南](docs/ONLINE_MAPPING.md)。
+查看 `ros2 topic echo /mapping/online_status std_msgs/msg/String --once`：`keyframes` 是帧数，`accepted_loops` 是通过门限的回环数，`pending_keyframes` 是积压，`fault` 应为 false。没有回环不一定是故障，也可能还没回到旧区域。详情见 [在线建图指南](docs/ONLINE_MAPPING.md)。
+
+### 第一次实车采样：先遥控，不开自动输出
+
+保持空旷环境，准备好后先启动限时3分钟的原始数据录制：
+
+```bash
+python3 "$NAV_RUNTIME/vehicle_session.py" start bag
+```
+
+再用遥控器低速前进约1米、返回起点，然后停车。不要同时开启新串口发送。观察雷达轴轨迹是否往返、地图是否重影；关键帧也会随平移保存。
+结束后运行 `python3 "$NAV_RUNTIME/vehicle_session.py" stop bag`，MCAP保存在 `$NAV_RUNTIME/bags`；不手动停止时3分钟自动结束。任务完成不等于自动导航已通过，后续还要受控检查电控速度方向和停车。
 
 ## 4. Foxglove 中每项是什么意思
 
@@ -167,13 +184,13 @@ ros2 topic echo /nav/task_status --once
 新的兼容入口默认不打开串口，可先看候选命令：
 
 ```bash
-ros2 launch rm_nav_bringup legacy_adam_transport.launch.py
+python3 "$NAV_RUNTIME/vehicle_session.py" start candidate
 ros2 topic echo /hardware/legacy_adam/adapter_status --once
 ```
 
 它不占用全局 `/cmd_vel`，避免旧业务节点的速度混入。真正接入传输时采用原版缓存yaw逻辑；不发布新的yaw目标，也不把 LIO yaw 发成电控角度。原默认0度仍是角度字段值，不是“禁用yaw”的标志。
 
-兼容格式已经按原源码实现，是否能直接控制当前这台车还要上车确认速度作用点、自旋和停止行为。连接方式、协议逐项对照和本机测试见 [Adam 无需改协议的替换说明](docs/LEGACY_ADAM_REPLACEMENT.md)。ASUS 部署仍暂缓，默认不会发送车辆命令。
+兼容格式已经按原源码实现，是否能直接控制当前这台车还要上车确认速度作用点、自旋和停止行为。连接方式、协议逐项对照和本机测试见 [Adam 无需改协议的替换说明](docs/LEGACY_ADAM_REPLACEMENT.md)。ASUS 已部署并启动 device-free 候选输出；默认不发送车辆命令。
 
 ## 6. 架构和安装几何
 
