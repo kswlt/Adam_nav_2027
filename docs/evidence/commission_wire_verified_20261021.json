@@ -1,0 +1,25 @@
+{
+  "commission_1mps_1s_trace.log": {
+    "actual_device": "/dev/ttyUSB0",
+    "successful_54byte_writes": 244,
+    "crc_errors": 0,
+    "nonzero_frames": 50,
+    "nonzero_wire_xy": [
+      [
+        -1.0,
+        -0.0
+      ]
+    ],
+    "trailing_zero_frames": 100,
+    "yaw_stance_region_aligned": [
+      [
+        0.0,
+        0.0,
+        3,
+        0,
+        0
+      ]
+    ],
+    "scope": "actual kernel write return=54; not MCU applied-velocity feedback"
+  }
+}

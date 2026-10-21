@@ -1,0 +1,28 @@
+{
+  "mode": "PHYSICAL_COMMISSIONING",
+  "axes": "horizontal_sensor_yaw_xy",
+  "speed_mps": 1.0,
+  "pulse_budget_s": 1.0,
+  "nav2_started": false,
+  "physical_stop_feedback": "NOT_VERIFIED",
+  "yaw_field": "original legacy cached zero; not a full chassis/yaw stop",
+  "pulse_started": true,
+  "completed": true,
+  "rotating_gimbal_operator_confirmed": true,
+  "high_speed_commission": true,
+  "measured_displacement_abort_m": 1.3,
+  "serial_last_rx_age_s": 0.0014997440002844087,
+  "estimated_end_displacement_m": 0.352723922507018,
+  "estimated_last1s_span_m": 0.17748101279912123,
+  "command_samples": 859,
+  "last_health": {
+    "state": {
+      "value": true,
+      "age_s": 0.04849838500012993
+    },
+    "cloud": {
+      "value": true,
+      "age_s": 0.049395336999623396
+    }
+  }
+}
