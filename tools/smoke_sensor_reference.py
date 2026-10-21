@@ -14,7 +14,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import TwistStamped
 from nav_msgs.msg import Odometry
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 from tf2_msgs.msg import TFMessage
 
 
@@ -32,25 +32,36 @@ def main():
         command = node.create_publisher(TwistStamped, '/nav/cmd_vel_safe', 1)
         observed = {'health': False, 'shadow': None, 'odom': None, 'tf': {}}
         node.create_subscription(Bool, '/state/sensor_reference_healthy', lambda m: observed.update(health=m.data), 10)
+        node.create_subscription(String, '/state/sensor_reference_reason', lambda m: observed.update(reason=m.data), 10)
         node.create_subscription(TwistStamped, '/nav/sensor_cmd_vel_shadow', lambda m: observed.update(shadow=m), 10)
         node.create_subscription(Odometry, '/sensor_reference/odom', lambda m: observed.update(odom=m), 10)
         def tf_receive(message):
             for t in message.transforms:
                 observed['tf'][t.child_frame_id] = t
         node.create_subscription(TFMessage, '/tf', tf_receive, 10)
-        def run(seconds, *, pose=True, quality=True, allow=True, send=False, yaw=math.pi/2, angular=0., bad_cov=False, old=False):
+        fixture_yaw, fixture_at = None, time.monotonic()
+        def run(seconds, *, pose=True, quality=True, allow=True, send=False, yaw=math.pi/2, angular=0., bad_cov=False, old=False, position_x=0.):
+            nonlocal fixture_yaw, fixture_at
             end = time.monotonic()+seconds
             while time.monotonic() < end:
                 assert process.poll() is None, 'sensor process exited'
                 raw.publish(Bool(data=quality))
                 permission.publish(Bool(data=allow))
                 if pose:
+                    now = time.monotonic()
+                    if fixture_yaw is None:
+                        fixture_yaw = yaw
+                    delta = math.atan2(math.sin(yaw-fixture_yaw),math.cos(yaw-fixture_yaw))
+                    step = 8.*(now-fixture_at)
+                    fixture_yaw += max(-step,min(step,delta))
+                    fixture_at = now
                     m = Odometry()
                     m.header.frame_id, m.child_frame_id = 'odom', 'front_mid360_imu'
                     m.header.stamp = node.get_clock().now().to_msg()
+                    m.pose.pose.position.x = position_x
                     if old:
                         m.header.stamp.sec -= 2
-                    m.pose.pose.orientation.z, m.pose.pose.orientation.w = math.sin(yaw/2), math.cos(yaw/2)
+                    m.pose.pose.orientation.z, m.pose.pose.orientation.w = math.sin(fixture_yaw/2), math.cos(fixture_yaw/2)
                     for i in range(6):
                         m.pose.covariance[i*7] = .01
                     if bad_cov:
@@ -82,8 +93,9 @@ def main():
             assert not observed['health'] and stopped(), 'LIO loss did not stop translation'
             run(.3)
             assert observed['health'] and stopped(), 'old command replayed after LIO recovery'
-            run(.3, send=True, yaw=0.)
-            assert observed['shadow'].twist.linear.x > .19
+            # Allow the physically bounded turn and two output periods to settle.
+            run(.6, send=True, yaw=0.)
+            assert observed['shadow'].twist.linear.x > .19, str(observed)
             run(.35, send=True, quality=False)
             assert not observed['health'] and stopped(), 'quality failure not interlocked'
             run(.3)
@@ -100,10 +112,17 @@ def main():
             assert stopped(), 'permission restoration replayed an old command'
             assert node.count_publishers('/cmd_vel') == 0
             assert node.count_publishers('/cmd_yaw_angle') == 0
+            jump_started = node.get_clock().now().nanoseconds
+            run(.3, position_x=-4626.836, send=True)
+            assert not observed['health'] and stopped(), 'kilometre LIO jump not stopped'
+            stamp = observed['odom'].header.stamp
+            assert stamp.sec*10**9+stamp.nanosec < jump_started, 'bad pose entered navigation odometry'
+            run(.3, send=True)
+            assert not observed['health'] and stopped(), 'continuity fault recovered without explicit restart'
             print(json.dumps({'result': 'PASS', 'mode': 'TEST_ONLY', 'yaw_rotation': 'PASS',
                 'lio_timeout': 'PASS', 'raw_quality_failure': 'PASS', 'no_replay': 'PASS',
                 'bad_covariance': 'PASS', 'stale_source': 'PASS', 'angular_rejection': 'PASS',
-                'physical_publishers': 0, 'chassis_tf_publishers': 0}))
+                'physical_publishers': 0, 'chassis_tf_publishers': 0, 'jump_latched_no_odom':True}))
         except Exception:
             log.seek(0)
             print(log.read(), file=sys.stderr)

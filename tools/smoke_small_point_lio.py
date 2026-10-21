@@ -33,6 +33,8 @@ def main():
     require(os.environ.get('ROS_DOMAIN_ID') not in (None,'','0'),'Use isolated Domain')
     pipeline='--with-state' in sys.argv
     mapping='--with-mapping' in sys.argv
+    input_guard='--with-input-guard' in sys.argv
+    require(not (input_guard and pipeline),'Input-guard regression uses its own isolated raw-filter fixture')
     require(not mapping or pipeline,'--with-mapping requires --with-state')
     rclpy.init()
     node = Node('small_point_lio_fixture')
@@ -69,6 +71,13 @@ def main():
         'extrinsic_T':[0.0,0.0,0.0],'extrinsic_R':[1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0],
         'acc_norm':9.81,'min_distance':0.5,'max_distance':20.0,'save_pcd':False,
     })
+    if input_guard:
+        params['small_point_lio']['ros__parameters'].update(
+            lidar_topic='/lio/input/cloud', imu_topic='/lio/input/imu')
+    input_health, input_reason = [], []
+    if input_guard:
+        node.create_subscription(Bool,'/lio/input_healthy',lambda m:input_health.append(m.data),10)
+        node.create_subscription(String,'/lio/input_reason',lambda m:input_reason.append(m.data),10)
     Path('log').mkdir(exist_ok=True)
     config = Path('log/lio_fixture.yaml')
     config.write_text(yaml.safe_dump(params))
@@ -96,6 +105,11 @@ def main():
     processes=[]
     try:
         with Path('log/small_point_lio_smoke.log').open('w') as log:
+            if input_guard:
+                processes.append(subprocess.Popen(['ros2','run','rm_nav_bringup','lio_input_guard',
+                    '--ros-args','-r','/livox/imu:=/fixture/imu',
+                    '-r','/sensors/front_mid360/guarded_points:=/fixture/lidar'],
+                    stdout=log,stderr=subprocess.STDOUT,start_new_session=True))
             command=['ros2','run','small_point_lio','small_point_lio_node',
                 '--ros-args','--params-file',str(config),'-r','/Odometry:=/lio/sensor_odometry',
                 '-r','/cloud_registered:=/lio/deskewed_odom_cloud']
@@ -203,6 +217,28 @@ def main():
             require(all(all(math.isfinite(v) for v in point) for point in xyz),'Nonfinite deskewed cloud')
             require(sum(min(abs(x-4),abs(y-4),abs(z+2))<0.1 for x,y,z in xyz)/len(xyz)>0.95,
                     'Core odom cloud was transformed a second time')
+            if input_guard:
+                require(input_health and input_health[-1], 'Input gate never became healthy')
+                end = time.monotonic()+.7
+                while time.monotonic() < end:
+                    imu.header.stamp = node.get_clock().now().to_msg()
+                    imu_pub.publish(imu)
+                    spin(.005)
+                require(input_health and not input_health[-1], 'Cloud-only loss was not interlocked')
+                before = len(observations), len(clouds)
+                end = time.monotonic()+.6
+                while time.monotonic() < end:
+                    stamp = node.get_clock().now()
+                    imu.header.stamp = msg.header.stamp = stamp.to_msg()
+                    msg.data = b''.join(struct.pack('<fffB3xd',x,y,z,0,
+                        float(stamp.nanoseconds-100_000_000+i*100_000_000//len(points)))
+                        for i,(x,y,z) in enumerate(points))
+                    imu_pub.publish(imu)
+                    cloud_pub.publish(msg)
+                    spin(.02)
+                require(before == (len(observations),len(clouds)), 'Old filter resumed after input discontinuity')
+                require(input_reason and 'restart' in input_reason[-1], 'Explicit reinitialization reason missing')
+                print('PASS actual small_point_lio input gate: one-sensor loss, bounded stop, no old-state resume',flush=True)
             print(f'PASS actual pinned Point-LIO: {len(observations)} poses, {len(clouds)} clouds; '
                   'raw IMU pose/covariance, stationary geometry, correct cloud frame and no LIO-owned TF',flush=True)
             if pipeline: print('PASS actual LIO -> time-aligned resolver -> EKF -> body odometry -> observation contract -> '

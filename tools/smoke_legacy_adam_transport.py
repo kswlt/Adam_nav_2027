@@ -46,17 +46,26 @@ def main():
     body = b'\xa5'+struct.pack(RX_FORMAT, 4, 4, 100, 200, 60, 42, 1200, 1500, 9, -12.5, 1)
     rx = body+struct.pack('<H', rm_crc16(body))
 
+    fixture_yaw, fixture_at = None, time.monotonic()
     def run(seconds, *, yaw=0., xy=None, pose=True, quality=True, allow=True, receive=True):
+        nonlocal fixture_yaw, fixture_at
         end = time.monotonic()+seconds
         while time.monotonic() < end:
             assert all(p.poll() is None for p in processes), 'transport process exited'
             pubs['raw'].publish(Bool(data=quality))
             pubs['permission'].publish(Bool(data=allow))
             if pose:
+                now = time.monotonic()
+                if fixture_yaw is None:
+                    fixture_yaw = yaw
+                delta = math.atan2(math.sin(yaw-fixture_yaw),math.cos(yaw-fixture_yaw))
+                step = 8.*(now-fixture_at)
+                fixture_yaw += max(-step,min(step,delta))
+                fixture_at = now
                 m = Odometry()
                 m.header.frame_id, m.child_frame_id = 'odom', 'front_mid360_imu'
                 m.header.stamp = node.get_clock().now().to_msg()
-                m.pose.pose.orientation.z, m.pose.pose.orientation.w = math.sin(yaw/2), math.cos(yaw/2)
+                m.pose.pose.orientation.z, m.pose.pose.orientation.w = math.sin(fixture_yaw/2), math.cos(fixture_yaw/2)
                 for i in range(6):
                     m.pose.covariance[i*7] = .01
                 pubs['lio'].publish(m)

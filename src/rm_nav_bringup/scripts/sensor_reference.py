@@ -16,6 +16,7 @@ from geometry_msgs.msg import TransformStamped, TwistStamped
 from std_msgs.msg import Bool, String
 from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 from sensor_reference_math import sensor_pose, sensor_velocity
+from lio_continuity import PoseContinuity
 
 
 class SensorReference(Node):
@@ -45,6 +46,10 @@ class SensorReference(Node):
         self.command = None
         self.previous = None
         self.detail = 'waiting for real LIO and raw-cloud quality'
+        self.continuity = PoseContinuity(
+            self.declare_parameter('max_pose_gap', 1.).value,
+            self.declare_parameter('max_sensor_speed', 6.).value,
+            self.declare_parameter('max_sensor_angular_speed', 12.).value)
         self.create_subscription(Bool, '/sensors/front_mid360/cloud_healthy', self.raw, 10)
         self.create_subscription(Odometry, '/lio/sensor_odometry', self.pose, qos_profile_sensor_data)
         self.create_subscription(Bool, '/nav/motion_allowed', self.permission, 10)
@@ -83,6 +88,7 @@ class SensorReference(Node):
                     np.diag(covariance).min() <= 0):
                 raise ValueError('LIO covariance must be finite symmetric and positive')
             point, yaw = sensor_pose((p.x, p.y, p.z), (q.x, q.y, q.z, q.w), self.offset)
+            self.continuity.check(stamp, point, (q.x,q.y,q.z,q.w))
             self.last_stamp, self.pose_at, self.pose_ok = stamp, time.monotonic(), True
             self.yaw, self.detail = yaw, 'real sensor-axis state; chassis orientation unobserved'
             # Never keep broadcasting TF after raw quality or source time expires.
