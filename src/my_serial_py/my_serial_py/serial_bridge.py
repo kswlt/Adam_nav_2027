@@ -15,7 +15,7 @@ from rclpy.node import Node
 import serial
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool, Int8, Float32, UInt8, UInt32
-from pb_rm_interfaces.msg import RobotStatus, GameStatus, GameRobotHP, RfidStatus
+from pb_rm_interfaces.msg import RobotStatus, GameStatus, GameRobotHP, RfidStatus, ContactAngleStamped
 
 from my_serial_py.protocol import FeedbackStream, encode_command
 
@@ -59,6 +59,7 @@ class SerialNode(Node):
             'all_robot_hp': self.create_publisher(GameRobotHP, '/referee/all_robot_hp', 10),
             'rfid_status': self.create_publisher(RfidStatus, '/referee/rfid_status', 10),
             'contact_angle': self.create_publisher(Float32, '/contact_angle', 10),
+            'contact_angle_stamped': self.create_publisher(ContactAngleStamped, '/contact_angle_stamped', 10),
             'is_fire': self.create_publisher(UInt8, '/is_fire', 10),
         }
         self.read_thread = threading.Thread(target=self.serial_read_loop, daemon=True)
@@ -146,6 +147,14 @@ class SerialNode(Node):
         self.pubs['rfid_status'].publish(rfid)
         if math.isfinite(f.contact_angle):
             self.pubs['contact_angle'].publish(Float32(data=f.contact_angle))
+            stamped = ContactAngleStamped()
+            stamped.header.stamp = self.get_clock().now().to_msg()
+            stamped.header.frame_id = 'mcu_rx_host_time'
+            stamped.angle = float(f.contact_angle)
+            stamped.host_monotonic_ns = time.monotonic_ns()
+            # The MCU packet has no acquisition timestamp or verified semantics.
+            stamped.semantics_verified = False
+            self.pubs['contact_angle_stamped'].publish(stamped)
         self.pubs['is_fire'].publish(UInt8(data=f.is_fire))
 
     def chassis_mode_callback(self, msg):
