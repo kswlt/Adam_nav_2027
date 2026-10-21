@@ -138,7 +138,10 @@ def main():
         start = time.monotonic()
         while time.monotonic()-start < 3:
             rclpy.spin_once(node,timeout_sec=.02)
-        player = launch(['ros2','bag','play',str(bag),'--clock','--delay','2'], 'player.log')
+        # A full vehicle capture also contains old estimates and TF. Replay only
+        # raw inputs so recorded outputs cannot masquerade as this LIO run.
+        player = launch(['ros2','bag','play',str(bag),'--clock','--delay','2',
+                         '--topics','/livox/lidar','/livox/imu'], 'player.log')
         deadline = time.monotonic()+meta['duration']['nanoseconds']/1e9+20
         while player.poll() is None and time.monotonic()<deadline:
             if lio.poll() is not None: raise RuntimeError('LIO exited early')

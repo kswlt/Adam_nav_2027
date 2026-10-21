@@ -1,0 +1,69 @@
+{
+  "passed": false,
+  "transport_passed": true,
+  "visualization_enabled": false,
+  "visualization": {
+    "path_messages": 0,
+    "path_poses": 0,
+    "preview_messages": 0,
+    "preview_points": 0
+  },
+  "motion_envelope_passed": false,
+  "max_displacement_m": 15.494466280357148,
+  "max_step_speed_mps": 4.010279983852779,
+  "p99_step_speed_mps": 2.921682511932438,
+  "max_rotation_rad": 3.138644407361011,
+  "final_relative_displacement_m": 7.625137891851103,
+  "output_span_s": 177.304068089,
+  "motion_limits": {
+    "speed_mps": 5.0,
+    "displacement_m": 10.0,
+    "rotation_rad": 1.0
+  },
+  "scope": "real bag -> sensor LIO only; no truth accuracy or chassis/navigation acceptance",
+  "bag": "/home/asus/nav_2027_vehicle_config_164/runtime_20261021_sensor_reference/bags/run_20261021_191136",
+  "internal_extrinsics": "unverified upstream example; not measured robot calibration",
+  "raw_acc_norm": 1.0,
+  "odometry_count": 1679,
+  "deskewed_cloud_count": 1676,
+  "tf_count": 0,
+  "last_input_to_output_lag_s": -0.100060702,
+  "last_point_end_to_output_lag_s": 0.000178027,
+  "lio_resources": {
+    "peak_rss_kib": 93716,
+    "cpu_seconds": 22.75,
+    "samples": 360,
+    "scope": "0.5 s sampled sum over ros2 run launcher and LIO children; shared RSS may be counted twice"
+  },
+  "first_odometry": {
+    "stamp_ns": 1792581099528273820,
+    "position": [
+      0.006472505860493604,
+      0.020536519721805917,
+      -0.044865097574957186
+    ],
+    "quaternion_xyzw": [
+      -0.00035822186500463453,
+      3.169443693536549e-07,
+      0.00018987434288035877,
+      0.99999991781236
+    ]
+  },
+  "last_odometry": {
+    "stamp_ns": 1792581276832341909,
+    "position": [
+      3.5116038516846473,
+      -0.8288446770048853,
+      -6.763148635868914
+    ],
+    "quaternion_xyzw": [
+      -0.03454833102367661,
+      0.0021283892402296643,
+      0.7811561919489856,
+      0.6233753977735668
+    ]
+  },
+  "errors": [
+    "estimated motion exceeds explicit diagnostic envelope"
+  ]
+}
