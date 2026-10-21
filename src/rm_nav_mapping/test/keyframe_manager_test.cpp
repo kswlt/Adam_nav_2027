@@ -29,5 +29,14 @@ int main()
   assert(wrapped.consider(0,pose));
   pose.linear()=Eigen::AngleAxisd(-3.1,Eigen::Vector3d::UnitZ()).toRotationMatrix();
   assert(!wrapped.consider(1,pose));
+  rm_nav_mapping::KeyframeManager sensor_heading;
+  pose=Eigen::Isometry3d::Identity();
+  assert(sensor_heading.consider(0,pose,3.1));
+  assert(!sensor_heading.consider(1,pose,-3.1));
+  assert(sensor_heading.consider(2,pose,-2.8));
+  assert(sensor_heading.keyframes().size()==2);
+  assert(sensor_heading.keyframes().back().odom_T_chassis.matrix().isApprox(Eigen::Matrix4d::Identity()));
+  try {sensor_heading.consider(3,pose,std::numeric_limits<double>::quiet_NaN());assert(false);}
+  catch(const std::invalid_argument &){}
   return 0;
 }

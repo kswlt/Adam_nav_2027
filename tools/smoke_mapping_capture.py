@@ -32,14 +32,14 @@ def main():
     node.create_subscription(String,'/mapping/keyframe_archive',lambda m:archives.append(m.data),10)
     node.create_subscription(String,'/mapping/recorder_status',lambda m:statuses.append(m.data),10)
     node.create_subscription(Bool,'/mapping/recorder_healthy',lambda m:healthy.update(value=m.data),10)
-    feed={'x':0.,'yaw':0.,'origin_yaw':0.,'health':True,'source':True,'on':True,'mode':'normal'}
+    feed={'x':0.,'yaw':0.,'origin_yaw':0.,'health':True,'source':True,'on':True,'mode':'normal','body':'base_footprint'}
     sequence=0;originals={}
     points=[(1.+i*.1,2.+j*.1,.5) for i in range(10) for j in range(10)]
     def tick():
         nonlocal sequence
         state.publish(Bool(data=feed['health']));health.publish(Bool(data=feed['source']))
         stamp=node.get_clock().now().to_msg()
-        transform=TransformStamped();transform.header.frame_id='odom';transform.child_frame_id='base_footprint'
+        transform=TransformStamped();transform.header.frame_id='odom';transform.child_frame_id=feed['body']
         transform.header.stamp=stamp;transform.transform.translation.x=feed['x']
         transform.transform.rotation.z=math.sin(feed['yaw']/2);transform.transform.rotation.w=math.cos(feed['yaw']/2)
         broadcaster.sendTransform(transform)
@@ -150,7 +150,25 @@ def main():
             require(not archives,'Over-byte-quota frame was announced')
             require(not list(root.rglob('*.partial')),'Successful/quota-only runs left partial commits')
             stop(process);process=None
+            # Sensor-heading mode saves pure gimbal motion while retaining the
+            # fixed-heading reference transform and byte-identical observation.
+            archives.clear();feed.update(x=0.,yaw=0.,origin_yaw=0.,body='nav_reference')
+            process=start(log,extra=('-p','body_frame:=nav_reference','-p','rotation_trigger_source:=sensor'))
+            require(wait(lambda:len(archives)==1 and healthy['value'],6),'Sensor heading session did not initialize')
+            feed['origin_yaw']=.05;wait(lambda:False,.4)
+            require(len(archives)==1,'Sub-threshold sensor turn triggered')
+            feed['origin_yaw']=.4
+            require(wait(lambda:len(archives)==2,1.5),'Pure sensor rotation was not archived')
+            directory=Path(archives[-1]);metadata=json.loads((directory/'metadata.json').read_text())
+            saved=deserialize_message((directory/'observation.cdr').read_bytes(),ObservationFrame)
+            require(metadata['rotation_trigger_source']=='sensor' and metadata['body_frame']=='nav_reference',
+                    'Sensor trigger provenance missing')
+            require(np.allclose(np.array(metadata['recorded_odom_T_body']).reshape(4,4),np.eye(4)),
+                    'Sensor heading corrupted fixed navigation reference pose')
+            require(saved==originals[saved.sequence],'Sensor-heading archive changed original observation')
+            stop(process);process=None
             archives.clear();feed.update(x=0.,yaw=0.)
+            feed['body']='base_footprint'
             process=start(log)
             require(wait(lambda:len(archives)==1 and healthy['value'],6),'Collision fixture session failed')
             collision=Path(archives[0]).parent/'keyframe_1'
@@ -162,7 +180,7 @@ def main():
             require(len(archives)==1 and (collision/'sentinel').read_text()=='must remain unchanged',
                     'Existing archive overwritten or failed commit announced')
             require(len(list(root.rglob('*.partial')))==1,'Failed commit not retained separately for diagnosis')
-            print('PASS actual mapping recorder: chassis-only translation/yaw triggers; original CDR/provenance/source time; '
+            print('PASS actual mapping recorder: default body triggers and explicit pure-sensor heading trigger; original CDR/provenance/source time; '
                   'optimized-pose reconstruction; bad observations/health/dropout refused; durable unique sessions, frame/byte quota fault holds; '
                   f'archive evidence: {root}',flush=True)
     finally:

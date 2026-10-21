@@ -31,6 +31,9 @@ public:
     body_=declare_parameter("body_frame","base_footprint");
     source_=declare_parameter("source_id","mid360_main");
     sensor_=declare_parameter("sensor_frame","front_mid360");
+    rotation_source_=declare_parameter("rotation_trigger_source","body");
+    if(rotation_source_!="body" && rotation_source_!="sensor")
+      throw std::invalid_argument("rotation_trigger_source must be body or sensor");
     const auto root=declare_parameter<std::string>("archive_root","");
     max_age_=declare_parameter("max_age",.3);
     // Offline PoseGraph currently has a hard bounded graph of 500 poses. Keep the
@@ -130,7 +133,11 @@ private:
       pose.linear()=q.normalized().toRotationMatrix();
       pose.translation()=Eigen::Vector3d(transform.translation.x,transform.translation.y,transform.translation.z);
       auto candidate=manager_;
-      const bool triggered=candidate.consider(stamp.nanoseconds(),pose);
+      // Sensor heading selects frames only. Reconstruction still uses the exact
+      // original body transform, including the fixed-heading nav_reference.
+      const auto rotation=(rotation_source_=="sensor")?origin_q.toRotationMatrix():pose.rotation().eval();
+      const double trigger_yaw=std::atan2(rotation(1,0),rotation(0,0));
+      const bool triggered=candidate.consider(stamp.nanoseconds(),pose,trigger_yaw);
       last_stamp_=stamp.nanoseconds();last_sequence_=observation->sequence;
       if(triggered) {
         // The manager advances only after a durable frame. Any storage error latches a fault.
@@ -138,7 +145,7 @@ private:
         catch(const std::exception & error){fault_=true;valid_=false;reason_=error.what();return;}
       }
       manager_=std::move(candidate);accepted_at_=Clock::now();accepted_stamp_=stamp.nanoseconds();valid_=true;
-      reason_=triggered?"original keyframe committed":"valid observation; chassis trigger not reached";
+      reason_=triggered?"original keyframe committed":"valid observation; selected reference trigger not reached";
     }catch(const std::exception & error){valid_=false;reason_=error.what();}
   }
   void archive(const Keyframe & keyframe,const rm_nav_interfaces::msg::ObservationFrame & observation)
@@ -152,6 +159,7 @@ private:
     metadata<<"{\n\"schema\":1,\"id\":"<<keyframe.id<<",\"stamp_ns\":"<<keyframe.stamp_ns
       <<",\"calibration_id\":"<<json_string(calibration_)<<",\"source_id\":"<<json_string(source_)
       <<",\"sensor_frame\":"<<json_string(sensor_)<<",\"body_frame\":"<<json_string(body_)
+      <<",\"rotation_trigger_source\":"<<json_string(rotation_source_)
       <<",\"cloud_frame\":\"odom\",\"observation_file\":\"observation.cdr\",\"observation_bytes\":"<<buffer.buffer_length
       <<",\"reconstruction\":\"optimized_T_body * inverse(recorded_odom_T_body) * original_odom_point\""
       <<",\"recorded_odom_T_body\":[";
@@ -177,7 +185,7 @@ private:
   KeyframeManager manager_;
   int lock_fd_{-1};
   fs::path root_,session_;
-  std::string calibration_,body_,source_,sensor_,reason_{"no valid mapping observation"};
+  std::string calibration_,body_,source_,sensor_,rotation_source_,reason_{"no valid mapping observation"};
   double max_age_;
   std::int64_t max_frames_,max_bytes_,last_stamp_{0},accepted_stamp_{0};
   std::uint64_t written_bytes_{0},last_sequence_{0};

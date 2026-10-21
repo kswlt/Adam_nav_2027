@@ -27,7 +27,8 @@ case "$nav_component" in
   capture)
     exec ros2 launch rm_nav_bringup mapping_capture.launch.py \
       archive_root:="$nav_runtime/keyframes" calibration_id:=vehicle164_sensor_axis_factory_v1 \
-      body_frame:=nav_reference state_health_topic:=/state/sensor_reference_healthy ;;
+      body_frame:=nav_reference state_health_topic:=/state/sensor_reference_healthy \
+      rotation_trigger_source:=sensor ;;
   online)
     nav_session="${1:?Explicit new sensor-reference session directory required}"
     exec nice -n 10 ros2 launch rm_nav_bringup online_mapping.launch.py session:="$nav_session" \

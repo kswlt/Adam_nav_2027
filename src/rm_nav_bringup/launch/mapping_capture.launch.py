@@ -13,10 +13,12 @@ def generate_launch_description():
         DeclareLaunchArgument('state_health_topic',default_value='/state/chassis_healthy'),
         DeclareLaunchArgument('body_frame',default_value='base_footprint'),
         DeclareLaunchArgument('sensor_frame',default_value='front_mid360'),
+        DeclareLaunchArgument('rotation_trigger_source',default_value='body'),
         DeclareLaunchArgument('use_sim_time',default_value='false'),
         Node(package='rm_nav_mapping',executable='keyframe_recorder',remappings=[('/state/chassis_healthy',LaunchConfiguration('state_health_topic'))],parameters=[{
             'archive_root':LaunchConfiguration('archive_root'),
             'calibration_id':LaunchConfiguration('calibration_id'),
             'body_frame':LaunchConfiguration('body_frame'),
             'sensor_frame':LaunchConfiguration('sensor_frame'),
+            'rotation_trigger_source':LaunchConfiguration('rotation_trigger_source'),
             'use_sim_time':ParameterValue(LaunchConfiguration('use_sim_time'),value_type=bool)}],output='screen')])

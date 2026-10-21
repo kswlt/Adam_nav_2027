@@ -22,12 +22,15 @@ public:
   explicit KeyframeManager(KeyframeTriggerConfig config = {});
 
   bool consider(std::int64_t stamp_ns, const Eigen::Isometry3d & odom_T_chassis);
+  // Rotation can come from a sensor without changing the archived body pose.
+  bool consider(std::int64_t stamp_ns, const Eigen::Isometry3d & odom_T_body, double trigger_yaw);
   const std::vector<Keyframe> & keyframes() const { return keyframes_; }
 
 private:
   KeyframeTriggerConfig config_;
   std::vector<Keyframe> keyframes_;
   std::int64_t last_seen_stamp_{-1};
+  double last_trigger_yaw_{0.};
 };
 
 }  // namespace rm_nav_mapping
