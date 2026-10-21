@@ -22,6 +22,41 @@ class GeometryTest(unittest.TestCase):
         self.assertAlmostEqual(p[1], 1.989)
         self.assertAlmostEqual(yaw, math.pi/2)
 
+    def test_coaxial_lidar_stays_fixed_when_imu_rotates_about_it(self):
+        # Physical fixture: LiDAR centre on yaw axis; IMU describes its small
+        # internal lever-arm circle. Navigation reference must remain fixed.
+        offset=(-.011,-.02329,.04412)
+        centre=(2.,3.,.25)
+        for i in range(72):
+            angle=i*math.pi/36
+            c,s=math.cos(angle),math.sin(angle)
+            rotated=(c*offset[0]-s*offset[1],s*offset[0]+c*offset[1],offset[2])
+            imu=tuple(a-b for a,b in zip(centre,rotated))
+            position,_=geometry.sensor_pose(imu,(0,0,math.sin(angle/2),math.cos(angle/2)),offset)
+            for actual,expected in zip(position,centre):self.assertAlmostEqual(actual,expected)
+
+    def test_eccentric_lidar_is_not_the_stationary_gimbal_axis(self):
+        # Hypothetical 16cm yaw-to-LiDAR offset, NOT the confirmed chassis-to-yaw
+        # installation. This demonstrates why the two offsets are not equivalent.
+        offset=(-.011,-.02329,.04412)
+        positions=[]
+        for angle in (0.,math.pi):
+            c,s=math.cos(angle),math.sin(angle)
+            lidar=(.16*c,.16*s,.25)
+            rotated=(c*offset[0]-s*offset[1],s*offset[0]+c*offset[1],offset[2])
+            imu=tuple(a-b for a,b in zip(lidar,rotated))
+            position,_=geometry.sensor_pose(imu,(0,0,math.sin(angle/2),math.cos(angle/2)),offset)
+            positions.append(position)
+        self.assertAlmostEqual(math.dist(*positions),.32)
+
+    def test_fixed_world_direction_needs_changing_sensor_command(self):
+        # +sensor-X becomes +world-Y at 90deg. A +world-X request must instead
+        # become -sensor-Y, independently of chassis yaw/contact_angle.
+        self.assertEqual(geometry.sensor_velocity(1.,0.,0.),(1.,0.))
+        x,y=geometry.sensor_velocity(1.,0.,math.pi/2)
+        self.assertAlmostEqual(x,0.)
+        self.assertAlmostEqual(y,-1.)
+
     def test_spinning_envelope(self):
         polygon = geometry.circle_polygon()
         required = geometry.spinning_radius()
