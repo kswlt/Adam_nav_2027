@@ -126,11 +126,13 @@ def main():
         # Same physical meaning as fake_vel_transform, followed by original wire negation.
         for theta, xy in ((0., (.2, -.1)), (math.pi/2, (.2, 0.)),
                           (-math.pi/2, (0., .2)), (math.pi, (-.2, .1))):
-            run(.5, yaw=theta, xy=xy)
+            # The fixture limits turns to 8rad/s. A pi turn needs .393s,
+            # then two settled LIO samples plus adapter/UART pipeline latency.
+            run(.8, yaw=theta, xy=xy)
             x, y = xy
             expected = (-(math.cos(theta)*x+math.sin(theta)*y),
                         -(-math.sin(theta)*x+math.cos(theta)*y))
-            assert max(abs(a-b) for a, b in zip(frames[-1][1:3], expected)) < 1e-5
+            assert max(abs(a-b) for a, b in zip(frames[-1][1:3], expected)) < 1e-5, (theta,frames[-1][1:3],expected)
             assert frames[-1][3:8] == (31.5, 31.5, 2, 5, 1), 'cached yaw or passthrough changed'
         run(.5, xy=(.2, 0.), quality=False)
         assert stopped(), 'raw quality did not stop wire xy'

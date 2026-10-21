@@ -1,0 +1,20 @@
+{
+  "mode": "TEST_ONLY",
+  "physical_io": false,
+  "firmware_modified": false,
+  "observed_tx_hz": 49.76155744566422,
+  "passed": true,
+  "tx_bytes": 54,
+  "rx_bytes": 26,
+  "rotation_and_single_negation": true,
+  "contact_angle_not_required": true,
+  "cached_yaw_passthrough": true,
+  "global_cmd_vel_isolated": true,
+  "raw_quality_stop": true,
+  "rx_dropout_stop": true,
+  "permission_stop": true,
+  "lio_dropout_stop": true,
+  "command_timeout_stop": true,
+  "no_replay": true,
+  "full_chassis_stop": "NOT_VERIFIED"
+}

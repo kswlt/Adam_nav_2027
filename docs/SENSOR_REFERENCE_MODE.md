@@ -15,7 +15,7 @@
 | `odom → sensor_yaw_reference` | 同一平面点，朝向为雷达朝向的水平投影 | sensor_reference |
 | `map → odom` | 真实地图匹配结果；建图阶段不存在 | MapOdomManager |
 
-`/sensor_reference/odom` 是虚拟参考的导航状态，x/y 协方差由 IMU 位姿协方差通过工厂内部杠杆臂传播。
+`/sensor_reference/odom` 是虚拟参考的导航状态，x/y 协方差由 IMU 位姿协方差通过实际选用的参考点杠杆臂传播。默认仍为LiDAR中心；2026-10-22新增显式实测 `gimbal_axis` 模式及有界朝向外推，参数、标定ID切换和验证限制见 [旋转参考链修复](SENSOR_REFERENCE_FIX_20261022.md)。不要把上表默认LiDAR位置等同于未经测量的机械yaw轴。
 固定的 z/roll/pitch/yaw 是该坐标的定义，不是真实底盘测量。速度来自参考点位置差分，保留未知速度协方差；不能作为轮速或停车反馈使用。
 无真实机械角时，不发布 `chassis`、`base_footprint`、`base_link` 的假旋转，不将参考里程计投入原有 chassis EKF。
 

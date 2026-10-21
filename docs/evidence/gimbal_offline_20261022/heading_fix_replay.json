@@ -1,0 +1,67 @@
+{
+  "scope": "recorded LIO arrivals at virtual 50Hz command ticks",
+  "comparison": "interpolated future LIO, NOT independent attitude ground truth",
+  "physical_output": false,
+  "runs": {
+    "run_20261021_202129": {
+      "ticks": 5315,
+      "rejected_ticks": 98,
+      "accepted_ticks": 5217,
+      "held_yaw_error_deg_p50_p95_max": [
+        0.00519710222092747,
+        0.02376545184515297,
+        0.052917322980490365
+      ],
+      "bounded_prediction_error_deg_p50_p95_max": [
+        0.009089620296108197,
+        0.041204993037362234,
+        0.09380084349241725
+      ]
+    },
+    "run_20261021_202408": {
+      "ticks": 5980,
+      "rejected_ticks": 140,
+      "accepted_ticks": 5840,
+      "held_yaw_error_deg_p50_p95_max": [
+        0.006177896044197582,
+        0.04015054093860302,
+        15.353955000783538
+      ],
+      "bounded_prediction_error_deg_p50_p95_max": [
+        0.010616433045648091,
+        0.06681232957582009,
+        5.177976741450877
+      ]
+    },
+    "run_20261021_202751": {
+      "ticks": 5949,
+      "rejected_ticks": 123,
+      "accepted_ticks": 5826,
+      "held_yaw_error_deg_p50_p95_max": [
+        0.012814681660379055,
+        5.803819654081485,
+        7.336837404973009
+      ],
+      "bounded_prediction_error_deg_p50_p95_max": [
+        0.015051742564394437,
+        0.169881119262508,
+        5.493215307820721
+      ]
+    },
+    "run_20261021_203205": {
+      "ticks": 5350,
+      "rejected_ticks": 84,
+      "accepted_ticks": 5266,
+      "held_yaw_error_deg_p50_p95_max": [
+        0.013576816690823654,
+        3.8425938471433074,
+        16.78199856860037
+      ],
+      "bounded_prediction_error_deg_p50_p95_max": [
+        0.021348566784396766,
+        1.2918861960776988,
+        7.024698747015069
+      ]
+    }
+  }
+}

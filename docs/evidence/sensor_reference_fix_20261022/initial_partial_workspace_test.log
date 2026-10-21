@@ -1,0 +1,151 @@
+UpdateCTestConfiguration  from :/root/adam_nav_sensor_reference/build/rm_nav_bringup/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_sensor_reference/build/rm_nav_bringup/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261021-2314 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_sensor_reference/build/rm_nav_bringup/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_sensor_reference/build/rm_nav_bringup/CTestConfiguration.ini
+Test project /root/adam_nav_sensor_reference/build/rm_nav_bringup
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+      Start  1: nav_supervisor_test
+
+1: Test command: /root/adam_nav_sensor_reference/build/rm_nav_bringup/nav_supervisor_test
+1: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+1: Test timeout computed to be: 10000000
+ 1/10 Test  #1: nav_supervisor_test ..............   Passed    0.00 sec
+test 2
+      Start  2: ros2_control_input_test
+
+2: Test command: /usr/bin/python3 "/root/adam_nav_sensor_reference/src/rm_nav_bringup/test/ros2_control_input_test.py" "/root/adam_nav_sensor_reference/src/rm_nav_bringup/scripts/ros2_control_input.py"
+2: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+2: Test timeout computed to be: 25
+2: PASS real ROS controller input: degree/radian adapter, true feedback prerequisite, independent lease expiry
+ 2/10 Test  #2: ros2_control_input_test ..........   Passed    3.16 sec
+test 3
+      Start  3: lio_continuity_test
+
+3: Test command: /usr/bin/python3 "/root/adam_nav_sensor_reference/src/rm_nav_bringup/test/lio_continuity_test.py"
+3: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+3: Test timeout computed to be: 10000000
+3: ...........
+3: ----------------------------------------------------------------------
+3: Ran 11 tests in 0.002s
+3:
+3: OK
+ 3/10 Test  #3: lio_continuity_test ..............   Passed    0.04 sec
+test 4
+      Start  4: local_site_bundle_test
+
+4: Test command: /usr/bin/python3 "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/test_local_site_bundle.py"
+4: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+4: Test timeout computed to be: 10000000
+4: /usr/bin/python3: can't open file '/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/test_local_site_bundle.py': [Errno 2] No such file or directory
+ 4/10 Test  #4: local_site_bundle_test ...........***Failed    0.01 sec
+test 5
+      Start  5: sensor_reference_math_test
+
+5: Test command: /usr/bin/python3 "/root/adam_nav_sensor_reference/src/rm_nav_bringup/test/sensor_reference_math_test.py"
+5: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+5: Test timeout computed to be: 10000000
+5: ...........
+5: ----------------------------------------------------------------------
+5: Ran 11 tests in 0.001s
+5:
+5: OK
+ 5/10 Test  #5: sensor_reference_math_test .......   Passed    0.06 sec
+test 6
+      Start  6: sensor_reference_ros_test
+
+6: Test command: /usr/bin/python3 "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py"
+6: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+6: Environment variables:
+6:  ROS_DOMAIN_ID=201
+6:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+6: Test timeout computed to be: 45
+6:
+6: Traceback (most recent call last):
+6:   File "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py", line 165, in <module>
+6:     main()
+6:   File "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py", line 109, in main
+6:     assert stopped(), 'out-of-order fresh command overrode newer command'
+6:            ^^^^^^^^^
+6: AssertionError: out-of-order fresh command overrode newer command
+ 6/10 Test  #6: sensor_reference_ros_test ........***Failed    3.06 sec
+test 7
+      Start  7: sensor_reference_axis_ros_test
+
+7: Test command: /usr/bin/python3 "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py" "--axis-fixture"
+7: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+7: Environment variables:
+7:  ROS_DOMAIN_ID=207
+7:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+7: Test timeout computed to be: 45
+7:
+7: Traceback (most recent call last):
+7:   File "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py", line 165, in <module>
+7:     main()
+7:   File "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py", line 109, in main
+7:     assert stopped(), 'out-of-order fresh command overrode newer command'
+7:            ^^^^^^^^^
+7: AssertionError: out-of-order fresh command overrode newer command
+ 7/10 Test  #7: sensor_reference_axis_ros_test ...***Failed    3.04 sec
+test 8
+      Start  8: sensor_heading_ros_test
+
+8: Test command: /usr/bin/python3 "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_sensor_heading.py"
+8: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+8: Environment variables:
+8:  ROS_DOMAIN_ID=208
+8:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+8: Test timeout computed to be: 20
+8: {"result": "PASS", "mode": "TEST_ONLY", "lio_hz": 10, "sensor_yaw_rate_rad_s": 1.2, "world_velocity_error_p95_m_s": 1.415262216750919e-16, "checked_samples": 95, "pose_loss_zero_output": true, "physical_publishers": 0}
+ 8/10 Test  #8: sensor_heading_ros_test ..........   Passed    4.23 sec
+test 9
+      Start  9: legacy_adam_launch_test
+
+9: Test command: /usr/bin/python3 "/root/adam_nav_sensor_reference/src/rm_nav_bringup/test/legacy_adam_launch_test.py"
+9: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+9: Test timeout computed to be: 10000000
+9: .....
+9: ----------------------------------------------------------------------
+9: Ran 5 tests in 0.016s
+9:
+9: OK
+ 9/10 Test  #9: legacy_adam_launch_test ..........   Passed    0.24 sec
+test 10
+      Start 10: legacy_adam_transport_ros_test
+
+10: Test command: /usr/bin/python3 "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_legacy_adam_transport.py"
+10: Working Directory: /root/adam_nav_sensor_reference/build/rm_nav_bringup
+10: Environment variables:
+10:  ROS_DOMAIN_ID=206
+10:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+10: Test timeout computed to be: 65
+10: Traceback (most recent call last):
+10:   File "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_legacy_adam_transport.py", line 175, in <module>
+10:     main()
+10:   File "/root/adam_nav_sensor_reference/src/rm_nav_bringup/../../tools/smoke_legacy_adam_transport.py", line 124, in main
+10:     assert max(abs(a-b) for a, b in zip(frames[-1][1:3], expected)) < 1e-5
+10:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+10: AssertionError
+10/10 Test #10: legacy_adam_transport_ros_test ...***Failed    4.92 sec
+
+60% tests passed, 4 tests failed out of 10
+
+Total Test time (real) =  18.77 sec
+
+The following tests FAILED:
+	  4 - local_site_bundle_test (Failed)
+	  6 - sensor_reference_ros_test (Failed)
+	  7 - sensor_reference_axis_ros_test (Failed)
+	 10 - legacy_adam_transport_ros_test (Failed)
+Errors while running CTest
+Output from these tests are in: /root/adam_nav_sensor_reference/build/rm_nav_bringup/Testing/Temporary/LastTest.log
+Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.

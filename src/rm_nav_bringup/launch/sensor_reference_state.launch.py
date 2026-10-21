@@ -10,11 +10,18 @@ from launch_ros.parameter_descriptions import ParameterValue
 def generate_launch_description():
     sim = {'use_sim_time': ParameterValue(LaunchConfiguration('use_sim_time'), value_type=bool)}
     health = [('/state/chassis_healthy', '/state/sensor_reference_healthy')]
-    calibration = 'vehicle164_sensor_axis_factory_v1'
+    calibration = ParameterValue(LaunchConfiguration('calibration_id'), value_type=str)
     return LaunchDescription([
         DeclareLaunchArgument('lio_params_file', description='small_point_lio MID360 driver/time parameters'),
         DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument('enable_lio', default_value='true'),
+        DeclareLaunchArgument('reference_point', default_value='lidar_center'),
+        DeclareLaunchArgument('gimbal_axis_to_lidar', default_value='[0.0,0.0,0.0]',
+                              description='Measured axis->LiDAR translation in sensor axes, NOT chassis->axis'),
+        DeclareLaunchArgument('reference_geometry_verified', default_value='false'),
+        DeclareLaunchArgument('calibration_id', default_value='vehicle164_sensor_axis_factory_v1'),
+        DeclareLaunchArgument('heading_max_extrapolation', default_value='0.12'),
+        DeclareLaunchArgument('heading_max_correction', default_value='0.25'),
         Node(package='rm_nav_sensors', executable='mid360_cloud_guard', parameters=[sim], output='screen'),
         Node(package='rm_nav_bringup', executable='lio_input_guard', parameters=[sim], output='screen'),
         Node(package='small_point_lio', executable='small_point_lio_node', name='small_point_lio',
@@ -27,7 +34,13 @@ def generate_launch_description():
                  'extrinsic_R': [1., 0., 0., 0., 1., 0., 0., 0., 1.]}],
              remappings=[('/Odometry', '/lio/sensor_odometry'),
                          ('/cloud_registered', '/lio/deskewed_odom_cloud')], output='screen'),
-        Node(package='rm_nav_bringup', executable='sensor_reference', parameters=[sim], output='screen'),
+        Node(package='rm_nav_bringup', executable='sensor_reference', parameters=[sim, {
+            'reference_point': ParameterValue(LaunchConfiguration('reference_point'), value_type=str),
+            'gimbal_axis_to_lidar': ParameterValue(LaunchConfiguration('gimbal_axis_to_lidar')),
+            'reference_geometry_verified': ParameterValue(LaunchConfiguration('reference_geometry_verified'), value_type=bool),
+            'calibration_id': calibration,
+            'heading_max_extrapolation': ParameterValue(LaunchConfiguration('heading_max_extrapolation'), value_type=float),
+            'heading_max_correction': ParameterValue(LaunchConfiguration('heading_max_correction'), value_type=float)}], output='screen'),
         Node(package='rm_nav_sensors', executable='lio_observation_adapter',
              parameters=[sim, {'calibration_id': calibration, 'sensor_frame': 'front_mid360'}],
              remappings=health, output='screen'),

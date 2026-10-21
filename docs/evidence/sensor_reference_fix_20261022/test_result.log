@@ -1,0 +1,640 @@
+Starting >>> rm_nav_interfaces
+Starting >>> pb_rm_interfaces
+Starting >>> rm_nav_registration
+Starting >>> rm_nav_planning
+Starting >>> rm_nav_frames
+Starting >>> rm_nav_perception
+Starting >>> rm_nav_sim
+Finished <<< rm_nav_frames [0.22s]
+Finished <<< rm_nav_sim [0.22s]
+Finished <<< rm_nav_perception [0.22s]
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_registration/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_registration/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261021-2319 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_registration/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_registration/CTestConfiguration.ini
+Test project /root/adam_nav_bugfix_20261022/build/rm_nav_registration
+Constructing a list of tests
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_planning/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_planning/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+ Add coverage exclude regular expressions.
+Create new tag: 20261021-2319 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_planning/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_planning/CTestConfiguration.ini
+Test project /root/adam_nav_bugfix_20261022/build/rm_nav_planning
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: timed_trajectory_test
+
+1: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_planning/timed_trajectory_test
+1: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_planning
+1: Test timeout computed to be: 10000000
+test 1
+    Start 1: registration_types_test
+
+1: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_registration/registration_types_test
+1: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_registration
+1: Test timeout computed to be: 10000000
+1/6 Test #1: registration_types_test ..........   Passed    0.00 sec
+test 2
+    Start 2: localization_validator_test
+
+2: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_registration/localization_validator_test
+2: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_registration
+2: Test timeout computed to be: 10000000
+1/6 Test #1: timed_trajectory_test ..............   Passed    0.00 sec
+test 2
+    Start 2: path_preprocessor_test
+
+2: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_planning/path_preprocessor_test
+2: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_planning
+2: Test timeout computed to be: 10000000
+2/6 Test #2: localization_validator_test ......   Passed    0.00 sec
+test 3
+    Start 3: registration_backend_test
+
+3: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_registration/registration_backend_test
+3: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_registration
+3: Test timeout computed to be: 10000000
+3/6 Test #3: registration_backend_test ........   Passed    0.00 sec
+test 4
+    Start 4: small_gicp_backend_test
+
+4: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_registration/small_gicp_backend_test
+4: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_registration
+4: Test timeout computed to be: 10000000
+2/6 Test #2: path_preprocessor_test .............   Passed    0.00 sec
+test 3
+    Start 3: swept_footprint_validator_test
+
+3: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_planning/swept_footprint_validator_test
+3: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_planning
+3: Test timeout computed to be: 10000000
+3/6 Test #3: swept_footprint_validator_test .....   Passed    0.00 sec
+test 4
+    Start 4: minimum_jerk_test
+
+4: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_planning/minimum_jerk_test
+4: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_planning
+4: Test timeout computed to be: 10000000
+4/6 Test #4: minimum_jerk_test ..................   Passed    0.00 sec
+test 5
+    Start 5: polygon_footprint_validator_test
+
+5: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_planning/polygon_footprint_validator_test
+5: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_planning
+5: Test timeout computed to be: 10000000
+5/6 Test #5: polygon_footprint_validator_test ...   Passed    0.00 sec
+test 6
+    Start 6: tdt_backend_test
+
+6: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_planning/tdt_backend_test
+6: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_planning
+6: Test timeout computed to be: 30
+6: accepted solves=2 time=0.000293293
+6: retiming: accepted solves=4
+6/6 Test #6: tdt_backend_test ...................   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 6
+
+Total Test time (real) =   0.02 sec
+Finished <<< rm_nav_planning [0.26s]
+Finished <<< pb_rm_interfaces [0.34s]
+Starting >>> my_serial_py
+Finished <<< rm_nav_interfaces [0.36s]
+Starting >>> rm_nav_sensors
+Starting >>> rm_nav_control
+4: translation_error_m=1.3239e-05 rotation_error_rad=6.80266e-06 rmse_m=0.00144337 inlier_ratio=1 condition_score=0.375642 runtime_ms=7.11485
+4: PASS real small_gicp alignment and rejection checks
+4/6 Test #4: small_gicp_backend_test ..........   Passed    0.26 sec
+test 5
+    Start 5: small_vgicp_backend_test
+
+5: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_registration/small_vgicp_backend_test
+5: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_registration
+5: Test timeout computed to be: 10000000
+5: VGICP error_m=2.10184e-05 error_rad=2.15329e-05 rmse=0.00224623 condition=0.349873
+5: PASS genuine voxel-map VGICP alignment and invalid-input rejection
+5/6 Test #5: small_vgicp_backend_test .........   Passed    0.04 sec
+test 6
+    Start 6: kiss_gicp_backend_test
+
+6: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_registration/kiss_gicp_backend_test
+6: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_registration
+6: Test timeout computed to be: 10000000
+6: KISS_GICP translation_error_m=1.62254e-06 angle_error_rad=4.30726e-07 rmse_m=0.00117408 inlier_ratio=1 runtime_ms=230.794
+6: PASS real KISS coarse registration, GICP refinement and large-correction gate
+6/6 Test #6: kiss_gicp_backend_test ...........   Passed    0.24 sec
+
+100% tests passed, 0 tests failed out of 6
+
+Total Test time (real) =   0.55 sec
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_sensors/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_sensors/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261021-2319 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_sensors/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_sensors/CTestConfiguration.ini
+Test project /root/adam_nav_bugfix_20261022/build/rm_nav_sensors
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: observation_batch_test
+
+1: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_sensors/observation_batch_test
+1: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_sensors
+1: Test timeout computed to be: 10000000
+1/2 Test #1: observation_batch_test ...........   Passed    0.00 sec
+test 2
+    Start 2: mid360_quality_test
+
+2: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_sensors/mid360_quality_test
+2: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_sensors
+2: Test timeout computed to be: 10000000
+Finished <<< rm_nav_registration [0.79s]
+2/2 Test #2: mid360_quality_test ..............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =   0.01 sec
+Finished <<< rm_nav_sensors [0.45s]
+Starting >>> rm_nav_localization
+Starting >>> rm_nav_mapping
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_control/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_control/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261021-2319 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_control/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_control/CTestConfiguration.ini
+Test project /root/adam_nav_bugfix_20261022/build/rm_nav_control
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: command_synthesizer_test
+
+1: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_control/command_synthesizer_test
+1: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_control
+1: Test timeout computed to be: 10000000
+1/7 Test #1: command_synthesizer_test .........   Passed    0.00 sec
+test 2
+    Start 2: trajectory_tracker_test
+
+2: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_control/trajectory_tracker_test
+2: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_control
+2: Test timeout computed to be: 10000000
+2/7 Test #2: trajectory_tracker_test ..........   Passed    0.01 sec
+test 3
+    Start 3: tdt_controller_test
+
+3: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_control/tdt_controller_test
+3: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_control
+3: Environment variables:
+3:  ROS_DOMAIN_ID=196
+3:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+3: Test timeout computed to be: 45
+3: [INFO] [1792624795.244276832] [test_only_tdt_costmap.test_only_tdt_costmap]:
+3: 	test_only_tdt_costmap lifecycle node launched.
+3: 	Waiting on external lifecycle transitions to activate
+3: 	See https://design.ros2.org/articles/node_lifecycle.html for more information.
+3: [INFO] [1792624795.252795185] [test_only_tdt_costmap.test_only_tdt_costmap]: Creating Costmap
+3: [INFO] [1792624795.252948125] [test_only_tdt_costmap.test_only_tdt_costmap]: Configuring
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_mapping/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_mapping/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261021-2319 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_mapping/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_mapping/CTestConfiguration.ini
+Test project /root/adam_nav_bugfix_20261022/build/rm_nav_mapping
+Constructing a list of tests
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_localization/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_localization/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261021-2319 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_localization/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_localization/CTestConfiguration.ini
+Test project /root/adam_nav_bugfix_20261022/build/rm_nav_localization
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: reference_point_test
+
+1: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_localization/reference_point_test
+1: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_localization
+1: Test timeout computed to be: 10000000
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: online_mapping_test
+
+1: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping/online_mapping_test
+1: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping
+1: Test timeout computed to be: 10000000
+1/7 Test #1: reference_point_test ................   Passed    0.00 sec
+test 2
+    Start 2: chassis_resolver_test
+
+2: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_localization/chassis_resolver_test
+2: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_localization
+2: Test timeout computed to be: 10000000
+2/7 Test #2: chassis_resolver_test ...............   Passed    0.00 sec
+test 3
+    Start 3: candidate_region_test
+
+3: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_localization/candidate_region_test
+3: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_localization
+3: Test timeout computed to be: 10000000
+3/7 Test #3: candidate_region_test ...............   Passed    0.00 sec
+test 4
+    Start 4: map_odom_manager_test
+
+4: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_localization/map_odom_manager_test
+4: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_localization
+4: Test timeout computed to be: 10000000
+4/7 Test #4: map_odom_manager_test ...............   Passed    0.00 sec
+test 5
+    Start 5: local_submap_builder_test
+
+5: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_localization/local_submap_builder_test
+5: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_localization
+5: Test timeout computed to be: 10000000
+5/7 Test #5: local_submap_builder_test ...........   Passed    0.00 sec
+test 6
+    Start 6: relocalization_state_machine_test
+
+6: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_localization/relocalization_state_machine_test
+6: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_localization
+6: Test timeout computed to be: 10000000
+6/7 Test #6: relocalization_state_machine_test ...   Passed    0.00 sec
+test 7
+    Start 7: ros_conversions_test
+
+7: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_localization/ros_conversions_test
+7: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_localization
+7: Test timeout computed to be: 10000000
+7: PASS PointCloud2 storage, endian, padding and transform checks
+7/7 Test #7: ros_conversions_test ................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 7
+
+Total Test time (real) =   0.01 sec
+Finished <<< rm_nav_localization [0.66s]
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0
+cachedir: /root/adam_nav_bugfix_20261022/build/my_serial_py/.pytest_cache
+rootdir: /root/adam_nav_bugfix_20261022/src/my_serial_py
+plugins: ament-pep257-0.17.5, launch-testing-ros-0.26.12, launch-testing-3.4.11, ament-copyright-0.17.5, ament-flake8-0.17.5, ament-lint-0.17.5, ament-xmllint-0.17.5, colcon-core-0.21.3, cov-4.1.0, typeguard-4.1.5
+collected 15 items
+
+test/test_contact_angle_stamped.py .                                     [  6%]
+test/test_protocol.py ....s.........                                     [100%]
+
+- generated xml file: /root/adam_nav_bugfix_20261022/build/my_serial_py/pytest.xml -
+======================== 14 passed, 1 skipped in 0.05s =========================
+Finished <<< my_serial_py [1.27s]
+Starting >>> rm_nav_hardware
+3: [INFO] [1792624796.454695822] [test_only_tdt_costmap.test_only_tdt_costmap]: Cleaning up
+3: [INFO] [1792624796.459165445] [test_only_tdt_costmap.test_only_tdt_costmap]: Destroying
+3/7 Test #3: tdt_controller_test ..............   Passed    1.45 sec
+test 4
+    Start 4: tdt_translation_only_test
+
+4: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_control/tdt_controller_test "--translation-only"
+4: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_control
+4: Environment variables:
+4:  ROS_DOMAIN_ID=202
+4:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+4: Test timeout computed to be: 45
+4: [INFO] [1792624796.643864709] [test_only_tdt_costmap.test_only_tdt_costmap]:
+4: 	test_only_tdt_costmap lifecycle node launched.
+4: 	Waiting on external lifecycle transitions to activate
+4: 	See https://design.ros2.org/articles/node_lifecycle.html for more information.
+4: [INFO] [1792624796.644618205] [test_only_tdt_costmap.test_only_tdt_costmap]: Creating Costmap
+4: [INFO] [1792624796.644823714] [test_only_tdt_costmap.test_only_tdt_costmap]: Configuring
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_hardware/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_hardware/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261021-2319 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_hardware/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_hardware/CTestConfiguration.ini
+Test project /root/adam_nav_bugfix_20261022/build/rm_nav_hardware
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: hardware_transport_test
+
+1: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_hardware/hardware_transport_test
+1: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_hardware
+1: Environment variables:
+1:  ROS_DOMAIN_ID=197
+1:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+1: Test timeout computed to be: 45
+4: [INFO] [1792624797.871468722] [test_only_tdt_costmap.test_only_tdt_costmap]: Cleaning up
+4: [INFO] [1792624797.875023733] [test_only_tdt_costmap.test_only_tdt_costmap]: Destroying
+4/7 Test #4: tdt_translation_only_test ........   Passed    1.42 sec
+test 5
+    Start 5: trajectory_tracker_regression
+
+5: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_control/test/trajectory_tracker_regression.py" "/root/adam_nav_bugfix_20261022/build/rm_nav_control/trajectory_tracker"
+5: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_control
+5: Test timeout computed to be: 90
+5: test_disabled_and_invalid_state (__main__.TrackerRegression.test_disabled_and_invalid_state) ... [INFO] [1792624799.123505878] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+5: ok
+1/1 Test #1: hardware_transport_test ..........   Passed    1.71 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   1.71 sec
+Finished <<< rm_nav_hardware [3.86s]
+1: loops=2 candidates=2 rejected=0 reason=bidirectional loop and GTSAM post-audit accepted; historical map rebuilt work_ms=2447.02
+1: PASS online real KISS/GICP + audited GTSAM, historical correction, rebuilt map and capacity rollback
+1/7 Test #1: online_mapping_test ..............   Passed    4.22 sec
+test 2
+    Start 2: pose_graph_test
+
+2: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping/pose_graph_test
+2: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping
+2: Test timeout computed to be: 10000000
+2: PASS actual GTSAM Pose3 adjacent graph, error reduction, direction and invalid factor refusal
+2/7 Test #2: pose_graph_test ..................   Passed    0.01 sec
+test 3
+    Start 3: overlap_test
+
+3: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping/overlap_test
+3: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping
+3: Test timeout computed to be: 10000000
+3: PASS exact overlap=0.0185 brute_ms=7.67935 kdtree_ms=1.81532
+3/7 Test #3: overlap_test .....................   Passed    0.01 sec
+test 4
+    Start 4: keyframe_manager_test
+
+4: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping/keyframe_manager_test
+4: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping
+4: Test timeout computed to be: 10000000
+4/7 Test #4: keyframe_manager_test ............   Passed    0.01 sec
+test 5
+    Start 5: loop_candidate_manager_test
+
+5: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping/loop_candidate_manager_test
+5: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping
+5: Test timeout computed to be: 10000000
+5/7 Test #5: loop_candidate_manager_test ......   Passed    0.01 sec
+test 6
+    Start 6: loop_validator_test
+
+6: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping/loop_validator_test
+6: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping
+6: Test timeout computed to be: 10000000
+6/7 Test #6: loop_validator_test ..............   Passed    0.00 sec
+test 7
+    Start 7: map_bundle_test
+
+7: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping/map_bundle_test
+7: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_mapping
+7: Test timeout computed to be: 10000000
+7/7 Test #7: map_bundle_test ..................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 7
+
+Total Test time (real) =   4.27 sec
+Finished <<< rm_nav_mapping [4.92s]
+5: test_tracking_recovery_and_obstacles (__main__.TrackerRegression.test_tracking_recovery_and_obstacles) ... [INFO] [1792624804.053508962] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+5: ok
+5: test_wrong_frame_stale_pose_and_invalid_replacement (__main__.TrackerRegression.test_wrong_frame_stale_pose_and_invalid_replacement) ... [INFO] [1792624806.810942562] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+5: ok
+5:
+5: ----------------------------------------------------------------------
+5: Ran 3 tests in 8.675s
+5:
+5: OK
+5/7 Test #5: trajectory_tracker_regression ....   Passed    9.05 sec
+test 6
+    Start 6: omni_pid_test
+
+6: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_control/omni_pid_test
+6: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_control
+6: Test timeout computed to be: 10000000
+6/7 Test #6: omni_pid_test ....................   Passed    0.00 sec
+test 7
+    Start 7: omni_pid_adapter_regression
+
+7: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_control/test/omni_pid_adapter_regression.py" "/root/adam_nav_bugfix_20261022/build/rm_nav_control/omni_pid_adapter"
+7: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_control
+7: Test timeout computed to be: 90
+7: [WARN] [1792624807.226816987] [omni_pid_adapter]: Measured feedback disabled: velocity feedforward only; PID correction bypassed.
+7: [INFO] [1792624807.676174101] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+7: .[INFO] [1792624810.018684882] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+7: .[WARN] [1792624810.158845946] [omni_pid_adapter]: Measured feedback disabled: velocity feedforward only; PID correction bypassed.
+7: [INFO] [1792624822.406404037] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+7: .[WARN] [1792624822.548035938] [omni_pid_adapter]: Measured feedback disabled: velocity feedforward only; PID correction bypassed.
+7: [INFO] [1792624824.593533423] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+7: .
+7: ----------------------------------------------------------------------
+7: Ran 4 tests in 17.553s
+7:
+7: OK
+7/7 Test #7: omni_pid_adapter_regression ......   Passed   17.78 sec
+
+100% tests passed, 0 tests failed out of 7
+
+Total Test time (real) =  29.72 sec
+Finished <<< rm_nav_control [30.5s]
+Starting >>> rm_nav_bringup
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_bringup/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_bringup/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261021-2320 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_bringup/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_bringup/CTestConfiguration.ini
+Test project /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+      Start  1: nav_supervisor_test
+
+1: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup/nav_supervisor_test
+1: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+1: Test timeout computed to be: 10000000
+ 1/10 Test  #1: nav_supervisor_test ..............   Passed    0.00 sec
+test 2
+      Start  2: ros2_control_input_test
+
+2: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/test/ros2_control_input_test.py" "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/scripts/ros2_control_input.py"
+2: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+2: Test timeout computed to be: 25
+2: PASS real ROS controller input: degree/radian adapter, true feedback prerequisite, independent lease expiry
+ 2/10 Test  #2: ros2_control_input_test ..........   Passed    2.90 sec
+test 3
+      Start  3: lio_continuity_test
+
+3: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/test/lio_continuity_test.py"
+3: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+3: Test timeout computed to be: 10000000
+3: ...........
+3: ----------------------------------------------------------------------
+3: Ran 11 tests in 0.002s
+3:
+3: OK
+ 3/10 Test  #3: lio_continuity_test ..............   Passed    0.04 sec
+test 4
+      Start  4: local_site_bundle_test
+
+4: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/test_local_site_bundle.py"
+4: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+4: Test timeout computed to be: 10000000
+4: test_local_site_never_claims_official_alignment (__main__.LocalSiteTest.test_local_site_never_claims_official_alignment) ... ok
+4: test_localization_only_without_free_space (__main__.LocalSiteTest.test_localization_only_without_free_space) ... ok
+4: test_missing_review_cannot_be_replaced_by_manifest_boolean (__main__.LocalSiteTest.test_missing_review_cannot_be_replaced_by_manifest_boolean) ... ok
+4: test_official_default_does_not_accept_local_alignment (__main__.LocalSiteTest.test_official_default_does_not_accept_local_alignment) ... ok
+4: test_session_coordinates_cannot_hide_arbitrary_alignment (__main__.LocalSiteTest.test_session_coordinates_cannot_hide_arbitrary_alignment) ... ok
+4: test_unreviewed_or_mismatched_masks_refused (__main__.LocalSiteTest.test_unreviewed_or_mismatched_masks_refused) ... ok
+4:
+4: ----------------------------------------------------------------------
+4: Ran 6 tests in 0.028s
+4:
+4: OK
+ 4/10 Test  #4: local_site_bundle_test ...........   Passed    0.14 sec
+test 5
+      Start  5: sensor_reference_math_test
+
+5: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/test/sensor_reference_math_test.py"
+5: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+5: Test timeout computed to be: 10000000
+5: ...........
+5: ----------------------------------------------------------------------
+5: Ran 11 tests in 0.001s
+5:
+5: OK
+ 5/10 Test  #5: sensor_reference_math_test .......   Passed    0.04 sec
+test 6
+      Start  6: sensor_reference_ros_test
+
+6: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py"
+6: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+6: Environment variables:
+6:  ROS_DOMAIN_ID=201
+6:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+6: Test timeout computed to be: 45
+6: {"result": "PASS", "mode": "TEST_ONLY", "yaw_rotation": "PASS", "lio_timeout": "PASS", "raw_quality_failure": "PASS", "no_replay": "PASS", "bad_covariance": "PASS", "stale_source": "PASS", "angular_rejection": "PASS", "physical_publishers": 0, "chassis_tf_publishers": 0, "jump_latched_no_odom": true, "out_of_order_command": "PASS", "measured_axis_TEST_ONLY": false}
+ 6/10 Test  #6: sensor_reference_ros_test ........   Passed    8.22 sec
+test 7
+      Start  7: sensor_reference_axis_ros_test
+
+7: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py" "--axis-fixture"
+7: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+7: Environment variables:
+7:  ROS_DOMAIN_ID=207
+7:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+7: Test timeout computed to be: 45
+7: {"result": "PASS", "mode": "TEST_ONLY", "yaw_rotation": "PASS", "lio_timeout": "PASS", "raw_quality_failure": "PASS", "no_replay": "PASS", "bad_covariance": "PASS", "stale_source": "PASS", "angular_rejection": "PASS", "physical_publishers": 0, "chassis_tf_publishers": 0, "jump_latched_no_odom": true, "out_of_order_command": "PASS", "measured_axis_TEST_ONLY": true}
+ 7/10 Test  #7: sensor_reference_axis_ros_test ...   Passed    8.24 sec
+test 8
+      Start  8: sensor_heading_ros_test
+
+8: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/smoke_sensor_heading.py"
+8: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+8: Environment variables:
+8:  ROS_DOMAIN_ID=208
+8:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+8: Test timeout computed to be: 20
+8: {"result": "PASS", "mode": "TEST_ONLY", "lio_hz": 10, "sensor_yaw_rate_rad_s": 1.2, "world_velocity_error_p95_m_s": 2.220446049250313e-16, "checked_samples": 95, "pose_loss_zero_output": true, "physical_publishers": 0}
+ 8/10 Test  #8: sensor_heading_ros_test ..........   Passed    4.24 sec
+test 9
+      Start  9: legacy_adam_launch_test
+
+9: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/test/legacy_adam_launch_test.py"
+9: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+9: Test timeout computed to be: 10000000
+9: .....
+9: ----------------------------------------------------------------------
+9: Ran 5 tests in 0.017s
+9:
+9: OK
+ 9/10 Test  #9: legacy_adam_launch_test ..........   Passed    0.20 sec
+test 10
+      Start 10: legacy_adam_transport_ros_test
+
+10: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/smoke_legacy_adam_transport.py"
+10: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+10: Environment variables:
+10:  ROS_DOMAIN_ID=206
+10:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+10: Test timeout computed to be: 65
+10: {
+[Processing: rm_nav_bringup]
+10:   "mode": "TEST_ONLY",
+10:   "physical_io": false,
+10:   "firmware_modified": false,
+10:   "observed_tx_hz": 49.76155744566422,
+10:   "passed": true,
+10:   "tx_bytes": 54,
+10:   "rx_bytes": 26,
+10:   "rotation_and_single_negation": true,
+10:   "contact_angle_not_required": true,
+10:   "cached_yaw_passthrough": true,
+10:   "global_cmd_vel_isolated": true,
+10:   "raw_quality_stop": true,
+10:   "rx_dropout_stop": true,
+10:   "permission_stop": true,
+10:   "lio_dropout_stop": true,
+10:   "command_timeout_stop": true,
+10:   "no_replay": true,
+10:   "full_chassis_stop": "NOT_VERIFIED"
+10: }
+10/10 Test #10: legacy_adam_transport_ros_test ...   Passed   13.13 sec
+
+100% tests passed, 0 tests failed out of 10
+
+Total Test time (real) =  37.14 sec
+Finished <<< rm_nav_bringup [40.4s]
+
+Summary: 14 packages finished [1min 12s]

@@ -10,6 +10,49 @@ spec.loader.exec_module(geometry)
 
 
 class GeometryTest(unittest.TestCase):
+    def test_measured_axis_compensation_preserves_stationary_pivot(self):
+        factory = (-.011,-.02329,.04412)
+        # Synthetic measured lever, never the recorded/production installation.
+        lever = (.03,.18,.08)
+        offset = geometry.reference_offset(factory,'gimbal_axis',lever,True,'TEST_ONLY_axis')
+        for angle in (0.,1.,2.,-3.,-1.):
+            c,s = math.cos(angle), math.sin(angle)
+            imu = (2-c*offset[0]+s*offset[1],3-s*offset[0]-c*offset[1],.2-offset[2])
+            point,_ = geometry.sensor_pose(imu,(0,0,math.sin(angle/2),math.cos(angle/2)),offset)
+            for a,b in zip(point,(2.,3.,.2)):self.assertAlmostEqual(a,b)
+
+    def test_geometry_requires_explicit_measured_mode_and_new_id(self):
+        factory = (-.011,-.02329,.04412)
+        for mode,verified,identity in [('gimbal_axis',False,'measured_v2'),
+                                       ('gimbal_axis',True,''),
+                                       ('gimbal_axis',True,'vehicle164_sensor_axis_factory_v1'),
+                                       ('lidar_center',True,'measured_v2')]:
+            with self.assertRaises(ValueError):
+                geometry.reference_offset(factory,mode,(.1,0.,0.),verified,identity)
+        self.assertEqual(geometry.reference_offset(factory,'lidar_center',(0,0,0),False,''),factory)
+
+    def test_heading_latency_correction_across_wrap(self):
+        tracker = geometry.HeadingTracker()
+        tracker.observe(1_000_000_000,math.pi-.05)
+        tracker.observe(1_100_000_000,-math.pi+.05)
+        yaw,age,correction = tracker.predict(1_180_000_000)
+        self.assertAlmostEqual(age,.08)
+        self.assertAlmostEqual(correction,.08)
+        vx,vy=geometry.sensor_velocity(.3,-.1,yaw)
+        actual=math.pi+.13
+        self.assertAlmostEqual(math.cos(actual)*vx-math.sin(actual)*vy,.3)
+        self.assertAlmostEqual(math.sin(actual)*vx+math.cos(actual)*vy,-.1)
+
+    def test_heading_expiry_and_angle_budget(self):
+        tracker=geometry.HeadingTracker()
+        tracker.observe(1_000_000_000,0.)
+        with self.assertRaises(ValueError):tracker.predict(1_010_000_000)
+        tracker.observe(1_100_000_000,.4)
+        for stamp in (1_090_000_000,1_180_000_000,1_230_000_000):
+            with self.assertRaises(ValueError):tracker.predict(stamp)
+        with self.assertRaises(ValueError):tracker.observe(1_100_000_000,.4)
+        with self.assertRaises(ValueError):tracker.predict(1_110_000_000)
+
     def test_velocity_frame_rotation(self):
         for angle in (0, .3, math.pi/2, -math.pi, 2.7):
             x, y = geometry.sensor_velocity(.3, -.2, angle)

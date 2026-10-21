@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "scope": "real MCAP state-adapter replay, not frontend rerun",
+  "recorded_samples": 1180,
+  "matched_samples": 1170,
+  "max_xy_difference_m": 0.0,
+  "real_cloud_health_observed": true,
+  "physical_output": false
+}

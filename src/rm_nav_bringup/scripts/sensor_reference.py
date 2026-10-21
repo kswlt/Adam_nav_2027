@@ -15,7 +15,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import TransformStamped, TwistStamped
 from std_msgs.msg import Bool, String
 from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
-from sensor_reference_math import sensor_pose, sensor_velocity
+from sensor_reference_math import sensor_pose, sensor_velocity, reference_offset, HeadingTracker
 from lio_continuity import PoseContinuity
 
 
@@ -26,6 +26,15 @@ class SensorReference(Node):
         self.offset = self.declare_parameter('imu_to_lidar', [-.011, -.02329, .04412]).value
         if not .05 <= self.timeout <= 1 or len(self.offset) != 3 or not all(map(math.isfinite, self.offset)):
             raise ValueError('Invalid factory geometry/timeout')
+        self.reference_point = self.declare_parameter('reference_point', 'lidar_center').value
+        self.calibration_id = self.declare_parameter('calibration_id', 'vehicle164_sensor_axis_factory_v1').value
+        self.reference_offset = reference_offset(
+            self.offset, self.reference_point,
+            self.declare_parameter('gimbal_axis_to_lidar', [0.,0.,0.]).value,
+            self.declare_parameter('reference_geometry_verified', False).value, self.calibration_id)
+        self.heading = HeadingTracker(
+            self.declare_parameter('heading_max_extrapolation', .12).value,
+            self.declare_parameter('heading_max_correction', .25).value)
         self.tf = TransformBroadcaster(self)
         self.static_tf = StaticTransformBroadcaster(self)
         fixed = TransformStamped()
@@ -42,6 +51,7 @@ class SensorReference(Node):
         self.raw_at = self.pose_at = self.allowed_at = self.command_at = -math.inf
         self.raw_ok = self.pose_ok = self.allowed = False
         self.last_stamp = 0
+        self.last_command_stamp = 0
         self.yaw = 0.
         self.command = None
         self.previous = None
@@ -60,6 +70,7 @@ class SensorReference(Node):
         self.raw_ok, self.raw_at = msg.data, time.monotonic()
         if not msg.data:
             self.command = None
+            self.heading.reset()
 
     def permission(self, msg):
         self.allowed, self.allowed_at = msg.data, time.monotonic()
@@ -87,10 +98,11 @@ class SensorReference(Node):
                     np.linalg.eigvalsh(covariance).min() < -1e-9 or
                     np.diag(covariance).min() <= 0):
                 raise ValueError('LIO covariance must be finite symmetric and positive')
-            point, yaw = sensor_pose((p.x, p.y, p.z), (q.x, q.y, q.z, q.w), self.offset)
+            point, yaw = sensor_pose((p.x, p.y, p.z), (q.x, q.y, q.z, q.w), self.reference_offset)
             self.continuity.check(stamp, point, (q.x,q.y,q.z,q.w))
+            self.heading.observe(stamp, yaw)
             self.last_stamp, self.pose_at, self.pose_ok = stamp, time.monotonic(), True
-            self.yaw, self.detail = yaw, 'real sensor-axis state; chassis orientation unobserved'
+            self.yaw, self.detail = yaw, 'real '+self.reference_point+' state; chassis orientation unobserved'
             # Never keep broadcasting TF after raw quality or source time expires.
             if not self.healthy():
                 self.command = None
@@ -139,19 +151,23 @@ class SensorReference(Node):
             self.odom_pub.publish(odom)
         except (ValueError, np.linalg.LinAlgError) as error:
             self.pose_ok, self.detail, self.command, self.previous = False, str(error), None, None
+            self.heading.reset()
 
     def velocity(self, msg):
+        stamp = msg.header.stamp.sec*10**9+msg.header.stamp.nanosec
         age = (self.get_clock().now().nanoseconds-
-               (msg.header.stamp.sec*10**9+msg.header.stamp.nanosec))*1e-9
+               stamp)*1e-9
         v = msg.twist
         if (not self.healthy() or not self.allowed or time.monotonic()-self.allowed_at > self.timeout or
-                msg.header.frame_id != 'nav_reference' or not 0 <= age <= self.timeout or
+                msg.header.frame_id != 'nav_reference' or stamp <= self.last_command_stamp or
+                msg.header.stamp.sec < 0 or not 0 <= msg.header.stamp.nanosec < 10**9 or
+                not 0 <= age <= self.timeout or
                 not all(map(math.isfinite, (v.linear.x, v.linear.y, v.linear.z, v.angular.x, v.angular.y, v.angular.z))) or
                 max(abs(v.linear.z),abs(v.angular.x),abs(v.angular.y)) > 1e-6 or
                 abs(v.angular.z) > 1e-6 or math.hypot(v.linear.x, v.linear.y) > .5+1e-6):
             self.command = None
             return
-        self.command, self.command_at = copy.deepcopy(msg), time.monotonic()
+        self.command, self.command_at, self.last_command_stamp = copy.deepcopy(msg), time.monotonic(), stamp
 
     def tick(self):
         healthy = self.healthy()
@@ -161,19 +177,30 @@ class SensorReference(Node):
                   self.command is not None and time.monotonic()-self.command_at <= self.timeout)
         out = TwistStamped()
         out.header.stamp, out.header.frame_id = self.get_clock().now().to_msg(), 'sensor_yaw_reference'
+        heading_age, heading_correction, heading_reason = None, None, 'no active command'
         if active:
             age = (self.get_clock().now().nanoseconds-
                    (self.command.header.stamp.sec*10**9+self.command.header.stamp.nanosec))*1e-9
             active = 0 <= age <= self.timeout
         if active:
+            try:
+                now = out.header.stamp.sec*10**9+out.header.stamp.nanosec
+                yaw, heading_age, heading_correction = self.heading.predict(now)
+                heading_reason = 'bounded constant-rate extrapolation from real LIO'
+            except ValueError as error:
+                active, heading_reason = False, str(error)
+        if active:
             out.twist.linear.x, out.twist.linear.y = sensor_velocity(
-                self.command.twist.linear.x, self.command.twist.linear.y, self.yaw)
+                self.command.twist.linear.x, self.command.twist.linear.y, yaw)
         else:
             self.command = None  # Fresh permissions cannot replay an earlier command.
         self.shadow.publish(out)
         self.command_reason.publish(String(data=json.dumps({
             'mode': 'sensor_reference_shadow', 'active': active, 'physical_output': False,
-            'velocity_point': 'lidar_yaw_axis', 'axes': 'horizontal_sensor_yaw_xy',
+            'velocity_point': self.reference_point, 'calibration_id': self.calibration_id,
+            'axes': 'horizontal_sensor_yaw_xy',
+            'heading_source_stamp_ns': self.last_stamp, 'heading_prediction_age_s': heading_age,
+            'heading_prediction_correction_rad': heading_correction, 'heading_status': heading_reason,
             'chassis_yaw': 'UNOBSERVED', 'full_chassis_stop': 'NOT_VERIFIED'})))
 
 
