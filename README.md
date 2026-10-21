@@ -1,12 +1,12 @@
 # Adam_nav_2027 使用说明
 
-> **当前车载运行代码在 `audit-p0-tf-costmap` 分支。main 此次同步使用文档，尚未合并该分支源码。** 下方文件链接指向运行分支；拉取代码请明确选择：
+> **当前车载运行代码在 `audit-p0-tf-costmap` 分支。main 同步使用文档，尚未合并该分支源码。** 文件链接指向运行分支，拉取代码请明确选择：
 
 ```bash
 git clone --branch audit-p0-tf-costmap https://github.com/kswlt/Adam_nav_2027.git
 ```
 
-**最新地图检查：当前会话LIO发生公里级位置跳变，在线后端已锁存故障，离线优化也拒绝。已停止关键帧录制并保留原档案；导出的是故障前1帧、2806点的检查包，不是可导航地图。** 见 [本次导出结果和下一步](https://github.com/kswlt/Adam_nav_2027/blob/audit-p0-tf-costmap/docs/MAP_EXPORT_20261021.md)。下文启动快照不代表这次故障后的健康状态。
+**最新交接：LIO输入/位姿连续性修复已部署，ASUS14包构建与57项测试通过（1跳过），60秒静止三维最大估计变化约9.2毫米。当前driver、state、Foxglove运行；关键帧录制、在线后端、真实串口发送及自动导航均关闭。** 旧公里级跳变会话仍保留且不能导航，需要重新建图。完整目录、启停、电控角度和下一步见 [详细交接文档](https://github.com/kswlt/Adam_nav_2027/blob/audit-p0-tf-costmap/docs/HANDOFF_20261021_LIO_REPAIR.md)。
 
 这是 RoboMaster 全向车导航工程。环境：Ubuntu 24.04、ROS 2 Jazzy、Nav2 Jazzy；雷达前端是 **small_point_lio**，串口沿用 **my_serial_py**。
 
@@ -14,9 +14,9 @@ git clone --branch audit-p0-tf-costmap https://github.com/kswlt/Adam_nav_2027.gi
 
 **电控源码核对（10月21日）：** 电控内部读取大yaw编码器转换xy，上传的`contact_angle`却写死为0，所以不回传角度也能执行这条速度链。串口“yaw”在当前电控特定模式下实际当作**度/秒速度**，不能把LIO yaw填进去。导航无自瞄跟踪时大yaw默认80°/s；零xy/零yaw不等于整车停止。还发现断流缓存未清零及导航底盘自旋被置零的源码问题；是否与车上固件一致待核对。详见 [电控yaw逐项解释与源码证据](https://github.com/kswlt/Adam_nav_2027/blob/audit-p0-tf-costmap/docs/ELECTRICAL_YAW_AUDIT_20261021.md)。
 
-本机与ASUS均已通过14包构建、56项测试（0失败、1跳过）；本机新模式和原有TDT/MPPI导航回归通过。
+软件基线已完成本机与ASUS构建；本轮修复在ASUS全14包构建、57项测试（0失败、1跳过）及真实small_point_lio断流隔离回归通过。本机没有ROS原生环境，本轮仅执行不依赖ROS的连续性单测，不把此前WSL结果当成本次重跑。
 
-2026-10-21 已在 ASUS 独立目录部署并通过同样的56项测试。雷达参考状态、Foxglove、新关键帧会话与在线建图已启动。**按用户要求，真实串口发送已开启：约50Hz发送原Adam的54字节报文；当前xy为0，yaw缓存值为0°。自动导航尚未开启。** 内核写入抓取2.013秒共100包；这不是下位机执行确认。实际运行状态以话题和下面的会话查询命令为准。现场目录与实测记录见 [ASUS部署记录](https://github.com/kswlt/Adam_nav_2027/blob/audit-p0-tf-costmap/docs/ASUS_SENSOR_REFERENCE_20261021.md)。
+2026-10-21重启前曾开启真实串口发送，2.013秒抓到100个54字节成功写入，xy=0、yawfloat=0；这不代表固件动作确认。**重启后当前physical未启动。** 旧快照见 [ASUS部署记录](https://github.com/kswlt/Adam_nav_2027/blob/audit-p0-tf-costmap/docs/ASUS_SENSOR_REFERENCE_20261021.md)，最新状态以详细交接及现场查询为准。
 
 ## 先弄清三个状态
 
@@ -105,7 +105,7 @@ python3 "$NAV_RUNTIME/vehicle_session.py" start capture
 ros2 topic echo /mapping/recorder_status std_msgs/msg/String --once
 ```
 
-当前部署已启动录制；组件日志和 `/mapping/recorder_status` 会给出 `session_...` 完整路径，新档案位于 `$NAV_RUNTIME/keyframes`。复制它，再开一个终端：
+当前交接时录制和online均未启动。执行上面的capture命令后，组件日志和 `/mapping/recorder_status` 会给出新 `session_...` 完整路径，新档案位于 `$NAV_RUNTIME/keyframes`。复制它，再开一个终端；不要使用旧失败会话：
 
 ```bash
 # 把下面路径换成 recorder_status 中的完整 session。
@@ -202,7 +202,7 @@ ros2 topic echo /hardware/legacy_adam/adapter_status --once
 
 ### 真实发送的启动、查看和停止
 
-当前ASUS已开启真实发送，串口为 `/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0`（ttyUSB0）。重启后需要真实发送时执行：
+当前ASUS真实发送关闭，串口为 `/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0`（ttyUSB0）。需要实际打开串口发送时执行：
 
 ```bash
 python3 "$NAV_RUNTIME/vehicle_session.py" stop candidate
