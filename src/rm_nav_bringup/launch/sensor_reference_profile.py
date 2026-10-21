@@ -16,6 +16,8 @@ def configure(params, version, share):
     polygon = [[r*math.cos(2*math.pi*i/32), r*math.sin(2*math.pi*i/32)] for i in range(32)]
     for key in ('local_costmap', 'global_costmap'):
         params[key][key]['ros__parameters'].update({'robot_base_frame': 'nav_reference', 'footprint': str(polygon)})
+        inflation=params[key][key]['ros__parameters']['inflation_layer']
+        inflation['inflation_radius']=max(float(inflation.get('inflation_radius',0)),.65)
     params['bt_navigator']['ros__parameters'].update({
         'robot_base_frame': 'nav_reference', 'odom_topic': '/sensor_reference/odom',
         'navigators': ['navigate_to_pose'],

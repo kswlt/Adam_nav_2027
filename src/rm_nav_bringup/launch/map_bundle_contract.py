@@ -5,15 +5,30 @@ import math
 from pathlib import Path
 import yaml
 
-def load_published_bundle(filename, navigation=False):
+def load_published_bundle(filename, navigation=False, expected_profile='official'):
+    if expected_profile not in ('official','local_site'):
+        raise ValueError('Unknown explicit map profile')
     original=Path(filename).absolute()
     if original.is_symlink(): raise ValueError('MapBundle manifest cannot be a symlink')
     manifest=original.resolve(strict=True)
     bundle=json.loads(manifest.read_text())
     if (bundle.get('schema')!=1 or bundle.get('status')!='published' or
-        bundle.get('coordinate_frame')!='map' or bundle.get('official_alignment_applied') is not True or
+        bundle.get('coordinate_frame')!='map' or
         bundle.get('publishable_for_frozen_localization') is not True or not bundle.get('version')):
-        raise ValueError('An officially aligned published MapBundle is required')
+        raise ValueError('An aligned published MapBundle is required')
+    if bundle.get('publication_profile','official')!=expected_profile:
+        raise ValueError('Map publication profile differs from explicit startup profile')
+    if expected_profile=='official':
+        if bundle.get('official_alignment_applied') is not True:
+            raise ValueError('Official startup requires official alignment')
+    elif (bundle.get('official_alignment_applied') is not False or bundle.get('local_alignment_applied') is not True or
+          not bundle.get('local_source') or bundle.get('coordinate_definition')!='session_mapping_odom'):
+        raise ValueError('Local startup requires explicit non-official session coordinates')
+    if expected_profile=='local_site':
+        alignment=bundle.get('alignment')
+        if (not isinstance(alignment,dict) or alignment.get('translation')!=[0,0,0] or
+                alignment.get('yaw_rad')!=0 or alignment.get('scale')!=1):
+            raise ValueError('Local session coordinates must retain their explicit identity alignment')
     root=manifest.parent; artifacts=bundle.get('artifacts')
     if not isinstance(artifacts,dict) or not 1<=len(artifacts)<=128: raise ValueError('Invalid artifact list')
     checked={}
@@ -41,10 +56,18 @@ def load_published_bundle(filename, navigation=False):
     required('localization_map')
     if navigation:
         if bundle.get('navigation_ready') is not True: raise ValueError('MapBundle lacks verified navigation free-space evidence')
-        if (bundle.get('free_space_evidence')!='verified_official_mask' or not bundle.get('official_source') or
-            bundle.get('free_space_official_source')!=bundle['official_source']):
-            raise ValueError('Navigation requires an officially verified free-space mask')
+        source_key='official_source' if expected_profile=='official' else 'local_source'
+        evidence='verified_official_mask' if expected_profile=='official' else 'operator_reviewed_local_mask'
+        if (bundle.get('free_space_evidence')!=evidence or not bundle.get(source_key) or
+            bundle.get('free_space_'+source_key)!=bundle[source_key]):
+            raise ValueError('Navigation requires reviewed free-space evidence for the selected profile')
         required('free_space_mask');required('free_space_metadata')
+        if expected_profile=='local_site':
+            review=json.loads(required('free_space_metadata').read_text())
+            if (review.get('status')!='operator_reviewed' or review.get('coordinate_frame')!='map' or review.get('local_source')!=bundle['local_source'] or
+                    not isinstance(review.get('reviewer'),str) or not review['reviewer'].strip() or
+                    review.get('review_scope')!='free_space_and_obstacles_in_local_map'):
+                raise ValueError('Local free-space operator review is missing or mismatched')
         map_yaml=required('map_yaml'); occupancy=required('base_occupancy')
         config=yaml.safe_load(map_yaml.read_text())
         if not isinstance(config,dict) or not isinstance(config.get('image'),str): raise ValueError('Invalid map YAML')

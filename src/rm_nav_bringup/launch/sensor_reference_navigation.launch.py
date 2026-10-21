@@ -20,7 +20,8 @@ def start(context):
     contract = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(contract)
     manifest = LaunchConfiguration('map_bundle').perform(context)
-    bundle, artifacts = contract.load_published_bundle(manifest, navigation=True)
+    map_profile=LaunchConfiguration('map_profile').perform(context)
+    bundle, artifacts = contract.load_published_bundle(manifest, navigation=True,expected_profile=map_profile)
     sim = LaunchConfiguration('use_sim_time').perform(context)
     profile_spec = importlib.util.spec_from_file_location('sensor_profile', Path(__file__).with_name('sensor_reference_profile.py'))
     profile = importlib.util.module_from_spec(profile_spec)
@@ -39,7 +40,7 @@ def start(context):
         Node(package='nav2_lifecycle_manager', executable='lifecycle_manager', name='lifecycle_manager_map',
              parameters=[{'autostart': True, 'node_names': ['map_server'], 'use_sim_time': sim == 'true'}]),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(str(share/'launch/frozen_map_localization.launch.py')),
-             launch_arguments={'map_bundle': manifest, 'map_version': bundle['version'], 'use_sim_time': sim,
+             launch_arguments={'map_bundle': manifest, 'map_profile':map_profile, 'map_version': bundle['version'], 'use_sim_time': sim,
                  'tracking_frame': 'nav_reference', 'hint_body_frame': 'nav_reference',
                  'odom_topic': '/sensor_reference/odom', 'state_health_topic': '/state/sensor_reference_healthy'}.items()),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(str(share/'launch/mppi_baseline.launch.py')),
@@ -55,7 +56,8 @@ def start(context):
 
 def generate_launch_description():
     return LaunchDescription([
-        DeclareLaunchArgument('map_bundle', description='Official aligned published navigation-ready manifest'),
+        DeclareLaunchArgument('map_bundle', description='Published navigation-ready manifest matching explicit map_profile'),
+        DeclareLaunchArgument('map_profile',default_value='official',description='Explicit official or local_site; no automatic downgrade'),
         DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument('scan_min_height', default_value='-0.10', description='Relative to odom z=0, tune against actual ground returns'),
         DeclareLaunchArgument('scan_max_height', default_value='1.50'),

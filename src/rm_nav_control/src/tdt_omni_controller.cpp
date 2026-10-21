@@ -39,6 +39,9 @@ void TdtOmniController::configure(const rclcpp_lifecycle::LifecycleNode::WeakPtr
   options_.solve_budget_s=scalar("solve_budget",.04);
   lookahead_=scalar("lookahead",1.0);replan_period_=scalar("replan_period",.2);
   input_timeout_=scalar("input_timeout",.25);
+  transform_timeout_=scalar("transform_timeout",.1);
+  if(transform_timeout_>input_timeout_)
+    throw nav2_core::ControllerException("TF wait cannot exceed pose input timeout");
   TrackerLimits limits;limits.max_speed=speed_limit_;limits.max_yaw_rate=options_.limits.max_yaw_rate;
   limits.position_gain=scalar("position_gain",1.0);limits.yaw_gain=scalar("yaw_gain",1.0);
   limits.max_update_gap_s=input_timeout_;
@@ -84,7 +87,10 @@ geometry_msgs::msg::PoseStamped TdtOmniController::transform(const geometry_msgs
   if (input.header.frame_id.empty()) throw nav2_core::InvalidPath("Empty path pose frame");
   if (input.header.frame_id!=target) {
     try {
-      const auto tf=tf_->lookupTransform(target,input.header.frame_id,stamp,rclcpp::Duration::from_seconds(.02));
+      // MapOdomManager broadcasts every 50 ms. Preserve the exact pose time and
+      // wait boundedly for interpolation data instead of aborting at 20 ms or
+      // silently falling back to an unrelated latest transform.
+      const auto tf=tf_->lookupTransform(target,input.header.frame_id,stamp,rclcpp::Duration::from_seconds(transform_timeout_));
       tf2::doTransform(input,out,tf);
     } catch (const tf2::TransformException & error) {throw nav2_core::ControllerTFError(error.what());}
   }
@@ -130,6 +136,8 @@ geometry_msgs::msg::TwistStamped TdtOmniController::computeVelocityCommands(
   if (speed_limit_==0) {tracker_->cancel();return out;}
   if (!std::isfinite(velocity.linear.x)||!std::isfinite(velocity.linear.y)||!std::isfinite(velocity.angular.z)) fail("Invalid current velocity");
   const auto pose=transform(input,rclcpp::Time(input.header.stamp,node_->get_clock()->get_clock_type()));
+  if((node_->now()-rclcpp::Time(input.header.stamp,node_->get_clock()->get_clock_type())).seconds()>input_timeout_)
+    fail("Pose expired while waiting for exact-time TF");
   const Eigen::Vector3d current(pose.pose.position.x,pose.pose.position.y,yaw(pose.pose.orientation));
   rm_nav_planning::CollisionGrid grid;
   auto * map=costmap_->getCostmap();

@@ -42,7 +42,7 @@ private:
   std::string name_,map_version_,environment_version_;
   rm_nav_planning::TdtOptions options_;
   std::unique_ptr<TrajectoryTracker> tracker_;
-  double speed_limit_{0.5}, lookahead_{1.0}, replan_period_{0.2}, input_timeout_{0.25};
+  double speed_limit_{0.5}, lookahead_{1.0}, replan_period_{0.2}, input_timeout_{0.25}, transform_timeout_{0.1};
   std::int64_t last_plan_ns_{0};
   std::uint64_t next_id_{0};
 };

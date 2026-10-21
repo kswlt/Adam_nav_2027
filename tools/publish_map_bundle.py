@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Promote a draft mapping_odom bundle only with verified official alignment data."""
+"""Publish explicit official or local-site coordinates with reviewed free space."""
 import argparse, hashlib, json, math, os, shutil, struct, tempfile
 from pathlib import Path
 from create_map_bundle import validate_binary_xyz_pcd
@@ -47,12 +47,19 @@ def write_pcd(path, points, frame):
         f.write((f'# {frame}\nVERSION .7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH {len(points)}\nHEIGHT 1\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS {len(points)}\nDATA binary\n').encode())
         for p in points: f.write(struct.pack('<fff',*p))
 
-def load_free_space(mask_path, metadata_path, official_source):
-    """An endpoint PCD cannot prove free space; use a reviewed official map mask."""
+def load_free_space(mask_path, metadata_path, source, profile='official'):
+    """Endpoint PCDs cannot prove free space; require explicit reviewed evidence."""
     from PIL import Image
     metadata=load_alignment(metadata_path)
-    if (metadata.get('status')!='verified' or metadata.get('coordinate_frame')!='map' or
-        metadata.get('official_source')!=official_source): raise ValueError('Verified map-frame official mask metadata required')
+    if profile not in ('official','local_site'):
+        raise ValueError('Unknown publication profile')
+    source_key='official_source' if profile=='official' else 'local_source'
+    expected_status='verified' if profile=='official' else 'operator_reviewed'
+    if (metadata.get('status')!=expected_status or metadata.get('coordinate_frame')!='map' or
+        metadata.get(source_key)!=source): raise ValueError('Reviewed map-frame mask metadata/source required')
+    if profile=='local_site' and (not isinstance(metadata.get('reviewer'),str) or not metadata['reviewer'].strip() or
+            metadata.get('review_scope')!='free_space_and_obstacles_in_local_map'):
+        raise ValueError('Local mask requires an identified operator review of free space and obstacles')
     resolution=metadata.get('resolution'); origin=metadata.get('origin')
     if (not isinstance(resolution,(float,int)) or not math.isfinite(resolution) or not 0<resolution<=.5 or
         not isinstance(origin,list) or len(origin)!=3 or not all(isinstance(v,(float,int)) and math.isfinite(v) for v in origin) or origin[2]!=0):
@@ -69,14 +76,19 @@ def load_free_space(mask_path, metadata_path, official_source):
     return metadata,width,height,float(resolution),float(origin[0]),float(origin[1]),cells
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('--draft',required=True); ap.add_argument('--alignment',required=True); ap.add_argument('--output',required=True); ap.add_argument('--resolution',type=float,default=.05); ap.add_argument('--min-z',type=float,default=.15); ap.add_argument('--max-z',type=float,default=2.0); ap.add_argument('--free-space-mask'); ap.add_argument('--free-space-metadata'); args=ap.parse_args()
+    ap=argparse.ArgumentParser(); ap.add_argument('--draft',required=True); ap.add_argument('--alignment',required=True); ap.add_argument('--output',required=True); ap.add_argument('--resolution',type=float,default=.05); ap.add_argument('--min-z',type=float,default=.15); ap.add_argument('--max-z',type=float,default=2.0); ap.add_argument('--free-space-mask'); ap.add_argument('--free-space-metadata'); ap.add_argument('--profile',choices=('official','local_site'),default='official'); args=ap.parse_args()
     draft_path=Path(args.draft).resolve(strict=True); alignment_path=Path(args.alignment).resolve(strict=True); output=Path(args.output).resolve()
     if output.exists(): raise FileExistsError('Published output exists; refusing overwrite')
     draft=json.loads(draft_path.read_text()); align=load_alignment(alignment_path)
     if draft.get('status')!='draft_mapping_odom' or draft.get('coordinate_frame')!='mapping_odom' or draft.get('official_alignment_applied') is not False: raise ValueError('Input must be an unaligned mapping_odom draft')
-    if align.get('status')!='verified' or align.get('source_frame')!='mapping_odom' or align.get('target_frame')!='map' or not align.get('official_source'): raise ValueError('Verified official alignment data required')
+    source_key='official_source' if args.profile=='official' else 'local_source'
+    expected_status='verified' if args.profile=='official' else 'operator_defined'
+    if align.get('status')!=expected_status or align.get('source_frame')!='mapping_odom' or align.get('target_frame')!='map' or not align.get(source_key): raise ValueError('Explicit alignment/profile source required')
     tr=align.get('translation'); yaw=align.get('yaw_rad'); scale=align.get('scale',1.0)
     if not isinstance(tr,list) or len(tr)!=3 or not all(math.isfinite(float(v)) for v in tr) or not math.isfinite(float(yaw)) or float(scale)!=1.0: raise ValueError('Alignment must provide finite rigid translation/yaw with scale 1')
+    if args.profile=='local_site' and (align.get('coordinate_definition')!='session_mapping_odom' or
+            any(float(v)!=0. for v in tr) or float(yaw)!=0.):
+        raise ValueError('Local site uses explicitly declared session coordinates with identity transform')
     artifacts=draft.get('artifacts',{}); entry=artifacts.get('rebuilt_map.pcd',{}); rel=entry.get('path')
     if not isinstance(rel,str): raise ValueError('Draft PCD reference missing')
     relative=Path(rel)
@@ -100,7 +112,7 @@ def main():
     mask_metadata=None; cells=bytearray([205])*(width*height)
     if args.free_space_mask:
         mask_metadata,width,height,res,xmin,ymin,cells=load_free_space(
-            Path(args.free_space_mask),Path(args.free_space_metadata),align['official_source'])
+            Path(args.free_space_mask),Path(args.free_space_metadata),align[source_key],args.profile)
     occupied=set(); terrain={}
     outside_points=0
     for x,y,z in aligned:
@@ -115,22 +127,26 @@ def main():
     staging=Path(tempfile.mkdtemp(prefix=output.name+'.partial-',dir=str(output.parent)))
     try:
         (staging/'maps').mkdir()
-        write_pcd(staging/'maps'/'localization_map.pcd',aligned,'map; official alignment applied')
+        write_pcd(staging/'maps'/'localization_map.pcd',aligned,
+                  'map; official alignment applied' if args.profile=='official' else 'map; explicit local session coordinates')
         # An endpoint-only PCD contains no free-space evidence. Never mark unseen cells free.
         (staging/'maps'/'occupancy.pgm').write_bytes(('P5\n# map\n%d %d\n255\n'%(width,height)).encode()+bytes(cells[y*width+x] for y in range(height-1,-1,-1) for x in range(width)))
         (staging/'maps'/'map.yaml').write_text('image: occupancy.pgm\nmode: trinary\nresolution: '+str(res)+'\norigin: ['+str(xmin)+', '+str(ymin)+', 0.0]\nnegate: 0\noccupied_thresh: 0.65\nfree_thresh: 0.196\n')
         (staging/'maps'/'terrain_reference.json').write_text(json.dumps({'frame':'map','resolution':res,'origin':[xmin,ymin],'method':'minimum_observed_z','traversability_verified':False,'cells':terrain},sort_keys=True)+'\n')
-        published={'schema':1,'status':'published','version':'map-'+digest(staging/'maps'/'localization_map.pcd')[:16],'coordinate_frame':'map','official_alignment_applied':True,'publishable_for_frozen_localization':True,'source_draft_version':draft.get('version'),'official_source':align['official_source'],'alignment':{'translation':tr,'yaw_rad':float(yaw),'scale':1.0},'localization_map':'maps/localization_map.pcd','base_occupancy':'maps/occupancy.pgm','terrain_reference':'maps/terrain_reference.json','metadata':'maps/terrain_reference.json','artifacts':{}}
+        published={'schema':1,'status':'published','version':'map-'+digest(staging/'maps'/'localization_map.pcd')[:16],'coordinate_frame':'map','official_alignment_applied':args.profile=='official','publishable_for_frozen_localization':True,'source_draft_version':draft.get('version'),source_key:align[source_key],'publication_profile':args.profile,'alignment':{'translation':tr,'yaw_rad':float(yaw),'scale':1.0},'localization_map':'maps/localization_map.pcd','base_occupancy':'maps/occupancy.pgm','terrain_reference':'maps/terrain_reference.json','metadata':'maps/terrain_reference.json','artifacts':{}}
+        if args.profile=='local_site':
+            published.update(local_alignment_applied=True,coordinate_definition=align['coordinate_definition'])
         published.update({'map_yaml':'maps/map.yaml','navigation_ready':False,
             'free_space_evidence':'unavailable_endpoint_only_pcd','occupancy_unknown_value':205,
             'obstacle_height_range_m':[args.min_z,args.max_z], 'terrain_traversability_verified':False})
         published['occupancy_ignored_outside_points']=outside_points
         if mask_metadata is not None:
-            shutil.copyfile(args.free_space_mask,staging/'maps'/'official_free_space.pgm')
-            (staging/'maps'/'official_free_space_metadata.json').write_text(json.dumps(mask_metadata,sort_keys=True)+'\n')
-            published.update({'navigation_ready':255 in cells,'free_space_evidence':'verified_official_mask',
-                'free_space_mask':'maps/official_free_space.pgm','free_space_metadata':'maps/official_free_space_metadata.json',
-                'free_space_official_source':mask_metadata['official_source']})
+            mask_name='official_free_space' if args.profile=='official' else 'local_reviewed_free_space'
+            shutil.copyfile(args.free_space_mask,staging/'maps'/(mask_name+'.pgm'))
+            (staging/'maps'/(mask_name+'_metadata.json')).write_text(json.dumps(mask_metadata,sort_keys=True)+'\n')
+            published.update({'navigation_ready':255 in cells,'free_space_evidence':'verified_official_mask' if args.profile=='official' else 'operator_reviewed_local_mask',
+                'free_space_mask':'maps/'+mask_name+'.pgm','free_space_metadata':'maps/'+mask_name+'_metadata.json',
+                'free_space_'+source_key:mask_metadata[source_key]})
         for p in (staging/'maps').iterdir(): published['artifacts'][p.name]={'path':'maps/'+p.name,'sha256':digest(p)}
         # Changing grid resolution/height filtering/terrain must invalidate consumers
         # even when the localization PCD itself is identical.

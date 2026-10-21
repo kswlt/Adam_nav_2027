@@ -14,7 +14,7 @@ def nodes(context):
     if bundle_path:
         spec=importlib.util.spec_from_file_location('rm_nav_bundle_contract',Path(__file__).with_name('map_bundle_contract.py'))
         contract=importlib.util.module_from_spec(spec);spec.loader.exec_module(contract)
-        bundle,artifacts=contract.load_published_bundle(bundle_path)
+        bundle,artifacts=contract.load_published_bundle(bundle_path,expected_profile=LaunchConfiguration('map_profile').perform(context))
         if bundle['version']!=map_version: raise ValueError('MapBundle version mismatch')
         map_nodes.append(Node(package='rm_nav_bringup',executable='pcd_map_publisher',
             name='frozen_map_bundle_publisher',output='screen',arguments=[
@@ -43,6 +43,7 @@ def generate_launch_description():
         DeclareLaunchArgument('state_health_topic',default_value='/state/chassis_healthy'),
         DeclareLaunchArgument('map_version',description='Frozen MapBundle version or content hash'),
         DeclareLaunchArgument('map_bundle',default_value='',description='Optional published MapBundle manifest; draft maps are rejected'),
+        DeclareLaunchArgument('map_profile',default_value='official',description='Explicit official or local_site map contract'),
         DeclareLaunchArgument('use_sim_time',default_value='false'),
         DeclareLaunchArgument('enable_recovery',default_value='false'),
         DeclareLaunchArgument('enable_recovery_transaction',default_value='false'),

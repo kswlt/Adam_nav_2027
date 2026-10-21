@@ -16,7 +16,8 @@ def start(context):
     spec=importlib.util.spec_from_file_location('rm_nav_bundle_contract',Path(__file__).with_name('map_bundle_contract.py'))
     contract=importlib.util.module_from_spec(spec);spec.loader.exec_module(contract)
     manifest=LaunchConfiguration('map_bundle').perform(context)
-    bundle,artifacts=contract.load_published_bundle(manifest,navigation=True)
+    map_profile=LaunchConfiguration('map_profile').perform(context)
+    bundle,artifacts=contract.load_published_bundle(manifest,navigation=True,expected_profile=map_profile)
     params=yaml.safe_load(Path(LaunchConfiguration('params_file').perform(context)).read_text())
     controller=params['controller_server']['ros__parameters']
     controller['controller_plugins']=['FollowPath']
@@ -50,7 +51,7 @@ def start(context):
         Node(package='nav2_lifecycle_manager',executable='lifecycle_manager',name='lifecycle_manager_map',
             parameters=[{'autostart':True,'node_names':['map_server']}]),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(str(share/'launch/frozen_map_localization.launch.py')),
-            launch_arguments={'map_bundle':manifest,'map_version':bundle['version'],
+            launch_arguments={'map_bundle':manifest,'map_profile':map_profile,'map_version':bundle['version'],
                 'use_sim_time':nav_args['use_sim_time']}.items()),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(str(share/'launch/mppi_baseline.launch.py')),
             launch_arguments=nav_args.items())]
@@ -59,6 +60,7 @@ def generate_launch_description():
     share=Path(get_package_share_directory('rm_nav_bringup'))
     return LaunchDescription([
         DeclareLaunchArgument('map_bundle',description='Published navigation-ready official MapBundle manifest'),
+        DeclareLaunchArgument('map_profile',default_value='official',description='Explicit official or local_site map contract'),
         DeclareLaunchArgument('footprint',description='Actual measured polygon [[x,y],...] in metres'),
         DeclareLaunchArgument('params_file',default_value=str(share/'config/mppi_baseline.yaml')),
         DeclareLaunchArgument('use_sim_time',default_value='false'),

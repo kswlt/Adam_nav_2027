@@ -26,7 +26,8 @@ from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 
 
 class IdealPlant(Node):
-    def __init__(self, publish_global_tf=True, publish_localization_health=True, publish_motion_permission=True, controller_profile="mppi", sensor_reference=False):
+    def __init__(self, publish_global_tf=True, publish_localization_health=True, publish_motion_permission=True, controller_profile="mppi", sensor_reference=False,
+                 publish_map=True, publish_scan=True, map_version='TEST_ONLY_TDT'):
         super().__init__('baseline_acceptance_plant')
         self.base_frame = 'nav_reference' if sensor_reference else 'base_link'
         self.x = self.y = self.yaw = 0.0
@@ -35,6 +36,7 @@ class IdealPlant(Node):
         self.max_lateral = 0.0
         self.scan_mode = 'clear'
         self.controller_profile = controller_profile
+        self.map_version_value = map_version
         self.cloud_health = self.create_publisher(Bool,'/sensors/front_mid360/cloud_healthy',10) if controller_profile=='tdt' else None
         self.map_version = self.create_publisher(String,'/localization/map_version',QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL)) if controller_profile=='tdt' else None
         self.output_count = 0
@@ -51,9 +53,9 @@ class IdealPlant(Node):
         self.raw = self.create_publisher(TwistStamped, '/nav/cmd_vel_raw', 10)
         self.create_subscription(TwistStamped, '/nav/cmd_vel_safe', self.command, 10)
         self.odom = self.create_publisher(Odometry, '/sensor_reference/odom' if sensor_reference else '/odom', 10)
-        self.scan = self.create_publisher(LaserScan, '/scan', qos_profile_sensor_data)
+        self.scan = self.create_publisher(LaserScan, '/scan', qos_profile_sensor_data) if publish_scan else None
         self.map = self.create_publisher(
-            OccupancyGrid, '/map', QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
+            OccupancyGrid, '/map', QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)) if publish_map else None
         self.tf = TransformBroadcaster(self)
         self.static_tf = StaticTransformBroadcaster(self)
         t = TransformStamped()
@@ -70,7 +72,8 @@ class IdealPlant(Node):
         grid.info.origin.position.x = grid.info.origin.position.y = -5.0
         grid.info.origin.orientation.w = 1.0
         grid.data = [0] * 40000
-        self.map.publish(grid)
+        if self.map:
+            self.map.publish(grid)
         self.previous_tick = time.monotonic()
         self.create_timer(0.02, self.tick)
 
@@ -92,7 +95,7 @@ class IdealPlant(Node):
         stamp = self.get_clock().now().to_msg()
         if self.cloud_health:
             self.cloud_health.publish(Bool(data=self.scan_mode!='dropout'))
-            self.map_version.publish(String(data='TEST_ONLY_TDT'))
+            self.map_version.publish(String(data=self.map_version_value))
         # Ideal-plant commissioning inputs; no measured hardware health is implied.
         self.chassis_health.publish(Bool(data=self.chassis_healthy))
         if self.publish_health:
@@ -114,7 +117,7 @@ class IdealPlant(Node):
         odom.pose.pose.orientation = t.transform.rotation
         odom.twist.twist = twist
         self.odom.publish(odom)
-        if self.scan_mode != 'dropout':
+        if self.scan_mode != 'dropout' and self.scan:
             scan = LaserScan()
             scan.header.stamp, scan.header.frame_id = stamp, self.base_frame
             scan.angle_min, scan.angle_max = -math.pi, math.pi
