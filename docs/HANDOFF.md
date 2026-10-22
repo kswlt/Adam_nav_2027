@@ -1,6 +1,6 @@
 # Adam_nav_2027 开发交接文档
 
-**当前正在实车建图：** 已启动新runtime的driver/state/foxglove/capture/online和600秒原始录包，物理输出/导航未启动。会话 `session_1792670869656779404_3581137020`，新拟合debug-v3标定。用户已被提示可以遥控绕场并回起点；完成后继续导出、停止采集、离线优化与导航验收。实际路径、启动探针和限制见 [当前会话](MAPPING_TEST_SESSION_20261022.md)，不要误停原车工作区或清理原始数据。
+**2026-10-22本次旋转测试已结束：** 用户确认底盘只能静止、仅云台旋转。新会话160关键帧、原始MCAP327.6秒，bag/capture已正常停止写盘；driver/state/Foxglove/online保留，physical/navigation未运行。在线累计10,952点导出成功；离线优化在139→140帧RMSE0.153856m处按原0.15m门限拒绝，未生成优化地图。偏心补偿后轴心估计XY最大变化6.68cm、末尾0.857cm；失败附近约2秒转350.9°，IMU峰值434°/s，需慢转对照，不能据此宣布全部修复。检查包draft、无自由栅格，不可导航。路径、统计与失败证据见 [当前会话报告](MAPPING_TEST_SESSION_20261022.md)。不要误停原车工作区或清理原始数据。
 
 **ASUS最新部署：** 2026-10-22代码8a9a9b1已部署至新release `20261022_fit153_console`、新runtime `runtime_20261022_fit153_console`；ASUS全14包构建/64 tests零失败1跳过，菜单CLI3项通过。旧release脏修改未覆盖，当前组件均未启动、物理输出关闭。用新runtime的 `start_console.bash`进入中文菜单。见 [部署交接](ASUS_DEPLOY_20261022.md)，此前“ASUS离线/未部署”均为历史状态。
 

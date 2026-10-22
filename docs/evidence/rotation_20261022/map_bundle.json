@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "status": "draft_mapping_review",
+  "coordinate_frame": "mapping_odom",
+  "official_alignment_applied": false,
+  "navigation_ready": false,
+  "publishable_for_frozen_localization": false,
+  "free_space_evidence": "unavailable_endpoint_only_pcd",
+  "source_topic": "/mapping/optimized_map",
+  "source_stamp_ns": 1792671195236070156,
+  "source_status": {
+    "mode": "ONLINE_MAPPING_ONLY_NOT_PUBLISHED_MAP",
+    "frame": "mapping_odom",
+    "session": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/keyframes_fit153cm_debug_v3/session_1792670869656779404_3581137020",
+    "revision": "160",
+    "keyframes": "160",
+    "map_points": "10952",
+    "accepted_loops": "150",
+    "candidates_tested": "151",
+    "loops_rejected": "1",
+    "pending_keyframes": "0",
+    "last_work_ms": "201.17380200000002",
+    "last_graph_ms": "9.4529339999999991",
+    "upstream_healthy": "true",
+    "fault": "false",
+    "reason": "bidirectional loop and GTSAM post-audit accepted; historical map rebuilt",
+    "budget_semantics": "soft deadline, non-preemptible registration; overshoot rejected"
+  },
+  "source_session": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/keyframes_fit153cm_debug_v3/session_1792670869656779404_3581137020",
+  "point_count": 10952,
+  "pose_count": 160,
+  "obstacle_height_range_mapping_odom_m": [
+    -0.1,
+    1.5
+  ],
+  "floor_height_verified": false,
+  "terrain_traversability_verified": false,
+  "localization_map": "maps/retained_map.pcd",
+  "map_yaml": "maps/map.yaml",
+  "base_occupancy": "maps/occupancy.pgm",
+  "terrain_reference": "maps/terrain_reference.json",
+  "occupancy_counts": {
+    "occupied": 1467,
+    "unknown": 211249,
+    "free": 0
+  }
+}

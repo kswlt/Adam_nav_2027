@@ -1,0 +1,85 @@
+{
+  "scope": "recorded estimates only; no independent ground truth",
+  "condition": "operator reports chassis stationary, gimbal rotated",
+  "control_output": false,
+  "bag": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/bags/run_20261022_200748",
+  "configured_axis_to_lidar_m": [
+    0.015293518836158204,
+    0.15267217555738066,
+    0.0
+  ],
+  "lio_imu_pose": {
+    "count": 3201,
+    "duration_s": 327.50013923700004,
+    "source_nonmonotonic_count": 0,
+    "xy_max_from_start_m": 0.38587201299641977,
+    "xy_end_from_start_m": 0.05301001507838664,
+    "z_span_m": 0.016016536045975912,
+    "yaw_span_deg": 378.76909910974973,
+    "yaw_end_delta_deg": 378.0866194878807
+  },
+  "recorded_planar_axis_pose": {
+    "count": 3199,
+    "duration_s": 327.300431252,
+    "source_nonmonotonic_count": 0,
+    "xy_max_from_start_m": 0.06680139633614822,
+    "xy_end_from_start_m": 0.00857111330582574,
+    "z_span_m": 0.0,
+    "yaw_span_deg": 0.0,
+    "yaw_end_delta_deg": 0.0
+  },
+  "reconstructed_3d_axis_pose": {
+    "count": 3201,
+    "duration_s": 327.50013923700004,
+    "source_nonmonotonic_count": 0,
+    "xy_max_from_start_m": 0.06345754248202438,
+    "xy_end_from_start_m": 0.009710425554128295,
+    "z_span_m": 0.019798146743387954,
+    "yaw_span_deg": 378.76909910974973,
+    "yaw_end_delta_deg": 378.0866194878807
+  },
+  "matched_reference_stamps": 3199,
+  "max_recorded_vs_reconstructed_xy_m": 0.0,
+  "imu_count": 65384,
+  "navigation_ready": false,
+  "imu_acc_norm_g_p50_p99_max": [
+    0.9980500361570805,
+    1.0092367378911458,
+    1.5539911568920834
+  ],
+  "imu_gyro_norm_rad_s_p50_p99_max": [
+    0.009546828705073365,
+    0.015345543253770888,
+    7.56664201614775
+  ],
+  "peak_gyro_stamp_ns": 1792671158780915984,
+  "peak_gyro_seconds_from_bag_imu_start": 288.945082834,
+  "imu_source_nonmonotonic_count": 0,
+  "high_rotation_sample_count_above_0_2_rad_s": 374,
+  "high_rotation_observed_interval_s": 1.8702047320000001,
+  "failed_edge_window": {
+    "source_stamp_ns": 1792671158936748504,
+    "half_width_s": 1,
+    "lio": {
+      "count": 20,
+      "duration_s": 1.899941206,
+      "source_nonmonotonic_count": 0,
+      "xy_max_from_start_m": 0.3862909746815282,
+      "xy_end_from_start_m": 0.01952042026755968,
+      "z_span_m": 0.01526957350195145,
+      "yaw_span_deg": 350.88921959813035,
+      "yaw_end_delta_deg": 350.86901581605935
+    },
+    "reference": {
+      "count": 20,
+      "duration_s": 1.899941206,
+      "source_nonmonotonic_count": 0,
+      "xy_max_from_start_m": 0.06584748502513225,
+      "xy_end_from_start_m": 0.014737004895176804,
+      "z_span_m": 0.0,
+      "yaw_span_deg": 0.0,
+      "yaw_end_delta_deg": 0.0
+    },
+    "imu_gyro_peak_rad_s": 7.56664201614775
+  }
+}
