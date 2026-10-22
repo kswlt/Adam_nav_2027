@@ -48,6 +48,11 @@ case "$nav_component" in
     exec ros2 launch rm_nav_bringup legacy_adam_transport.launch.py transport:=physical \
       enable_physical_output:=true \
       serial_port:=/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0 ;;
+  navigation)
+    nav_manifest="${1:?Published MapBundle manifest path required}"
+    nav_profile="${2:?Explicit local_site or official required}"
+    exec ros2 launch rm_nav_bringup sensor_reference_navigation.launch.py \
+      map_bundle:="$nav_manifest" map_profile:="$nav_profile" ;;
   candidate)
     exec ros2 launch rm_nav_bringup legacy_adam_transport.launch.py transport:=disabled ;;
   *) echo "Unsupported component: $nav_component" >&2; exit 2 ;;

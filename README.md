@@ -1,5 +1,7 @@
 # Adam_nav_2027 使用说明
 
+**中文操作菜单：** 部署后运行 `python3 "$NAV_RUNTIME/nav_console.py"`，可启动建图、选择在线优化、导出地图检查包、选择地图做影子导航，并在终端连续查看日志和ROS消息；真实串口单独开启。安装命令和Foxglove布局配置见 [菜单使用指南](docs/NAV_CONSOLE.md)。当前尚未部署ASUS。
+
 **累计建图预览：** Foxglove选择 `/visualization/live_map_preview`、参考系 `odom`；在线回环地图选择 `/mapping/optimized_map_preview`、参考系 `mapping_odom`。新预览到点数上限会粗化全局，不再删除旧区域。默认5万点/1 Hz，纯核心合成测试峰值约61 MiB；查看方法、内存及精度取舍见 [累计点云指南](docs/ACCUMULATED_MAP_VIEW.md)。待部署ASUS。
 
 **安装关系更正（2026-10-22）：左16 cm指yaw轴→雷达偏心，不是底盘中心→yaw轴。** 按用户要求，车辆专用入口使用录包拟合值：前1.53 cm、左15.27 cm，半径约15.34 cm，显式标为拟合调试配置。建图/录制使用新ID和新会话，原始点云不做反向平移。见 [配置与使用方法](docs/VEHICLE164_GEOMETRY_CORRECTION_20261022.md)。ASUS尚未部署。

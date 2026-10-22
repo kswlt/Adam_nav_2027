@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+**中文终端菜单：** 新增 `tools/deployment/20261021/nav_console.py`，复用受标记会话管理器；建图、录包、新会话在线优化、draft导出、地图选择、影子导航、日志与消息集中操作。真实串口是独立选项。管理器新增navigation组件和无缓冲Python日志。3项无设备CLI回归及语法检查通过；未做ASUS实机整流程。详见 [操作与Foxglove配置](NAV_CONSOLE.md)。
+
 **累计预览更新：** 修复live_map_preview的LRU删旧区域，改为容量受控的全局体素粗化；保留旧区域覆盖、真实源时间与断流stale，晚连接者收到快照。WSL重建/回归通过，汇总64 tests零失败/1跳过；纯核心容量测试5万/20万点峰值约61/121 MiB，不含ROS/LIO/浏览器。用法见 [累计点云指南](ACCUMULATED_MAP_VIEW.md)，尚未部署ASUS。
 
 **安装语义最新更正：** 用户明确16 cm是yaw轴→雷达偏心，随后批准使用录包拟合值。车辆入口 `vehicle_164_sensor_reference_state.launch.py` 当前使用前1.53cm、左15.27cm（半径15.34cm），参考点定义在yaw轴与LiDAR同高处；`reference_fit_debug_approved=true`、实测verified保持false。C→G未知，完整底盘标定仍draft。新ID为 `vehicle164_yaw_axis_fit153cm_debug_v3`，旧包络不再视为已验证。详见 [安装更正](VEHICLE164_GEOMETRY_CORRECTION_20261022.md)，未部署ASUS。

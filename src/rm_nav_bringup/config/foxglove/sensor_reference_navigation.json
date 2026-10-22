@@ -1,0 +1,46 @@
+{
+  "configById": {
+    "3D!scene": {
+      "followTf": "map",
+      "followMode": "follow-pose",
+      "scene": {"enableStats": true, "transforms": {"showLabel": true, "axisScale": 0.3, "lineWidth": 1}},
+      "transforms": {
+        "frame:map": {"visible": true},
+        "frame:odom": {"visible": true},
+        "frame:nav_reference": {"visible": true},
+        "frame:sensor_yaw_reference": {"visible": true},
+        "frame:front_mid360_imu": {"visible": true},
+        "frame:front_mid360": {"visible": true}
+      },
+      "topics": {
+        "/map": {"visible": true},
+        "/plan": {"visible": true},
+        "/visualization/tdt_path": {"visible": true},
+        "/visualization/sensor_reference_path": {"visible": true},
+        "/local_costmap/costmap": {"visible": true},
+        "/global_costmap/costmap": {"visible": false},
+        "/visualization/live_map_preview": {"visible": false},
+        "/mapping/optimized_map": {"visible": false},
+        "/lio/deskewed_odom_cloud": {"visible": false},
+        "/livox/lidar": {"visible": false}
+      }
+    },
+    "RawMessages!task": {"topicPath": "/nav/task_status"},
+    "RawMessages!state": {"topicPath": "/state/sensor_reference_reason"},
+    "RawMessages!command": {"topicPath": "/nav/sensor_command_status"}
+  },
+  "globalVariables": {},
+  "userNodes": {},
+  "linkedGlobalVariables": [],
+  "playbackConfig": {"speed": 1},
+  "layout": {
+    "direction": "row",
+    "splitPercentage": 75,
+    "first": "3D!scene",
+    "second": {
+      "direction": "column",
+      "first": "RawMessages!task",
+      "second": {"direction": "column", "first": "RawMessages!state", "second": "RawMessages!command"}
+    }
+  }
+}

@@ -15,7 +15,7 @@ import time
 ROOT = Path('/home/asus/nav_2027_vehicle_config_164')
 RUNTIME = ROOT/'runtime_20261021_sensor_reference'
 RUNNER = Path(__file__).with_name('vehicle_component.bash')
-COMPONENTS = ('driver', 'state', 'foxglove', 'capture', 'online', 'candidate', 'bag', 'physical')
+COMPONENTS = ('driver', 'state', 'foxglove', 'capture', 'online', 'candidate', 'bag', 'physical', 'navigation')
 MARKER = b'NAV_MANAGED_SESSION=20261021_sensor_reference'
 
 
@@ -60,12 +60,12 @@ def main():
             print('Already running: '+str(pid))
             return
         logfile = RUNTIME/(args.component+'_'+time.strftime('%Y%m%d_%H%M%S')+'.log')
-        env = dict(os.environ, NAV_MANAGED_SESSION='20261021_sensor_reference')
+        env = dict(os.environ, NAV_MANAGED_SESSION='20261021_sensor_reference', PYTHONUNBUFFERED='1')
         with logfile.open('ab') as stream:
             process = subprocess.Popen(['bash', str(RUNNER), args.component, *args.arguments],
                 stdout=stream, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                 env=env, start_new_session=True)
-        data = {'pid': process.pid, 'component': args.component, 'log': str(logfile)}
+        data = {'pid': process.pid, 'component': args.component, 'log': str(logfile), 'arguments': args.arguments}
         temporary = record.with_suffix('.tmp')
         temporary.write_text(json.dumps(data)+'\n')
         temporary.replace(record)
