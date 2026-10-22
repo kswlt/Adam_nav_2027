@@ -63,4 +63,3 @@ QoS profile:
   Deadline: Infinite
   Liveliness: AUTOMATIC
   Liveliness lease duration: Infinite
-
