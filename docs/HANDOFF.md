@@ -1,5 +1,29 @@
 # Adam_nav_2027 开发交接文档
 
+## 当前工作：Z-Localization 整链迁移（2026-10-23）
+
+当前默认前端改为ZLIO，回环/先验定位/重定位及map→odom由Z backend负责。
+旧small_point_lio、冻结matcher及MapOdomManager仅显式legacy回归；不要同时启动。
+操作入口已经改写到根README，细节和本轮真实结果见
+[Z迁移记录](Z_LOCALIZATION_MIGRATION.md)。下方2026-10-22等内容为历史快照。
+
+ASUS `asus@192.168.1.164:2233` 已能连接。此次独立目录
+`/home/asus/nav_2027_vehicle_config_164/z_migration_20261023`；完整18包已构建。
+发现 `/home/asus/z-localization-jazzy` 有既有运行实例，未修改/停止其driver、ZLIO和backend。
+此次测试不占用真实雷达、不发送串口；独立MCAP Domain222，桥接fixture Domain221。
+源码基线453624b，已fetch实际远端；原有未提交smoke_local_site_navigation.py未纳入迁移。
+15.34cm偏心补偿仍为用户批准debug拟合，未升级标定状态，原始MCAP和失败证据全部保留。
+
+新地图需原生Z keyframes/clouds/descriptor与RM占据栅格配套，旧RM地图不能直接拿来导航。
+新命令 `tools/z_nav.bash mapping/save/state/navigation/foxglove/status`；旧console属于旧release。
+现场自主导航精度与地图自由空间审核仍需单独验收；测试结果以迁移记录最后一节为准。
+
+本轮最终：18包构建、364 tests零错误/零失败/1可选跳过；完整327秒采集时序派生回放
+末尾NORMAL/epoch0，583关键帧、12220点原生地图保存及完整地图重载通过。
+原接收时序在56.64秒的343ms排队样本保留并按源年龄门拒绝；未改消息/源时间或放宽生产门限。
+代码已提交推送 `5aaf827`。当前真实地图仍是draft，没有虚构自由空间审核。
+新环境 `source tools/z_environment.bash` 默认Domain98，未切换原车进程、未发送运动命令。
+
 **本机离线后端进展（2026-10-22）：** 原160帧档案在显式 `--adjacent-submap --enable-loops` 下通过VGICP/回环/GTSAM全链路，重建83,229点。139→140边从单帧RMSE0.153856m降为0.140308m，门限仍0.15m。目标最多3帧/5秒/3米，使用已验收配准位姿对齐。默认模式和在线后端未改。ASUS SSH多次超时，最新24帧回放及ASUS部署NOT TESTED；现场原LIO状态未经重新确认。详情见 [本轮报告](ADJACENT_SUBMAP_REVIEW_20261022.md)。
 
 **当前现场已切换（2026-10-22 21:30）：** 仅启用range＋dense_time补丁，原0.2m采样不变；新库 `/home/asus/nav_2027_vehicle_config_164/lio_review_dense_time_20261022/install`，由runtime内lio_overlay.path选择。实际库路径、健康和15秒数据检查通过，LIO年龄P95约14ms。64项兼容测试零失败/1跳过、独立C++2项通过；真实点/1ms/平均时间三种体素实验静止回归失败，不能部署。新24帧回放的离线配准仍在9→10帧约0.162m处拒绝。物理输出、导航、录包和采集均未启动，旧地图未自动清理。见 [本轮交接](LIO_TEMPORAL_FIX_20261022.md)，下方“现场未替换”为此前快照。

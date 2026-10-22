@@ -1,0 +1,14 @@
+{
+  "original_bag": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/bags/run_20261022_200748",
+  "derived_bag": "/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/acquisition_scheduled_raw",
+  "message_counts": {
+    "/livox/lidar": 3270,
+    "/livox/imu": 65384
+  },
+  "original_serialized_messages_preserved": true,
+  "header_and_frame_unchanged": true,
+  "receive_times_preserved_in": "source_receive_times.csv",
+  "peak_buffered_messages": 214,
+  "schedule": "IMU header; LiDAR last original point time (scan completion); sorted with bounded 1s buffer",
+  "scope": "OFFLINE diagnostic scheduling only; not live latency or physical navigation acceptance"
+}

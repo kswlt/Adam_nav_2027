@@ -18,7 +18,16 @@
 
 当前协议和话题来自原版 `串口通信说明.md` 及 `my_serial_py/serialpy_node.py`。任何协议变化必须同时更新上位机、下位机说明、回放测试和接口记录。
 
-## TF authority
+## 当前定位方案覆盖条款（2026-10-23）
+
+当前默认使用固定版本Z-Localization（ZLIO+原生Z图优化/先验定位），见
+[完整迁移契约](Z_LOCALIZATION_MIGRATION.md)。下文原frozen_map_matcher、KISS恢复及
+MapOdomManager相关规定只适用于显式legacy回归，不能与Z后端同时启动。
+当前map→odom唯一发布者为Z backend，前端publish_tf=false、后端legacy TF=false；
+sensor_reference保留真实IMU位姿与15.34cm轴参考补偿，未伪造chassis yaw。
+建图不提供导航健康许可，导航须加载含原生Z先验的同版本MapBundle且backend NORMAL。
+
+## TF authority（历史完整chassis/legacy配置，当前以覆盖条款为准）
 
 ```text
 map -> odom                 MapOdomManager

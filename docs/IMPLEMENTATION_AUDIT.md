@@ -1,5 +1,10 @@
 # Adam_nav_2027 源码审计报告
 
+2026-10-23：按用户新要求将运行期定位替换为Z-Localization。起点453624b、fetch远端后修改；
+ZLIO替换旧前端，Z backend替换冻结匹配/恢复及map→odom，保留传感器参考补偿、Nav2和原串口协议。
+Jazzy兼容修复、地图格式边界、真实测试及未验证事项统一记录于
+[Z-Localization迁移审查](Z_LOCALIZATION_MIGRATION.md)，不能用历史small_point_lio通过项宣称新方案验收。
+
 2026-10-21后续：基线770636c，fetch确认后分阶段提交采集节拍/异步发布ac39942、本地地图profile/精确时间TF修复e68a7bc。ASUS全14包构建、58 tests零失败/1跳过；隔离真实GICP/Nav2/TDT回归、真实60帧离线建图及原协议PTY通过。新增有限物理调试工具，实际1m/s×1s写串口50帧，随后100帧零平移，用户观察车辆移动后停下；未验证精确行程/轮速/机械yaw/正式地图自主导航。详细根因、文件、命令、指标和未验证项见 [实车验收报告](VEHICLE_MOTION_COMMISSION_20261021.md) 和 [本地地图软件报告](LOCAL_SITE_PROFILE_20261021.md)。断电后不再声称实机测试执行，原MCAP留在ASUS，源码仍在feature branch，不合并main。
 
 2026-10-21 LIO修复：检查基线77920aa，clean status/fetch后处理。旧session 0→1帧跳4762.076m；上游预测没有长dt限制，参考状态未检查物理连续性。新增双输入门与位姿连续性锁存，不改滤波算法、单位、时间戳或地图门限；明确restart/new session恢复。ASUS14包构建、57 tests零失败（1 skipped）、实际small_point_lio失流/恢复fixture通过；用户确认静止60秒三维估计变化9.2mm，未录该段MCAP。会话stop等待退出修复、3项测试通过。保留首次模块安装/异步回调误判与fixture稳定等待失败证据；旧异常原始断流原因、动态精度、角度标定、正式本地地图和物理停车未验证。完整文件/命令/风险见 [交接审计](HANDOFF_20261021_LIO_REPAIR.md)，Git SHA与远端状态见本阶段提交。

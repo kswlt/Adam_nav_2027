@@ -1,275 +1,194 @@
-# Adam_nav_2027 使用说明
+# Adam_nav_2027
 
-**离线建图最新进展（2026-10-22）：** 新增可选3帧局部子图配准；本机WSL对原160帧实车档案跑通完整VGICP/回环/GTSAM，重建83,229点，未放宽原门限。全14包构建、65项测试零失败/1跳过。默认单帧模式保留。ASUS目前SSH超时，这项后端修改尚未部署；产物仍是mapping_odom地图，尚不能用于导航。命令和证据见 [离线子图报告](docs/ADJACENT_SUBMAP_REVIEW_20261022.md)。
+RoboMaster 全向哨兵导航框架，运行于 **Ubuntu 24.04 / ROS 2 Jazzy / Nav2 Jazzy**。
 
-**ASUS最新LIO修复（2026-10-22 21:30）：** 已启用稠密点距离过滤和按点时刻短时投影，保留原0.2m采样。三种体素时间实验未通过旧静止回归，均未启用。64项兼容测试零失败、真实雷达/参考位姿/累计预览正常；快速旋转数据的离线配准仍拒绝，尚未发布导航地图。详见 [实际修复、失败对照和回退方法](docs/LIO_TEMPORAL_FIX_20261022.md)，此前“未替换现场实例”为历史状态。
+**当前定位方案已迁移到 [mozihe/z-localization](https://github.com/mozihe/z-localization)**：ZLIO 前端处理雷达/IMU，Z 后端负责在线回环、历史轨迹优化、地图更新和先验地图定位。原 `my_serial_py` 通信协议保留。旧 small_point_lio/KISS 定位链只保留作显式历史回归，不是默认定位入口。
 
-**本次建图测试结果（2026-10-22）：** 底盘静止、仅云台旋转；已停止录包/关键帧采集，累计地图仍可查看。在线地图10,952点导出成功，离线优化在快速旋转附近因配准误差超限拒绝；检查包不能直接导航。下一步对照原Adam/其他学校LIO输入与参数，复查去畸变，再做慢转对照。见 [本次数据与结果](docs/MAPPING_TEST_SESSION_20261022.md)。
+完整迁移说明、依赖版本、测试证据和限制见 [Z-Localization 迁移记录](docs/Z_LOCALIZATION_MIGRATION.md)。**代码迁移不等于实车导航精度验收通过。**
 
-**ASUS已部署（2026-10-22）：** 新release `20261022_fit153_console`、新runtime `runtime_20261022_fit153_console`，14包构建及64项测试零失败/1跳过。打开菜单：`ssh -t -p 2233 asus@192.168.1.164 "bash /home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/start_console.bash"`。旧目录未覆盖，当前物理输出关闭；下方“尚未部署”为此前历史。最新路径和验收边界见 [部署记录](docs/ASUS_DEPLOY_20261022.md)。
+## 先区分三个操作
 
-**中文操作菜单：** 使用上面的SSH启动器进入，可启动建图、选择在线优化、导出地图检查包、选择地图做影子导航，并在终端连续查看日志和ROS消息；真实串口单独开启。菜单5看日志、6看消息、f看Foxglove配置。见 [菜单使用指南](docs/NAV_CONSOLE.md)。
+| 要做的事 | 启动什么 | 得到什么 |
+|---|---|---|
+| 建图 | 雷达驱动 + mapping | ZLIO、在线回环/图优化、累计地图 |
+| 保存地图 | 保持后端运行，再执行 save | 原生Z关键帧地图及优化后的 map.pcd |
+| 用地图导航 | state + navigation | 先验地图定位 + Nav2；默认不启动物理串口 |
 
-**累计建图预览：** Foxglove选择 `/visualization/live_map_preview`、参考系 `odom`；在线回环地图选择 `/mapping/optimized_map_preview`、参考系 `mapping_odom`。预览到点数上限会粗化全局，不再删除旧区域。默认5万点/1 Hz，纯核心合成测试峰值约61 MiB；查看方法、内存及精度取舍见 [累计点云指南](docs/ACCUMULATED_MAP_VIEW.md)。已纳入新部署。
+当前测试车：MID-360 随 yaw 转动，雷达偏心安装。导航参考点使用已批准的约15.34cm偏心拟合；`nav_reference` 是导航计算参考，不是底盘真实朝向。不要把雷达 yaw 当成底盘 yaw，也不要复制其他车辆的标定参数。
 
-**安装关系更正（2026-10-22）：左16 cm指yaw轴→雷达偏心，不是底盘中心→yaw轴。** 按用户要求，车辆专用入口使用录包拟合值：前1.53 cm、左15.27 cm，半径约15.34 cm，显式标为拟合调试配置。建图/录制使用新ID和新会话，原始点云不做反向平移。见 [配置与使用方法](docs/VEHICLE164_GEOMETRY_CORRECTION_20261022.md)。ASUS尚未部署。
+## 连接 ASUS
 
-**2026-10-22软件修复：** 已修复旋转时使用旧LIO朝向换算当前速度、旧速度指令覆盖新指令的问题，增加显式实测轴心参考模式。WSL Jazzy全14包构建，61项测试0失败/1跳过；真实MCAP匹配1170帧，默认参考位置保持一致。ASUS尚未部署；15.3cm拟合未冒充实测外参。配置、验证命令和剩余问题见 [修复说明](docs/SENSOR_REFERENCE_FIX_20261022.md)。
-
-**2026-10-22离线分析：** 原始MCAP已完整备份到本机。两段旋转记录显示LiDAR相对某近似固定轴约15.3cm的重复圆轨迹；尚待实测确认安装关系，未写成生产外参。第三组仍有约79cm末尾距起点，不能据此确认导航精度。图表、复现命令与下一步修复约束见 [原始数据复核](docs/GIMBAL_OFFLINE_ANALYSIS_20261022.md)。ASUS当前不可用，本轮仅本机离线分析。
-
-**最新现场结果（2026-10-21）：已实际发送1m/s、持续1秒，用户确认底盘明显移动并随后停下。** 串口实际写入50个非零报文、随后100个连续零平移报文。ASUS全14包构建，58项测试0失败、1跳过。此前约1米往返最大估计位移1.27m、返回偏差约7.9cm；60帧已完成离线优化并导出地图草稿，**尚未完成正式地图自主导航**。随后设备反复断电，当前暂停采集与运动，恢复供电后需重新检查运行状态；物理工具已退出，没有遗留持续速度指令。最新原始证据和限制先看 [实车调试报告](docs/VEHICLE_MOTION_COMMISSION_20261021.md)；完整启停说明见 [交接文档](docs/HANDOFF_20261021_LIO_REPAIR.md)。
-
-这是 RoboMaster 全向车导航工程。环境：Ubuntu 24.04、ROS 2 Jazzy、Nav2 Jazzy；雷达前端是 **small_point_lio**，串口沿用 **my_serial_py**。
-
-**现在默认开发的是“雷达参考导航模式”：上位机负责定位、建图、规划和平移；电控负责底盘自旋、轮子控制和大 yaw。** 不再要求用 `contact_angle` 推算底盘朝向。原有完整底盘模式仍保留，两种模式不能同时启动。
-
-**电控源码核对（10月21日）：** 旧ZIP中电控内部读取大yaw编码器转换xy，`contact_angle`写死为0；现车已经回传非零角度，表明固件与旧ZIP有差异，其单位/零点/方向仍待验证。串口“yaw”在旧代码特定模式下实际当作**度/秒速度**，不能把LIO yaw填进去。导航无自瞄跟踪时大yaw默认80°/s；零xy/零yaw不等于整车停止。旧源码还存在断流缓存未清零及导航底盘自旋被置零的问题，不能未经核对就当作现车固件行为。详见 [电控yaw逐项解释与源码证据](docs/ELECTRICAL_YAW_AUDIT_20261021.md)。
-
-软件基线已完成本机与ASUS构建；本轮修复在ASUS全14包构建、57项测试（0失败、1跳过）及真实small_point_lio断流隔离回归通过。本机没有ROS原生环境，本轮仅执行不依赖ROS的连续性单测，不把此前WSL结果当成本次重跑。
-
-2026-10-21重启前曾开启真实串口发送，2.013秒抓到100个54字节成功写入，xy=0、yawfloat=0；这不代表固件动作确认。**重启后当前physical未启动。** 旧快照见 [ASUS部署记录](docs/ASUS_SENSOR_REFERENCE_20261021.md)，最新状态以详细交接及现场查询为准。
-
-## 先弄清三个状态
-
-| 状态 | 可以做什么 | 不能据此认为什么 |
-| --- | --- | --- |
-| 建图 | 看扫描、雷达轨迹、累积点云；录制关键帧；在线检测回环并更新历史地图 | 有点云不代表已有正式导航地图 |
-| 导航影子运行 | 在正式地图上定位、规划，查看将要发送的平移速度 | 不向串口发车速，不会让车自动跑 |
-| 真实串口发送 | 启用后通过原Adam协议发给电控；本次已有一次真实移动/停车观察 | 不代表精确速度、各方向坐标或自动导航已验收 |
-
-## 1. 连接车载电脑
-
-```bash
+```powershell
 ssh -p 2233 asus@192.168.1.164
 ```
 
-车上独立目录是 `/home/asus/nav_2027_vehicle_config_164`。本工程不覆盖原车工作区，不停止原车导航程序。
+用户名 `asus`，密码使用你现有的 ASUS 登录密码。
 
-每个新的 SSH 终端都先执行：
+此次隔离目录：
 
-```bash
-export NAV_BASE=/home/asus/nav_2027_vehicle_config_164
-source "$NAV_BASE/remote_env_20261020.bash"
-export NAV_RELEASE="$NAV_BASE/releases/20261022_fit153_console"
-export NAV_RUNTIME="$NAV_BASE/runtime_20261022_fit153_console"
-source "$NAV_RELEASE/install/local_setup.bash"
+```text
+/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/
+├── src/z-localization/       固定版本的完整上游源码
+├── src/Adam_nav_2027/        本框架
+├── build/、install/、log/    此次独立构建
+└── build_full.log、test_result.log
 ```
 
-ROS Domain 是 **97**。这些路径属于当前独立部署，不要混用旧 `.145` 主机或原车工作区的环境。
+`/home/asus/z-localization-jazzy` 和既有车载导航属于其他现有实例，本次不覆盖、不停止。
+原 `20261022_fit153_console` 菜单运行的是旧 release；**新流程使用下面的 z_nav 命令。**
 
-## 2. 启动建图：按顺序执行
+## 每个终端先加载环境
 
-ASUS新release已部署15.3cm拟合调试配置，实际运行状态以菜单1或下列status命令为准。仅更新Git源码不会自动替换车上已有运行脚本。后台入口会识别本会话已有实例，不会重复创建。
-
-查询某个组件：`python3 "$NAV_RUNTIME/vehicle_session.py" status state`。日志和PID记录在 `$NAV_RUNTIME`。
-只停止新会话、保留原车程序：
+在 ASUS 上：
 
 ```bash
-for component in physical bag online capture candidate foxglove state driver; do
-  python3 "$NAV_RUNTIME/vehicle_session.py" stop "$component"
-done
+export NAV_Z_WORKSPACE=/home/asus/nav_2027_vehicle_config_164/z_migration_20261023
+cd "$NAV_Z_WORKSPACE/src/Adam_nav_2027"
+source tools/z_environment.bash
 ```
 
-需要重启时再按下列顺序启动：
+其他电脑设置自己的 `NAV_Z_WORKSPACE` 和 `NAV_LIVOX_INSTALL`。安装/构建步骤见 [迁移记录](docs/Z_LOCALIZATION_MIGRATION.md#源码构建与许可证)。
 
-**第一步：雷达驱动**
+此环境默认 **ROS_DOMAIN_ID=98**，与旧实例隔离；如确需其他Domain，先设置 `NAV_Z_DOMAIN_ID`。驱动、状态、建图、导航、Foxglove必须使用同一值。
+
+雷达驱动单独启动，并确保 ROS_DOMAIN_ID 一致。**不要同时开启两套驱动抢占同一个 MID-360。**下面的工具不自动接管其他实例、不配置网卡、不打开物理串口。
+
+确认其他驱动已经由其操作者停止后，使用你实际雷达/主机IP的JSON启动：
 
 ```bash
-python3 "$NAV_RUNTIME/vehicle_session.py" start driver
+bash tools/z_nav.bash driver /absolute/mid360_identity.json
 ```
 
-驱动使用 `runtime_20261021_sensor_reference/mid360_identity.json`：车体安装位移不能再在驱动里重复应用。
+此入口固定使用本框架已经检查过的官方PointCloud2格式。其他实例的CustomMsg不能直接接到本入口。
 
-**第二步：雷达参考状态链**
+## 1. 建图
+
+先让底盘和云台都停稳，完成初始化后再缓慢移动、转动。新终端：
 
 ```bash
-python3 "$NAV_RUNTIME/vehicle_session.py" start state
+bash tools/z_nav.bash mapping "$HOME/adam_z_maps/session_001"
 ```
 
-当前源码中的state组件使用车辆专用 `vehicle_164_sensor_reference_state.launch.py`，启动质量门、small_point_lio、传感器TF、补偿偏心后的yaw轴平面参考点及滚动子图；不启动底盘EKF、机械yaw TF或串口。拟合配置为前1.53cm、左15.27cm，运行状态中保留debug标识。它使用新运行目录中的 `small_point_lio_live.yaml`，保留旧目录配置。
+每次使用不存在的新输出目录。此命令启动完整状态链和Z在线后端；不需要再开旧 capture/online 组件。
 
-**第三步：Foxglove**
+另开终端连接可视化：
 
 ```bash
-python3 "$NAV_RUNTIME/vehicle_session.py" start foxglove
+bash tools/z_nav.bash foxglove
 ```
 
-如果 8765 已有本工程 Bridge，不要再开一次。电脑上的 Foxglove 连接：`ws://192.168.1.164:8765`。
+Foxglove 新建 WebSocket 连接 `ws://192.168.1.164:8765`，导入布局：
+`src/rm_nav_bringup/config/foxglove/z_localization_mapping.json`。
+如果8765已有其他实例占用，给本次 bridge 传 `port:=8766`，连接对应端口。
 
-**先确认真的有数据：**
+## 2. 查看建图与定位
+
+3D面板显示坐标选择 **map**。
+
+| 话题 | 含义 | 建议 |
+|---|---|---|
+| `/backend_node/runtime_map` | 全部运行关键帧按优化位姿重建的累计地图 | 建图主要看这个，默认约2秒更新 |
+| `/backend_node/optimized_path` | 回环/图优化后的历史轨迹 | 开启 |
+| `/backend_node/loop_edges` | 后端接纳的回环边 | 开启 |
+| `/backend_node/odom_path` | 原始里程计轨迹对照 | 排查漂移时开启 |
+| `/backend_node/prior_map` | 定位模式加载的固定先验图 | 导航时开启 |
+| `/localization/lio_world_cloud` | 全局定位下的当前扫描 | 检查扫描是否贴合先验图 |
+| `/lio/deskewed_odom_cloud` | ZLIO去畸变后、转换到odom的当前观测 | 不是整张地图 |
+| `/livox/lidar` | 原始扫描 | 只检查输入时开，避免重复显示卡顿 |
+| `/tf`、`/tf_static` | 坐标关系与传感器安装外参 | 开启变换/坐标轴 |
+| `/backend_node/localization_state` | NORMAL/LOST等状态、epoch及原因 | 原始消息面板 |
+| `/localization/healthy` | 给导航使用的真实定位健康许可 | 建图模式为false是预期行为 |
+
+**累计地图每2秒刷新与实时扫描延迟是两回事。**多路大点云一起开会明显增加带宽和渲染负担；日常先只开累计地图、优化轨迹和TF。
+旧 `/visualization/live_map_preview` 只是odom累计预览，不代表回环已经修正历史地图。
+
+终端持续看消息：
 
 ```bash
-ros2 topic hz /lio/deskewed_odom_cloud
-ros2 topic echo /state/sensor_reference_healthy std_msgs/msg/Bool --once
-ros2 topic echo /state/sensor_reference_reason std_msgs/msg/String --once
-ros2 run tf2_ros tf2_echo odom front_mid360
+bash tools/z_nav.bash status
+ros2 topic echo /lio/estimator_reason
+ros2 topic echo /state/sensor_reference_reason
+ros2 topic hz /lio/sensor_odometry
 ```
 
-`hz` 和 `tf2_echo` 会持续显示，观察后按 Ctrl+C。健康值应为 true；false 时看 reason，不能靠手工发布 true 绕过。
+## 3. 保存地图
 
-## 3. 保存关键帧，并开启在线回环
-
-仅看累积预览不会自动留下完整建图档案。要保存，另开终端：
+停车，保持建图终端和后端运行。在另一个已加载环境的终端执行：
 
 ```bash
-python3 "$NAV_RUNTIME/vehicle_session.py" start capture
-ros2 topic echo /mapping/recorder_status std_msgs/msg/String --once
+bash tools/z_nav.bash save
 ```
 
-执行上面的capture命令后，组件日志和 `/mapping/recorder_status` 会给出新 `session_...` 完整路径。部署新组件脚本后，新档案位于 `$NAV_RUNTIME/keyframes_fit153cm_debug_v3`，使用新ID `vehicle164_yaw_axis_fit153cm_debug_v3`。复制它，再开一个终端；不要使用旧参考配置或旧失败会话：
+脚本先排空并停止前端，再请求后端保存；任一步失败会直接报错。
+保存位置是启动mapping时填写的目录，包含 `keyframes.txt`、`clouds/`、描述子及 `map.pcd`。
+**保存后前端已停止**，下次建图/导航先退出旧mapping，再重启状态链。
+
+## 4. 地图检查与发布
+
+原生Z地图不等于Nav2占据栅格。必须检查墙体重影、地面/高度、闭环、障碍物和自由空间，生成RM MapBundle。
 
 ```bash
-# 把下面路径换成 recorder_status 中的完整 session。
-export NAV_SESSION=/实际完整路径/session_实际编号
-python3 "$NAV_RUNTIME/vehicle_session.py" start online "$NAV_SESSION"
+python3 tools/import_z_map.py --native-bundle "$HOME/adam_z_maps/session_001" \
+  --output "$HOME/adam_z_maps/draft_001" \
+  --calibration-id vehicle164_yaw_axis_fit153cm_debug_v3
 ```
 
-后端边读取关键帧，边做双向 KISS/GICP 回环验证和 GTSAM 优化；回环通过后，重建历史点云地图。默认最多 500 个关键帧，达到容量或遇到错误会报 fault，保留已有档案，不静默覆盖旧数据。
+随后使用 `tools/publish_map_bundle.py`，传入 **local_site恒等坐标说明、检查后的自由空间PGM和审核元数据**，以及 `--z-native-bundle`。完整命令见 [地图交付步骤](docs/Z_LOCALIZATION_MIGRATION.md#从原生z地图到rm导航地图)。
 
-查看 `ros2 topic echo /mapping/online_status std_msgs/msg/String --once`：`keyframes` 是帧数，`accepted_loops` 是通过门限的回环数，`pending_keyframes` 是积压，`fault` 应为 false。没有回环不一定是故障，也可能还没回到旧区域。详情见 [在线建图指南](docs/ONLINE_MAPPING.md)。
+不自动把未观察区域变成自由空间，不把本次场地坐标冒充比赛官方坐标。旧RM地图缺少Z原生先验，默认导航入口会拒绝，须明确转换或重新建图。
 
-### 第一次实车采样：先遥控，不开自动输出
+## 5. 用地图定位、规划
 
-保持空旷环境，准备好后先启动限时3分钟的原始数据录制：
+先退出mapping。终端A：
 
 ```bash
-python3 "$NAV_RUNTIME/vehicle_session.py" start bag
+bash tools/z_nav.bash state
 ```
 
-纯遥控采样时先执行 `python3 "$NAV_RUNTIME/vehicle_session.py" stop physical`，避免与串口命令叠加。再用遥控器低速前进约1米、返回起点，然后停车。观察雷达轴轨迹是否往返、地图是否重影；关键帧也会随平移保存。
-结束后运行 `python3 "$NAV_RUNTIME/vehicle_session.py" stop bag`，MCAP保存在 `$NAV_RUNTIME/bags`；不手动停止时3分钟自动结束。任务完成不等于自动导航已通过，后续还要受控检查电控速度方向和停车。
-
-## 4. Foxglove 中每项是什么意思
-
-**看实时建图：**导入 [雷达参考建图布局](src/rm_nav_bringup/config/foxglove/sensor_reference_mapping.json)，3D 的 Fixed frame 和 Display frame 都选 `odom`。
-
-**看回环优化地图：**导入 [在线优化布局](src/rm_nav_bringup/config/foxglove/mapping_online.json)，参考系选 `mapping_odom`。两套地图在独立坐标系，不要强行叠加后判断错位。
-
-| 话题 / 坐标 | 显示的内容 | 怎么用 |
-| --- | --- | --- |
-| `/livox/lidar` | 雷达刚扫描到的原始点云 | 查雷达是否正常；不是整张地图 |
-| `/lio/deskewed_odom_cloud` | small_point_lio 去畸变、放进 odom 的当前扫描 | 看实时配准；仍主要是当前扫描 |
-| `/localization/odom_submap` | 近期观测组成的滚动局部子图 | 给定位匹配使用；不是永久全图 |
-| `/visualization/live_map_preview` | 历史扫描累积预览，容量不足时全局粗化，不按新旧删区域 | 看覆盖范围；`live_map_status.voxel_m`显示实际分辨率，不包含历史回环修正 |
-| `/mapping/optimized_map_preview` | 经过后端修正的全历史地图预览 | 在线建图时优先看这个 |
-| `/mapping/optimized_map` | 后端完整体素地图 | 点较多，日常显示用 preview |
-| `/visualization/sensor_reference_path` | 雷达轴平面参考点走过的轨迹 | 不表示底盘中心的轨迹 |
-| `/mapping/optimized_path` | 优化后的历史参考点轨迹 | 回环后旧轨迹可能一起调整 |
-| `/mapping/loop_graph` | 关键帧和回环连线 | 看哪里发生回环，不是导航路线 |
-| `/nav/tdt/trajectory`、`/visualization/tdt_path` | 规划得到的时序轨迹和显示路径 | 导航启动并接到任务后才有 |
-| `/nav/sensor_cmd_vel_shadow` | 转换到当前雷达水平朝向的平移速度 | 只观察；不直接连接串口 |
-| `nav_reference` | 位置跟随雷达轴，方向保持与 odom 对齐的虚拟导航坐标 | 不是车头，不表示底盘没旋转 |
-| `sensor_yaw_reference` | 雷达朝向投影到水平面的坐标轴 | 影子速度的坐标系，不包含雷达倾斜 |
-| `front_mid360` | 雷达真实朝向 | 雷达转动时它会跟着转 |
-| `mapping_odom` | 后端优化地图的坐标 | 不等于正式比赛场地 map |
-
-3D 点的红黄蓝通常是面板按高度或强度着色，**不是默认的可通行/危险标签**；在点云设置中查看 Color mode。
-
-底部 `/visualization/map_cloud.header` 一直“等待消息”时，常见原因是没有加载冻结 PCD 地图。建图阶段改看上表的实时/优化点云即可。图表面板要手工选数值字段，例如影子速度的 `twist.linear.x/y`。
-
-卡顿时：只打开一种大点云，优先preview；关闭full map和原始点云同时显示。累计由ASUS端预览节点完成，Foxglove只显示最新一份全图，关闭客户端跨消息的长时间Decay累积，避免重复堆全图。预览本来会降频，不能拿它的刷新率当作LIO频率。详见 [累计点云指南](docs/ACCUMULATED_MAP_VIEW.md)。
-
-## 5. 怎么进入导航
-
-先完成建图交付与正式场地对齐，得到 `status=published` 且 `navigation_ready=true` 的 MapBundle。draft、在线预览或随手保存的 PCD 不能直接代替它。
-
-保持雷达参考状态链运行，另开终端：
+终端B：
 
 ```bash
-ros2 launch rm_nav_bringup sensor_reference_navigation.launch.py \
-  map_bundle:=/实际正式地图目录/map_bundle.json
+bash tools/z_nav.bash navigation /absolute/published_001/map_bundle.json local_site
 ```
 
-该入口加载地图、冻结地图匹配、唯一的 MapOdomManager、Nav2 和只跟踪平移的 TDT 控制器。没有正式 Bundle 会直接拒绝启动。在 Foxglove 的 3D 面板用 Publish pose estimate 向 `/initialpose` 发布地图初值；位置选 **雷达轴参考点**。箭头是虚拟 nav_reference 在 map 中的方向，不是雷达当前扫描方向。初值只是匹配提示，匹配成功前不会获得运动许可。
+等待 `/backend_node/localization_state` 为 `NORMAL`，且 `/localization/healthy` 为true，再通过既有 `/nav/submit_goal` 发map坐标目标。新启动不应同时运行旧冻结地图定位器或旧MapOdomManager。
 
-定位健康后提交任务，下面的 x/y 必须替换为实际地图中的可行目标：
+例如下面请求目标 `(1.0, 0.0)`；使用时换成你检查过的地图坐标：
 
 ```bash
 ros2 service call /nav/submit_goal rm_nav_interfaces/srv/SubmitGoal \
-  "{goal: {header: {frame_id: map}, pose: {position: {x: 1.0, y: 1.0, z: 0.0}, orientation: {w: 1.0}}}}"
-ros2 topic echo /nav/task_status --once
+  '{goal: {header: {frame_id: map}, pose: {position: {x: 1.0, y: 0.0}, orientation: {w: 1.0}}}}'
 ```
 
-此模式只要求到达位置，目标 orientation 不要求车辆转向。直接点击 `/move_base_simple/goal` 或直接发 Nav2 action 不会自动获得任务监管器许可，调试时优先使用上面的服务。
+Foxglove单纯发布 `/move_base_simple/goal` 不等同于这个监管服务，不保证会启动任务。
 
-障碍物投影高度默认在 odom z=0 的 -0.10～1.50 m 范围；地面与车身回波过滤需现场检查，不能把有点云直接当作避障验收。
+物理输出仍单独启用；上述命令不会打开串口。当前迁移阶段不要把新定位的“能启动”直接当作整车可放行依据。
 
-导航状态和速度依次看：`/localization/healthy` → `/nav/motion_allowed` → `/nav/cmd_vel_safe` → `/nav/sensor_cmd_vel_shadow`。任务接口见 [完整软件使用说明](docs/SOFTWARE_USAGE_20261013.md)。停止本次任务或进程只会停止本工程平移输出；**不代表电控自旋也停止**。
-
-当前影子模式不会打开串口。接物理输出前还要确认：电控接收 xy 的坐标方向、速度作用点是底盘中心还是雷达轴、偏心自旋速度补偿，以及下位机停止/超时行为。这些不能从 `contact_angle=0` 推断出来。
-
-### 电控怎么接：保留原 Adam 协议
-
-目标是下位机不改协议：仍使用原 `my_serial_py` 的115200、50Hz、54字节下发/26字节回传；xy按原方向转换并在打包时各取负一次。yaw目标、姿态、区域、对齐标志和预留位都保留。
-
-新的兼容入口默认不打开串口，可先看候选命令：
-
-```bash
-python3 "$NAV_RUNTIME/vehicle_session.py" start candidate
-ros2 topic echo /hardware/legacy_adam/adapter_status --once
-```
-
-它不占用全局 `/cmd_vel`，避免旧业务节点的速度混入。传输采用旧上位机缓存yaw逻辑；不发布新的yaw目标，也不把LIO yaw填入电控字段。上位机仍叫yaw_degrees，但新提供电控在特定模式下将该数值用作deg/s；字段名不能代表固件执行含义。
-
-### 真实发送的启动、查看和停止
-
-当前ASUS真实发送关闭，串口为 `/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0`（ttyUSB0）。需要实际打开串口发送时执行：
-
-```bash
-python3 "$NAV_RUNTIME/vehicle_session.py" stop candidate
-python3 "$NAV_RUNTIME/vehicle_session.py" start physical
-python3 "$NAV_RUNTIME/vehicle_session.py" status physical
-ros2 topic echo /hardware/legacy_adam/serial_healthy std_msgs/msg/Bool --once
-ros2 topic echo /hardware/legacy_adam/adapter_status std_msgs/msg/String --once
-```
-
-关闭本工程的串口发送并释放串口：
-
-```bash
-python3 "$NAV_RUNTIME/vehicle_session.py" stop physical
-```
-
-physical组件同时启动适配器和真实my_serial_py；不要再并行启动candidate或第二个串口节点。新速度走私有 `/hardware/legacy_adam/cmd_vel`，全局 `/cmd_vel` 没有发布者不等于串口没发。
-
-当前没有正式地图定位与任务运动许可，适配器保持xy=0；不是让车自行驶向目标。yaw字段沿用原版缓存策略，初值数值0；当前电控导航默认扫描可能绕过这个值，详见上述源码审计。遥控接管尚未实测确认。停止串口也不等于电控自旋停车，当前固件源码未见导航断流缓存清零门控。
-
-实测 [100个真实写入报文](docs/evidence/asus_serial_tx_20261021.json)。非零速度方向、速度作用点、偏心自旋补偿、停车行为仍需现场验证。连接方式和协议对照见 [Adam兼容说明](docs/LEGACY_ADAM_REPLACEMENT.md)。
-
-## 6. 架构和安装几何
+## 架构和源码入口
 
 ```text
-MID-360 → 原始点云质量门 → small_point_lio
-                              ├─ 雷达 6DoF 位姿 → sensor_reference → 虚拟平面参考与健康状态
-                              └─ 去畸变点云 → 观测子图 → 关键帧 → 回环验证/GTSAM → 历史地图
-
-正式 MapBundle + 观测子图 → 冻结地图匹配 → MapOdomManager → map→odom
-正式地图 + nav_reference + 障碍物 → Nav2 → TDT 平移轨迹 → 碰撞检查/健康门
-                                                   → 雷达系 xy 影子速度
-电控（独立职责）：底盘自旋 / 大 yaw / 轮子控制 / 最终速度执行
+MID-360原始点云/IMU
+  → 原始质量门 + 时间连续性门
+  → ZLIO frontend（逐点时间、去畸变、6DoF里程计）
+  ├→ 同包观测桥接 → 偏心补偿/nav_reference → Nav2局部避障
+  └→ Z backend（原生关键帧、回环、GTSAM、先验定位/重定位）
+       ├→ map→odom、优化轨迹、全历史地图、原生地图保存
+       └→ 实际健康状态 → 任务监管 → 规划/控制 → 原my_serial_py
 ```
 
-TF 为 `map → odom → front_mid360_imu → front_mid360`，另有 `odom → nav_reference` 和 `odom → sensor_yaw_reference`。`map → odom` 只由真实地图匹配后的 MapOdomManager 发布。没有机械角反馈时，不发布冒充真实的 chassis/base_link 旋转。
+- `src/rm_nav_bringup/launch/z_localization_*.py`：新方案配置与启动。
+- `src/rm_nav_bringup/scripts/z_localization_bridge.py`：消息、会话和真实健康接口适配。
+- `src/rm_nav_bringup/scripts/sensor_reference.py`：传感器6DoF到导航轴参考点和水平速度系。
+- `tools/z_nav.bash`：简化操作；`tools/bootstrap_z_localization.bash`：固定版本依赖。
+- [架构契约](docs/architecture_contract.md)、[交接文档](docs/HANDOFF.md)、[阶段矩阵](docs/stage_completion_matrix.md)。旧报告保留历史证据，不能直接作为Z方案验收结果。
 
-用户确认：车外缘约 **50×50 cm**；yaw 轴在底盘中心左侧 **16 cm**；雷达与轴同轴，离地约 **25 cm**。导航以该轴为参考，使用半径 **0.54 m** 的保守圆包络覆盖旋转底盘。它比真实轮廓保守，窄通道通过能力会降低。工厂 IMU/LiDAR 内部外参不等于车体现场标定。
+上游Z-Localization为 **GPL-2.0-only**，完整保留其作者、源码、LICENSE与Jazzy补丁；本工程自己的许可不覆盖上游。
 
-要做精确车体姿态、按实际矩形挤窄道，仍需真实机械 yaw 和车体状态；那是保留的完整底盘模式，见 [架构契约](docs/architecture_contract.md)。
+## 本轮验证结果
 
-## 7. 开发、测试和交接
+- ASUS：18包全量构建，`colcon test-result --verbose` 汇总364项、零错误、零失败、1项可选交叉检查跳过。
+- 完整327秒原始数据按采集时刻派生调度：64837条里程计、3248帧云、163次累计地图更新；末尾NORMAL、epoch0。
+- 导出583关键帧、12220点地图，重新加载完整地图后的45秒先验定位通过。
+- 原录包约56.64秒处有343ms接收间隔；按接收时间直接播放的故障样本仍按源年龄门拒绝。原消息、header、frame和原文件均保留，不以派生播放结果冒充实时延迟验收。
 
-本次本机工作区：WSL `/root/adam_nav_sensor_reference`；依赖在 `/root/adam_nav_deps`。测试不连接物理串口。
-
-```bash
-cd /root/adam_nav_sensor_reference
-source /opt/ros/jazzy/setup.bash
-source /root/adam_nav_deps/livox_ws/install/local_setup.bash
-source /root/adam_nav_deps/install_lio/local_setup.bash
-export CMAKE_PREFIX_PATH=/root/adam_nav_deps/install:${CMAKE_PREFIX_PATH:-}
-export LD_LIBRARY_PATH=/root/adam_nav_deps/install/lib:${LD_LIBRARY_PATH:-}
-colcon build --executor sequential --cmake-args -DCMAKE_BUILD_TYPE=Release
-source install/local_setup.bash
-colcon test --executor sequential --return-code-on-test-failure
-colcon test-result --verbose
-```
-
-依赖安装和其他机器的配置见 [源码构建指南](tools/deployment/20261020/README.md)。最新模式说明与测试记录见 [传感器参考模式](docs/SENSOR_REFERENCE_MODE.md)；接续开发先读 [HANDOFF](docs/HANDOFF.md)。硬件、比赛场地精度和真实停车仍需单独验证。
+这轮未切换现有现场进程、未发送物理运动指令；场地地图检查、真实动态精度和整车导航仍需现场验收。原始报告见 [迁移记录](docs/Z_LOCALIZATION_MIGRATION.md#实际验收结果)。

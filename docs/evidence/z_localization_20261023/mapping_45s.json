@@ -1,0 +1,50 @@
+{
+  "pipeline_pass": true,
+  "error": "",
+  "counts": {
+    "odom": 8285,
+    "cloud": 416,
+    "optimized_map": 21,
+    "reference": 8285,
+    "backend_pose": 8284
+  },
+  "bag": "/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/raw_window_45s",
+  "rate": 1.0,
+  "backend_states_tail": [
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=84;stamp_ns=1792670913238252032;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=85;stamp_ns=1792670913337296128;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=85;stamp_ns=1792670913437354496;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=85;stamp_ns=1792670913538553600;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=85;stamp_ns=1792670913638566144;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=85;stamp_ns=1792670913737516544;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=85;stamp_ns=1792670913836755968;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=86;stamp_ns=1792670913938426368;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=86;stamp_ns=1792670914037463296;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=86;stamp_ns=1792670914138493184;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom"
+  ],
+  "reasons": {
+    "/sensors/front_mid360/cloud_reason": "raw scan timed out",
+    "/lio/input_reason": "continuous original inputs",
+    "/lio/estimator_reason": "ZLIO atomic IMU-frame deskewed cloud projected once into odom",
+    "/state/sensor_reference_reason": "real gimbal_axis state; chassis orientation unobserved"
+  },
+  "prior_map": null,
+  "map_topic": "/backend_node/runtime_map",
+  "tf_parent_sets": {
+    "odom": [
+      "map"
+    ],
+    "front_mid360_imu": [
+      "odom"
+    ],
+    "nav_reference": [
+      "odom"
+    ],
+    "sensor_yaw_reference": [
+      "odom"
+    ]
+  },
+  "max_estimated_displacement_m": 0.0070328674061839284,
+  "accuracy": "NOT VERIFIED: no ground truth, do not interpret as drift acceptance",
+  "scope": "raw-only MCAP ZLIO/axis reference/online backend/map export; no serial/hardware motion"
+}
