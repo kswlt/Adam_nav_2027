@@ -12,8 +12,8 @@ import signal
 import subprocess
 import time
 
-ROOT = Path('/home/asus/nav_2027_vehicle_config_164')
-RUNTIME = ROOT/'runtime_20261021_sensor_reference'
+ROOT = Path(os.environ.get('NAV_BASE','/home/asus/nav_2027_vehicle_config_164'))
+RUNTIME = Path(os.environ.get('NAV_RUNTIME',str(ROOT/'runtime_20261021_sensor_reference')))
 RUNNER = Path(__file__).with_name('vehicle_component.bash')
 COMPONENTS = ('driver', 'state', 'foxglove', 'capture', 'online', 'candidate', 'bag', 'physical', 'navigation')
 MARKER = b'NAV_MANAGED_SESSION=20261021_sensor_reference'

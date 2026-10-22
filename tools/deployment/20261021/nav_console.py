@@ -8,9 +8,9 @@ import subprocess
 import sys
 import time
 
-ROOT=Path('/home/asus/nav_2027_vehicle_config_164')
-RUNTIME=ROOT/'runtime_20261021_sensor_reference'
-RELEASE=ROOT/'releases/20261021_sensor_reference'
+ROOT=Path(os.environ.get('NAV_BASE','/home/asus/nav_2027_vehicle_config_164'))
+RUNTIME=Path(os.environ.get('NAV_RUNTIME',str(ROOT/'runtime_20261021_sensor_reference')))
+RELEASE=Path(os.environ.get('NAV_RELEASE',str(ROOT/'releases/20261021_sensor_reference')))
 COMPONENTS=('driver','state','foxglove','capture','online','bag','navigation','candidate','physical')
 TOPICS={
     '1':('/visualization/live_map_status','累计地图：点数、分辨率、断流'),
@@ -30,7 +30,8 @@ class Console:
         if self.dry:
             print('[预演，不执行] '+json.dumps(list(map(str,args)),ensure_ascii=False))
             return '{}'
-        env=dict(os.environ,ROS_DOMAIN_ID='97',ROS_AUTOMATIC_DISCOVERY_RANGE='SUBNET')
+        env=dict(os.environ,ROS_DOMAIN_ID='97',ROS_AUTOMATIC_DISCOVERY_RANGE='SUBNET',
+                 NAV_BASE=str(ROOT),NAV_RUNTIME=str(RUNTIME),NAV_RELEASE=str(RELEASE))
         if ros:
             args=['bash','-c','set -e; source "$1"; source "$2"; shift 2; exec "$@"',
                   'nav_console',str(ROOT/'remote_env_20261020.bash'),str(RELEASE/'install/local_setup.bash'),*args]

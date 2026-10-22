@@ -3,9 +3,9 @@
 set -eo pipefail
 nav_component="${1:?driver|state|foxglove|capture|online|candidate|bag}"
 shift
-nav_root=/home/asus/nav_2027_vehicle_config_164
-nav_release="$nav_root/releases/20261021_sensor_reference"
-nav_runtime="$nav_root/runtime_20261021_sensor_reference"
+nav_root="${NAV_BASE:-/home/asus/nav_2027_vehicle_config_164}"
+nav_release="${NAV_RELEASE:-$nav_root/releases/20261021_sensor_reference}"
+nav_runtime="${NAV_RUNTIME:-$nav_root/runtime_20261021_sensor_reference}"
 source "$nav_root/remote_env_20261020.bash"
 if [[ "$nav_component" != driver ]]; then
   source "$nav_release/install/local_setup.bash"
