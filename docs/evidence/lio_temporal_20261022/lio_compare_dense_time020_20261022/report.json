@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "transport_passed": true,
+  "visualization_enabled": false,
+  "visualization": {
+    "path_messages": 0,
+    "path_poses": 0,
+    "preview_messages": 0,
+    "preview_points": 0
+  },
+  "motion_envelope_passed": true,
+  "max_displacement_m": 0.3754443184473131,
+  "max_step_speed_mps": 1.262194122160349,
+  "p99_step_speed_mps": 0.9264381392117617,
+  "max_rotation_rad": 3.1124382999463593,
+  "final_relative_displacement_m": 0.050111942963073315,
+  "output_span_s": 43.898939133,
+  "motion_limits": {
+    "speed_mps": 5.0,
+    "displacement_m": 0.6,
+    "rotation_rad": 3.141593
+  },
+  "scope": "real bag -> sensor LIO only; no truth accuracy or chassis/navigation acceptance",
+  "bag": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/raw_rotation_window_20261022",
+  "internal_extrinsics": "unverified upstream example; not measured robot calibration",
+  "raw_acc_norm": 1.0,
+  "odometry_count": 434,
+  "deskewed_cloud_count": 434,
+  "tf_count": 0,
+  "last_input_to_output_lag_s": -0.098272849,
+  "last_point_end_to_output_lag_s": 0.001801919,
+  "lio_resources": {
+    "peak_rss_kib": 69572,
+    "cpu_seconds": 2.9699999999999998,
+    "samples": 94,
+    "scope": "0.5 s sampled sum over ros2 run launcher and LIO children; shared RSS may be counted twice"
+  },
+  "first_odometry": {
+    "stamp_ns": 1792671140237308740,
+    "position": [
+      0.014986553202515374,
+      0.031035011527145013,
+      -0.046428006554911916
+    ],
+    "quaternion_xyzw": [
+      -0.00047433149698495415,
+      -8.793878221771478e-05,
+      -0.00011466139150240472,
+      0.999999877064576
+    ]
+  },
+  "last_odometry": {
+    "stamp_ns": 1792671184136247873,
+    "position": [
+      -0.034922200524788255,
+      0.03318659744537757,
+      -0.04246646557214616
+    ],
+    "quaternion_xyzw": [
+      -0.0015694785539621143,
+      0.0007611476779923147,
+      0.1551524192115159,
+      0.9878890039891045
+    ]
+  },
+  "errors": []
+}

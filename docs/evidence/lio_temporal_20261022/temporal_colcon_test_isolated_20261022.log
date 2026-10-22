@@ -1,0 +1,31 @@
+Starting >>> rm_nav_interfaces
+Starting >>> pb_rm_interfaces
+Starting >>> rm_nav_registration
+Starting >>> rm_nav_planning
+Starting >>> rm_nav_frames
+Starting >>> rm_nav_perception
+Starting >>> rm_nav_sim
+Finished <<< rm_nav_sim [0.01s]
+Finished <<< rm_nav_perception [0.02s]
+Finished <<< rm_nav_frames [0.02s]
+Finished <<< pb_rm_interfaces [0.03s]
+Finished <<< rm_nav_interfaces [0.04s]
+Starting >>> rm_nav_sensors
+Starting >>> my_serial_py
+Finished <<< rm_nav_planning [0.16s]
+Starting >>> rm_nav_control
+Finished <<< rm_nav_sensors [0.15s]
+Finished <<< my_serial_py [0.40s]
+Starting >>> rm_nav_hardware
+Finished <<< rm_nav_registration [0.51s]
+Starting >>> rm_nav_localization
+Starting >>> rm_nav_mapping
+Finished <<< rm_nav_localization [0.04s]
+Finished <<< rm_nav_hardware [1.68s]
+Finished <<< rm_nav_mapping [2.41s]
+Finished <<< rm_nav_control [29.9s]
+Starting >>> rm_nav_bringup
+[Processing: rm_nav_bringup]
+Finished <<< rm_nav_bringup [44.3s]
+
+Summary: 14 packages finished [1min 14s]

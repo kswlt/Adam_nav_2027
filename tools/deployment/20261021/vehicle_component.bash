@@ -10,6 +10,14 @@ source "$nav_root/remote_env_20261020.bash"
 if [[ "$nav_component" != driver ]]; then
   source "$nav_release/install/local_setup.bash"
 fi
+if [[ "$nav_component" == state && -f "$nav_runtime/lio_overlay.path" ]]; then
+  IFS= read -r nav_lio_overlay < "$nav_runtime/lio_overlay.path"
+  [[ "$nav_lio_overlay" == /* && -f "$nav_lio_overlay/local_setup.bash" ]] || {
+    echo 'Configured LIO overlay is invalid; refusing silent fallback' >&2; exit 2;
+  }
+  source "$nav_lio_overlay/local_setup.bash"
+  printf 'State LIO overlay: %s\n' "$nav_lio_overlay"
+fi
 export ROS_DOMAIN_ID=97
 export ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
 case "$nav_component" in

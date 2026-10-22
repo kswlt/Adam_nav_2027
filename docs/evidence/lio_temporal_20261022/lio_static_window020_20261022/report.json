@@ -1,0 +1,69 @@
+{
+  "passed": false,
+  "transport_passed": true,
+  "visualization_enabled": false,
+  "visualization": {
+    "path_messages": 0,
+    "path_poses": 0,
+    "preview_messages": 0,
+    "preview_points": 0
+  },
+  "motion_envelope_passed": false,
+  "max_displacement_m": 0.04012176297479289,
+  "max_step_speed_mps": 0.3435050329221992,
+  "p99_step_speed_mps": 0.07541947735342089,
+  "max_rotation_rad": 0.0034897652702912535,
+  "final_relative_displacement_m": 0.0290400953494882,
+  "output_span_s": 23.898136616,
+  "motion_limits": {
+    "speed_mps": 0.1,
+    "displacement_m": 0.03,
+    "rotation_rad": 0.05
+  },
+  "scope": "real bag -> sensor LIO only; no truth accuracy or chassis/navigation acceptance",
+  "bag": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/raw_static_window_20261022",
+  "internal_extrinsics": "unverified upstream example; not measured robot calibration",
+  "raw_acc_norm": 1.0,
+  "odometry_count": 237,
+  "deskewed_cloud_count": 237,
+  "tf_count": 0,
+  "last_input_to_output_lag_s": -0.096496564,
+  "last_point_end_to_output_lag_s": 0.003864323,
+  "lio_resources": {
+    "peak_rss_kib": 73544,
+    "cpu_seconds": 3.3699999999999997,
+    "samples": 55,
+    "scope": "0.5 s sampled sum over ros2 run launcher and LIO children; shared RSS may be counted twice"
+  },
+  "first_odometry": {
+    "stamp_ns": 1792585293522350549,
+    "position": [
+      -0.009251103224324946,
+      0.02024886134837331,
+      -0.07021240050035829
+    ],
+    "quaternion_xyzw": [
+      -0.0003583433641338865,
+      0.0005395015011029247,
+      4.715048244958197e-05,
+      0.9999997891524753
+    ]
+  },
+  "last_odometry": {
+    "stamp_ns": 1792585317420487165,
+    "position": [
+      0.009272250045576082,
+      0.022830519302004484,
+      -0.04799647009543791
+    ],
+    "quaternion_xyzw": [
+      0.0004032611255955728,
+      0.00026937430692444665,
+      3.363433967437658e-05,
+      0.9999998818428227
+    ]
+  },
+  "errors": [
+    "estimated motion exceeds explicit diagnostic envelope"
+  ]
+}

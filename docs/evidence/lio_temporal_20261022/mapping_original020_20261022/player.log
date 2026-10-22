@@ -1,0 +1,3 @@
+[INFO] [1792674351.130619752] [rosbag2_player]: Set rate to 1
+[INFO] [1792674351.136643805] [rosbag2_player]: Playback until timestamp: -1
+[INFO] [1792674351.136961866] [rosbag2_player]: Sleep 2000000000 ns

@@ -1,0 +1,69 @@
+{
+  "passed": false,
+  "transport_passed": true,
+  "visualization_enabled": false,
+  "visualization": {
+    "path_messages": 0,
+    "path_poses": 0,
+    "preview_messages": 0,
+    "preview_points": 0
+  },
+  "motion_envelope_passed": false,
+  "max_displacement_m": 0.05613255431002958,
+  "max_step_speed_mps": 0.4430304880759429,
+  "p99_step_speed_mps": 0.07509800619382478,
+  "max_rotation_rad": 0.00975926728067937,
+  "final_relative_displacement_m": 0.03968270237160825,
+  "output_span_s": 23.898136616,
+  "motion_limits": {
+    "speed_mps": 0.1,
+    "displacement_m": 0.03,
+    "rotation_rad": 0.05
+  },
+  "scope": "real bag -> sensor LIO only; no truth accuracy or chassis/navigation acceptance",
+  "bag": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/raw_static_window_20261022",
+  "internal_extrinsics": "unverified upstream example; not measured robot calibration",
+  "raw_acc_norm": 1.0,
+  "odometry_count": 238,
+  "deskewed_cloud_count": 238,
+  "tf_count": 0,
+  "last_input_to_output_lag_s": -0.096496564,
+  "last_point_end_to_output_lag_s": 0.003864323,
+  "lio_resources": {
+    "peak_rss_kib": 74596,
+    "cpu_seconds": 4.9,
+    "samples": 55,
+    "scope": "0.5 s sampled sum over ros2 run launcher and LIO children; shared RSS may be counted twice"
+  },
+  "first_odometry": {
+    "stamp_ns": 1792585293522350549,
+    "position": [
+      -0.024053956987580255,
+      0.019624834656699307,
+      -0.06310615058953481
+    ],
+    "quaternion_xyzw": [
+      -0.0006671241447996598,
+      0.003888190441602191,
+      -0.0005236391972168452,
+      0.9999920813298759
+    ]
+  },
+  "last_odometry": {
+    "stamp_ns": 1792585317420487165,
+    "position": [
+      0.011654569195516587,
+      0.025504813812594142,
+      -0.046825982578393995
+    ],
+    "quaternion_xyzw": [
+      0.0006222949035615969,
+      0.0002396976783173423,
+      -0.000505812170599574,
+      0.9999996497224057
+    ]
+  },
+  "errors": [
+    "estimated motion exceeds explicit diagnostic envelope"
+  ]
+}

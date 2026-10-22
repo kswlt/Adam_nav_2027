@@ -1,0 +1,9 @@
+[INFO] [launch]: All log files can be found below /home/asus/.ros/log/2026-10-22-21-03-13-107982-ASUS-70237
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [keyframe_recorder-1]: process started with pid [70249]
+[keyframe_recorder-1] [INFO] [1792674193.182189603] [keyframe_recorder]: New mapping archive: /home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/mapping_dense_time020_20261022/keyframes/session_0_1191189225
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[keyframe_recorder-1] [INFO] [1792674245.412594996] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [keyframe_recorder-1]: sending signal 'SIGINT' to process[keyframe_recorder-1]
+[keyframe_recorder-1] [INFO] [1792674245.413677233] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [keyframe_recorder-1]: process has finished cleanly [pid 70249]

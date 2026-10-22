@@ -1,0 +1,53 @@
+[INFO] [launch]: All log files can be found below /home/asus/.ros/log/2026-10-22-21-08-21-334939-ASUS-74276
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [mid360_cloud_guard-1]: process started with pid [74285]
+[INFO] [lio_input_guard-2]: process started with pid [74286]
+[INFO] [small_point_lio_node-3]: process started with pid [74287]
+[INFO] [sensor_reference-4]: process started with pid [74288]
+[INFO] [lio_observation_adapter-5]: process started with pid [74289]
+[INFO] [observation_submap-6]: process started with pid [74290]
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[mid360_cloud_guard-1] [INFO] [1792674553.784892147] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[lio_observation_adapter-5] [INFO] [1792674553.784893590] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [observation_submap-6]: sending signal 'SIGINT' to process[observation_submap-6]
+[INFO] [lio_observation_adapter-5]: sending signal 'SIGINT' to process[lio_observation_adapter-5]
+[INFO] [sensor_reference-4]: sending signal 'SIGINT' to process[sensor_reference-4]
+[INFO] [small_point_lio_node-3]: sending signal 'SIGINT' to process[small_point_lio_node-3]
+[INFO] [lio_input_guard-2]: sending signal 'SIGINT' to process[lio_input_guard-2]
+[INFO] [mid360_cloud_guard-1]: sending signal 'SIGINT' to process[mid360_cloud_guard-1]
+[small_point_lio_node-3] [INFO] [1792674553.785081991] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[observation_submap-6] [INFO] [1792674553.785195300] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[observation_submap-6] [INFO] [1792674553.787583407] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[lio_observation_adapter-5] [INFO] [1792674553.788153539] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[small_point_lio_node-3] [INFO] [1792674553.788437150] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[sensor_reference-4] Traceback (most recent call last):
+[sensor_reference-4]   File "/home/asus/nav_2027_vehicle_config_164/releases/20261022_fit153_console/install/rm_nav_bringup/lib/rm_nav_bringup/sensor_reference", line 225, in <module>
+[sensor_reference-4]     main()
+[sensor_reference-4]   File "/home/asus/nav_2027_vehicle_config_164/releases/20261022_fit153_console/install/rm_nav_bringup/lib/rm_nav_bringup/sensor_reference", line 219, in main
+[sensor_reference-4]     node.destroy_node()
+[sensor_reference-4]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1956, in destroy_node
+[mid360_cloud_guard-1] [INFO] [1792674553.788946535] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[sensor_reference-4]     self.destroy_publisher(self._publishers[0])
+[sensor_reference-4]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1836, in destroy_publisher
+[sensor_reference-4]     publisher.destroy()
+[sensor_reference-4]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/publisher.py", line 105, in destroy
+[sensor_reference-4]     self.__publisher.destroy_when_not_in_use()
+[sensor_reference-4] KeyboardInterrupt
+[lio_input_guard-2] Traceback (most recent call last):
+[lio_input_guard-2]   File "/home/asus/nav_2027_vehicle_config_164/releases/20261022_fit153_console/install/rm_nav_bringup/lib/rm_nav_bringup/lio_input_guard", line 65, in <module>
+[lio_input_guard-2]     main()
+[lio_input_guard-2]   File "/home/asus/nav_2027_vehicle_config_164/releases/20261022_fit153_console/install/rm_nav_bringup/lib/rm_nav_bringup/lio_input_guard", line 59, in main
+[lio_input_guard-2]     node.destroy_node()
+[lio_input_guard-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1962, in destroy_node
+[lio_input_guard-2]     self.destroy_service(self._services[0])
+[lio_input_guard-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1886, in destroy_service
+[lio_input_guard-2]     service.destroy()
+[lio_input_guard-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/service.py", line 123, in destroy
+[lio_input_guard-2]     self.__service.destroy_when_not_in_use()
+[lio_input_guard-2] KeyboardInterrupt
+[ERROR] [lio_input_guard-2]: process has died [pid 74286, exit code -2, cmd '/home/asus/nav_2027_vehicle_config_164/releases/20261022_fit153_console/install/rm_nav_bringup/lib/rm_nav_bringup/lio_input_guard --ros-args --params-file /tmp/launch_params_detls4sh'].
+[ERROR] [sensor_reference-4]: process has died [pid 74288, exit code -2, cmd '/home/asus/nav_2027_vehicle_config_164/releases/20261022_fit153_console/install/rm_nav_bringup/lib/rm_nav_bringup/sensor_reference --ros-args --params-file /tmp/launch_params_e20kxt1u --params-file /tmp/launch_params_9ip392kk'].
+[INFO] [observation_submap-6]: process has finished cleanly [pid 74290]
+[INFO] [mid360_cloud_guard-1]: process has finished cleanly [pid 74285]
+[INFO] [small_point_lio_node-3]: process has finished cleanly [pid 74287]
+[INFO] [lio_observation_adapter-5]: process has finished cleanly [pid 74289]

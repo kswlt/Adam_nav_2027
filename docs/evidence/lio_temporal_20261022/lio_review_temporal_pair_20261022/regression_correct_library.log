@@ -1,0 +1,10 @@
+Internal ctest changing into directory: /home/asus/nav_2027_vehicle_config_164/lio_review_temporal_pair_20261022/regression/build
+Test project /home/asus/nav_2027_vehicle_config_164/lio_review_temporal_pair_20261022/regression/build
+    Start 1: actual_dense_range
+1/2 Test #1: actual_dense_range ........................   Passed    0.01 sec
+    Start 2: actual_temporal_projection_and_sampling
+2/2 Test #2: actual_temporal_projection_and_sampling ...   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =   0.02 sec

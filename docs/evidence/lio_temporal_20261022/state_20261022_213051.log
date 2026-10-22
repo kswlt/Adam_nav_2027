@@ -1,0 +1,9 @@
+State LIO overlay: /home/asus/nav_2027_vehicle_config_164/lio_review_dense_time_20261022/install
+[INFO] [launch]: All log files can be found below /home/asus/.ros/log/2026-10-22-21-30-51-691495-ASUS-93346
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [mid360_cloud_guard-1]: process started with pid [93384]
+[INFO] [lio_input_guard-2]: process started with pid [93385]
+[INFO] [small_point_lio_node-3]: process started with pid [93386]
+[INFO] [sensor_reference-4]: process started with pid [93387]
+[INFO] [lio_observation_adapter-5]: process started with pid [93388]
+[INFO] [observation_submap-6]: process started with pid [93389]

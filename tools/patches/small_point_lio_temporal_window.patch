@@ -1,0 +1,70 @@
+--- a/src/util/voxelgrid_sampling.cpp
++++ b/src/util/voxelgrid_sampling.cpp
+@@ -171,37 +171,38 @@
+         }
+ 
+         // Sort by voxel coord
+-        const auto compare = [](const auto &lhs, const auto &rhs) { return lhs.first < rhs.first; };
++        const auto compare = [&points](const auto &lhs, const auto &rhs) {
++            if (lhs.first != rhs.first) return lhs.first < rhs.first;
++            if (points[lhs.second].timestamp != points[rhs.second].timestamp)
++                return points[lhs.second].timestamp < points[rhs.second].timestamp;
++            return lhs.second < rhs.second;
++        };
+         std::sort(coord_pt.begin(), coord_pt.end(), compare);
+ 
+-        downsampled.resize(points.size());
+-
+-        size_t num_points = 0;
+-        auto sum_pt = points[coord_pt.front().second];
+-        size_t sum_pt_size = 1;
+-        for (size_t i = 1; i < points.size(); i++) {
+-            if (coord_pt[i].first == invalid_coord) {
+-                continue;
+-            }
+-
+-            if (coord_pt[i - 1].first != coord_pt[i].first) {
+-                auto &point = downsampled[num_points++];
+-                point.position = sum_pt.position / sum_pt_size;
+-                point.timestamp = sum_pt.timestamp;
+-                sum_pt.position.setZero();
+-                sum_pt_size = 0;
+-            }
+-
+-            const auto &point = points[coord_pt[i].second];
+-            sum_pt.position += point.position;
+-            sum_pt.timestamp = point.timestamp;
+-            ++sum_pt_size;
+-        }
+-
+-        auto &point = downsampled[num_points++];
+-        point.position = sum_pt.position / sum_pt_size;
+-        point.timestamp = sum_pt.timestamp;
+-        downsampled.resize(num_points);
++        // Preserve spatial averaging, but never merge a whole moving scan into
++        // one measurement. Like the reference school's 1ms batches, bound time.
++        constexpr double max_time_span = .001;
++        downsampled.clear();
++        downsampled.reserve(points.size());
++        for (size_t begin = 0; begin < coord_pt.size();) {
++            if (coord_pt[begin].first == invalid_coord) break;
++            const double first_time = points[coord_pt[begin].second].timestamp;
++            Eigen::Vector3f sum_position = points[coord_pt[begin].second].position;
++            double sum_time_offset = 0.;
++            size_t end = begin + 1;
++            while (end < coord_pt.size() && coord_pt[end].first == coord_pt[begin].first &&
++                   points[coord_pt[end].second].timestamp - first_time <= max_time_span) {
++                sum_position += points[coord_pt[end].second].position;
++                sum_time_offset += points[coord_pt[end].second].timestamp - first_time;
++                ++end;
++            }
++            common::Point point;
++            point.position = sum_position / static_cast<float>(end - begin);
++            // Relative summation avoids loss of precision with Unix epoch times.
++            point.timestamp = first_time + sum_time_offset / static_cast<double>(end - begin);
++            downsampled.push_back(point);
++            begin = end;
++        }
+     }
+ 
+     /// @brief Voxel grid downsampling with OpenMP backend.

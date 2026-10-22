@@ -1,0 +1,56 @@
+--- a/src/small_point_lio/small_point_lio.cpp
++++ b/src/small_point_lio/small_point_lio.cpp
+@@ -5,6 +5,7 @@
+  */
+ 
+ #include "small_point_lio.h"
++#include "dense_projection.h"
+ 
+ namespace small_point_lio {
+ 
+@@ -89,13 +90,20 @@
+             const common::ImuMsg &imu_msg = preprocess.imu_deque.front();
+             if (dense_point_lidar_frame.timestamp < point_lidar_frame.timestamp && dense_point_lidar_frame.timestamp < imu_msg.timestamp) {
+                 // collect odom frame pointcloud
++                if (dense_point_lidar_frame.timestamp < time_current) {
++                    preprocess.dense_point_deque.pop_front();
++                    continue;
++                }
+                 Eigen::Matrix<state::value_type, 3, 1> dense_point_imu_frame;
+                 if (parameters.extrinsic_est_en) {
+                     dense_point_imu_frame = estimator.kf.x.offset_R_L_I * dense_point_lidar_frame.position.cast<state::value_type>() + estimator.kf.x.offset_T_L_I;
+                 } else {
+                     dense_point_imu_frame = estimator.Lidar_R_wrt_IMU * dense_point_lidar_frame.position.cast<state::value_type>() + estimator.Lidar_T_wrt_IMU;
+                 }
+-                pointcloud_odom_frame.emplace_back((estimator.kf.x.rotation * dense_point_imu_frame + estimator.kf.x.position).cast<float>());
++                // Project only the publication point, leaving filter state/covariance untouched.
++                pointcloud_odom_frame.emplace_back(project_dense_point(
++                    estimator.kf.x, dense_point_imu_frame,
++                    dense_point_lidar_frame.timestamp - time_current).cast<float>());
+ 
+                 preprocess.dense_point_deque.pop_front();
+             } else if (point_lidar_frame.timestamp < imu_msg.timestamp) {
+--- /dev/null
++++ b/src/small_point_lio/dense_projection.h
+@@ -0,0 +1,21 @@
++#pragma once
++
++#include "eskf.h"
++#include <stdexcept>
++
++namespace small_point_lio {
++
++// Same local constant velocity/angular-rate model as eskf::predict_state.
++// This is publication-only projection to a real point time, not a filter update.
++inline Eigen::Matrix<state::value_type, 3, 1> project_dense_point(
++    const state & source, const Eigen::Matrix<state::value_type, 3, 1> & point_imu,
++    double elapsed_seconds) {
++    if (!std::isfinite(elapsed_seconds) || elapsed_seconds < 0.) {
++        throw std::invalid_argument("Dense point precedes filter time or has invalid time");
++    }
++    const auto dt = static_cast<state::value_type>(elapsed_seconds);
++    return source.position + source.velocity * dt +
++        source.rotation * exp<state::value_type>((source.omg * dt).eval()) * point_imu;
++}
++
++}  // namespace small_point_lio

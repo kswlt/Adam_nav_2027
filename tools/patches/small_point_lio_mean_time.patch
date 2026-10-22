@@ -1,0 +1,36 @@
+--- a/src/util/voxelgrid_sampling.cpp
++++ b/src/util/voxelgrid_sampling.cpp
+@@ -178,6 +178,8 @@
+ 
+         size_t num_points = 0;
+         auto sum_pt = points[coord_pt.front().second];
++        const double time_origin = sum_pt.timestamp;
++        double sum_time_offset = 0.;
+         size_t sum_pt_size = 1;
+         for (size_t i = 1; i < points.size(); i++) {
+             if (coord_pt[i].first == invalid_coord) {
+@@ -187,20 +189,21 @@
+             if (coord_pt[i - 1].first != coord_pt[i].first) {
+                 auto &point = downsampled[num_points++];
+                 point.position = sum_pt.position / sum_pt_size;
+-                point.timestamp = sum_pt.timestamp;
++                point.timestamp = time_origin + sum_time_offset / static_cast<double>(sum_pt_size);
+                 sum_pt.position.setZero();
+                 sum_pt_size = 0;
++                sum_time_offset = 0.;
+             }
+ 
+             const auto &point = points[coord_pt[i].second];
+             sum_pt.position += point.position;
+-            sum_pt.timestamp = point.timestamp;
++            sum_time_offset += point.timestamp - time_origin;
+             ++sum_pt_size;
+         }
+ 
+         auto &point = downsampled[num_points++];
+         point.position = sum_pt.position / sum_pt_size;
+-        point.timestamp = sum_pt.timestamp;
++        point.timestamp = time_origin + sum_time_offset / static_cast<double>(sum_pt_size);
+         downsampled.resize(num_points);
+     }
+ 

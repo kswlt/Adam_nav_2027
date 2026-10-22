@@ -1,0 +1,26 @@
+{
+  "scope": "real raw inputs through frontend/state/archive/optimizer; no independent truth",
+  "bag": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/raw_rotation_window_20261022",
+  "output": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/mapping_temporal_pair020_20261022",
+  "navigation_accepted": false,
+  "physical_command_publishers": {
+    "/cmd_vel": 0,
+    "/cmd_yaw_angle": 0,
+    "/hardware/cmd_vel": 0
+  },
+  "keyframes": 24,
+  "session": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/mapping_temporal_pair020_20261022/keyframes/session_0_4125923876",
+  "optimizer_exit": 1,
+  "passed": false,
+  "errors": [
+    "Offline optimizer refused; inspect optimizer.log and retain archives"
+  ],
+  "lio_samples": 433,
+  "reference_samples": 433,
+  "cloud_samples": 433,
+  "real_input_health_seen": true,
+  "published_cloud_point_count_min_max": [
+    6433,
+    8853
+  ]
+}

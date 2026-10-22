@@ -1,0 +1,12 @@
+edge=0->1 converged=1 rmse=0.0960785 inliers=0.974818 condition=0.00742597
+edge=1->2 converged=1 rmse=0.0959826 inliers=0.990935 condition=0.00420368
+edge=2->3 converged=1 rmse=0.109355 inliers=0.954517 condition=0.00368267
+edge=3->4 converged=1 rmse=0.121324 inliers=0.910236 condition=0.00437205
+edge=4->5 converged=1 rmse=0.101768 inliers=0.997167 condition=0.0064376
+edge=5->6 converged=1 rmse=0.079137 inliers=0.998056 condition=0.00637124
+edge=6->7 converged=1 rmse=0.0739906 inliers=0.998408 condition=0.00538814
+edge=7->8 converged=1 rmse=0.100096 inliers=0.993128 condition=0.00706732
+edge=8->9 converged=1 rmse=0.113165 inliers=0.974364 condition=0.00342224
+edge=9->10 converged=1 rmse=0.162003 inliers=0.844643 condition=0.00298936
+Mapping optimization refused: VGICP adjacent edge rejected; no odometry-only bridge inserted
+[ros2run]: Process exited with failure 1

@@ -1,0 +1,39 @@
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+-- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP: TRUE (found version "4.5")  
+-- Configuring done (0.7s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/asus/nav_2027_vehicle_config_164/lio_review_mean_time_20261022/regression/build
+[ 50%] Building CXX object CMakeFiles/dense_range_test.dir/home/asus/nav_2027_vehicle_config_164/releases/20261022_fit153_console/tools/test_small_point_lio_dense_range.cpp.o
+[ 50%] Building CXX object CMakeFiles/temporal_test.dir/home/asus/nav_2027_vehicle_config_164/releases/20261022_fit153_console/tools/test_small_point_lio_mean_time.cpp.o
+[ 75%] Linking CXX executable dense_range_test
+[ 75%] Built target dense_range_test
+[100%] Linking CXX executable temporal_test
+[100%] Built target temporal_test
+Internal ctest changing into directory: /home/asus/nav_2027_vehicle_config_164/lio_review_mean_time_20261022/regression/build
+Test project /home/asus/nav_2027_vehicle_config_164/lio_review_mean_time_20261022/regression/build
+    Start 1: actual_dense_range
+1/2 Test #1: actual_dense_range ........................   Passed    0.01 sec
+    Start 2: actual_temporal_projection_and_sampling
+2/2 Test #2: actual_temporal_projection_and_sampling ...   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =   0.02 sec

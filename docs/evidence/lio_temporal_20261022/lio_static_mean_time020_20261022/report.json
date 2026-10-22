@@ -1,0 +1,69 @@
+{
+  "passed": false,
+  "transport_passed": true,
+  "visualization_enabled": false,
+  "visualization": {
+    "path_messages": 0,
+    "path_poses": 0,
+    "preview_messages": 0,
+    "preview_points": 0
+  },
+  "motion_envelope_passed": false,
+  "max_displacement_m": 0.050139935544600354,
+  "max_step_speed_mps": 0.44586178242055907,
+  "p99_step_speed_mps": 0.06369220268340742,
+  "max_rotation_rad": 0.019301851461572136,
+  "final_relative_displacement_m": 0.04587555331226472,
+  "output_span_s": 23.898136616,
+  "motion_limits": {
+    "speed_mps": 0.1,
+    "displacement_m": 0.03,
+    "rotation_rad": 0.05
+  },
+  "scope": "real bag -> sensor LIO only; no truth accuracy or chassis/navigation acceptance",
+  "bag": "/home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/raw_static_window_20261022",
+  "internal_extrinsics": "unverified upstream example; not measured robot calibration",
+  "raw_acc_norm": 1.0,
+  "odometry_count": 239,
+  "deskewed_cloud_count": 239,
+  "tf_count": 0,
+  "last_input_to_output_lag_s": -0.096496564,
+  "last_point_end_to_output_lag_s": 0.003864323,
+  "lio_resources": {
+    "peak_rss_kib": 74216,
+    "cpu_seconds": 2.9299999999999997,
+    "samples": 55,
+    "scope": "0.5 s sampled sum over ros2 run launcher and LIO children; shared RSS may be counted twice"
+  },
+  "first_odometry": {
+    "stamp_ns": 1792585293522350549,
+    "position": [
+      -0.007697535207171568,
+      -0.006735489255276389,
+      -0.015834307945782198
+    ],
+    "quaternion_xyzw": [
+      -0.008527100657098712,
+      -0.0013027956761641776,
+      0.0013609292116576574,
+      0.999961868847753
+    ]
+  },
+  "last_odometry": {
+    "stamp_ns": 1792585317420487165,
+    "position": [
+      0.00898665101221046,
+      0.021585948641891693,
+      -0.047835877865713895
+    ],
+    "quaternion_xyzw": [
+      0.0002539560516871018,
+      0.00027866237171400506,
+      -9.266843097408663e-05,
+      0.9999999246326822
+    ]
+  },
+  "errors": [
+    "estimated motion exceeds explicit diagnostic envelope"
+  ]
+}

@@ -1,0 +1,8 @@
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1792675478.406816367] [rosbag2_player]: Set rate to 1
+[INFO] [1792675478.410700537] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1792675478.410725101] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1792675478.410728365] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1792675478.410730770] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1792675478.410732837] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1792675478.411934362] [rosbag2_player]: Playback until timestamp: -1
+[INFO] [1792675478.412021365] [rosbag2_player]: Sleep 2000000000 ns
