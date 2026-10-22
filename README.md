@@ -1,8 +1,10 @@
 # Adam_nav_2027 使用说明
 
-**中文操作菜单：** 部署后运行 `python3 "$NAV_RUNTIME/nav_console.py"`，可启动建图、选择在线优化、导出地图检查包、选择地图做影子导航，并在终端连续查看日志和ROS消息；真实串口单独开启。安装命令和Foxglove布局配置见 [菜单使用指南](docs/NAV_CONSOLE.md)。当前尚未部署ASUS。
+**ASUS已部署（2026-10-22）：** 新release `20261022_fit153_console`、新runtime `runtime_20261022_fit153_console`，14包构建及64项测试零失败/1跳过。打开菜单：`ssh -t -p 2233 asus@192.168.1.164 "bash /home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/start_console.bash"`。旧目录未覆盖，当前物理输出关闭；下方“尚未部署”为此前历史。最新路径和验收边界见 [部署记录](docs/ASUS_DEPLOY_20261022.md)。
 
-**累计建图预览：** Foxglove选择 `/visualization/live_map_preview`、参考系 `odom`；在线回环地图选择 `/mapping/optimized_map_preview`、参考系 `mapping_odom`。新预览到点数上限会粗化全局，不再删除旧区域。默认5万点/1 Hz，纯核心合成测试峰值约61 MiB；查看方法、内存及精度取舍见 [累计点云指南](docs/ACCUMULATED_MAP_VIEW.md)。待部署ASUS。
+**中文操作菜单：** 使用上面的SSH启动器进入，可启动建图、选择在线优化、导出地图检查包、选择地图做影子导航，并在终端连续查看日志和ROS消息；真实串口单独开启。菜单5看日志、6看消息、f看Foxglove配置。见 [菜单使用指南](docs/NAV_CONSOLE.md)。
+
+**累计建图预览：** Foxglove选择 `/visualization/live_map_preview`、参考系 `odom`；在线回环地图选择 `/mapping/optimized_map_preview`、参考系 `mapping_odom`。预览到点数上限会粗化全局，不再删除旧区域。默认5万点/1 Hz，纯核心合成测试峰值约61 MiB；查看方法、内存及精度取舍见 [累计点云指南](docs/ACCUMULATED_MAP_VIEW.md)。已纳入新部署。
 
 **安装关系更正（2026-10-22）：左16 cm指yaw轴→雷达偏心，不是底盘中心→yaw轴。** 按用户要求，车辆专用入口使用录包拟合值：前1.53 cm、左15.27 cm，半径约15.34 cm，显式标为拟合调试配置。建图/录制使用新ID和新会话，原始点云不做反向平移。见 [配置与使用方法](docs/VEHICLE164_GEOMETRY_CORRECTION_20261022.md)。ASUS尚未部署。
 
@@ -43,8 +45,8 @@ ssh -p 2233 asus@192.168.1.164
 ```bash
 export NAV_BASE=/home/asus/nav_2027_vehicle_config_164
 source "$NAV_BASE/remote_env_20261020.bash"
-export NAV_RELEASE="$NAV_BASE/releases/20261021_sensor_reference"
-export NAV_RUNTIME="$NAV_BASE/runtime_20261021_sensor_reference"
+export NAV_RELEASE="$NAV_BASE/releases/20261022_fit153_console"
+export NAV_RUNTIME="$NAV_BASE/runtime_20261022_fit153_console"
 source "$NAV_RELEASE/install/local_setup.bash"
 ```
 

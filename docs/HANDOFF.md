@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+**ASUS最新部署：** 2026-10-22代码8a9a9b1已部署至新release `20261022_fit153_console`、新runtime `runtime_20261022_fit153_console`；ASUS全14包构建/64 tests零失败1跳过，菜单CLI3项通过。旧release脏修改未覆盖，当前组件均未启动、物理输出关闭。用新runtime的 `start_console.bash`进入中文菜单。见 [部署交接](ASUS_DEPLOY_20261022.md)，此前“ASUS离线/未部署”均为历史状态。
+
 **中文终端菜单：** 新增 `tools/deployment/20261021/nav_console.py`，复用受标记会话管理器；建图、录包、新会话在线优化、draft导出、地图选择、影子导航、日志与消息集中操作。真实串口是独立选项。管理器新增navigation组件和无缓冲Python日志。3项无设备CLI回归及语法检查通过；未做ASUS实机整流程。详见 [操作与Foxglove配置](NAV_CONSOLE.md)。
 
 **累计预览更新：** 修复live_map_preview的LRU删旧区域，改为容量受控的全局体素粗化；保留旧区域覆盖、真实源时间与断流stale，晚连接者收到快照。WSL重建/回归通过，汇总64 tests零失败/1跳过；纯核心容量测试5万/20万点峰值约61/121 MiB，不含ROS/LIO/浏览器。用法见 [累计点云指南](ACCUMULATED_MAP_VIEW.md)，尚未部署ASUS。

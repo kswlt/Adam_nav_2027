@@ -1,5 +1,7 @@
 # 中文终端菜单：建图、导航、日志和Foxglove
 
+2026-10-22已部署到ASUS新隔离目录。当前请运行 `bash /home/asus/nav_2027_vehicle_config_164/runtime_20261022_fit153_console/start_console.bash`；启动器会设置正确release/runtime，不需要手工复制脚本。详见 [实际部署与结果](ASUS_DEPLOY_20261022.md)。下方旧路径是最初部署模板，不能与新目录混用。
+
 菜单在ASUS的SSH终端里运行，退出菜单不退出后台组件。它调用既有 `vehicle_session.py`，仅管理本项目带标记的进程，不覆盖或停止原车工作区。源码在开发分支 `audit-p0-tf-costmap`；ASUS当前离线，这次尚未部署。
 
 ## 启动菜单
