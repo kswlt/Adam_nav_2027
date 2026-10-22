@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+**LIO对照审查：** 已参考原Adam/rose/sentry26等源码，g单位及工厂内部外参与当前一致；发现dense点绕过距离过滤，隔离候选修复构建/真实Preprocess回归/45秒MCAP回放通过，旧库同测失败。现场LIO未替换，体素位置/时间配对及dense精确时间风险仍待修复，不能把在线地图或叶长对照当作已完成定位验收。完整原始MCAP及关键帧已本机备份。见 [本轮报告](LIO_SOURCE_COMPARISON_20261022.md)。
+
 **2026-10-22本次旋转测试已结束：** 用户确认底盘只能静止、仅云台旋转。新会话160关键帧、原始MCAP327.6秒，bag/capture已正常停止写盘；driver/state/Foxglove/online保留，physical/navigation未运行。在线累计10,952点导出成功；离线优化在139→140帧RMSE0.153856m处按原0.15m门限拒绝，未生成优化地图。偏心补偿后轴心估计XY最大变化6.68cm、末尾0.857cm；失败附近约2秒转350.9°，IMU峰值434°/s，需慢转对照，不能据此宣布全部修复。检查包draft、无自由栅格，不可导航。路径、统计与失败证据见 [当前会话报告](MAPPING_TEST_SESSION_20261022.md)。不要误停原车工作区或清理原始数据。
 
 **ASUS最新部署：** 2026-10-22代码8a9a9b1已部署至新release `20261022_fit153_console`、新runtime `runtime_20261022_fit153_console`；ASUS全14包构建/64 tests零失败1跳过，菜单CLI3项通过。旧release脏修改未覆盖，当前组件均未启动、物理输出关闭。用新runtime的 `start_console.bash`进入中文菜单。见 [部署交接](ASUS_DEPLOY_20261022.md)，此前“ASUS离线/未部署”均为历史状态。

@@ -1,0 +1,49 @@
+small_point_lio:
+  ros__parameters:
+    acc_norm: 1.0
+    acceleration_cov: 500.0
+    ba_cov: 0.0001
+    bg_cov: 0.0001
+    check_satu: true
+    extrinsic_R:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    extrinsic_T:
+    - -0.011
+    - -0.02329
+    - 0.04412
+    extrinsic_est_en: false
+    fix_gravity_direction: true
+    gravity:
+    - 0.0
+    - 0.0
+    - -9.81
+    imu_meas_acc_cov: 0.01
+    imu_meas_omg_cov: 0.01
+    imu_topic: /livox/imu
+    init_map_size: 10
+    laser_point_cov: 0.01
+    lidar_frame: livox_frame
+    lidar_topic: /sensors/front_mid360/guarded_points
+    lidar_type: livox_pointcloud2
+    map_resolution: 0.2
+    match_sqaured: 81.0
+    max_distance: 30.0
+    min_distance: 0.5
+    omg_cov: 1000.0
+    plane_threshold: 0.1
+    point_filter_num: 1
+    publish_odometry_without_downsample: false
+    satu_acc: 3.0
+    satu_gyro: 35.0
+    save_pcd: false
+    space_downsample: true
+    space_downsample_leaf_size: 0.2
+    velocity_cov: 20.0

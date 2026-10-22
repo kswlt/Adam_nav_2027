@@ -24,6 +24,10 @@ def main():
     parser.add_argument('--bag', required=True)
     parser.add_argument('--output', required=True)
     parser.add_argument('--deps', default='/home/asus/nav_deps')
+    parser.add_argument('--params-file', type=Path,
+                        help='Explicit LIO configuration for offline parameter comparisons')
+    parser.add_argument('--space-downsample-leaf-size', type=float,
+                        help='Offline comparison override; does not modify the live configuration')
     parser.add_argument('--max-bag-duration', type=float, default=60.0,
                         help='Explicit bounded replay duration budget, seconds (not a motion tolerance)')
     parser.add_argument('--with-visualization', action='store_true')
@@ -49,6 +53,12 @@ def main():
     output.mkdir(parents=True, exist_ok=False)
     upstream = Path(args.deps) / 'src/small_point_lio/config/mid360.yaml'
     params = yaml.safe_load(upstream.read_text())
+    if args.params_file:
+        params = yaml.safe_load(args.params_file.read_text())
+    if args.space_downsample_leaf_size is not None:
+        if not math.isfinite(args.space_downsample_leaf_size) or not 0 < args.space_downsample_leaf_size <= 1:
+            raise ValueError('Offline leaf size must be finite and in (0,1] metres')
+        params['small_point_lio']['ros__parameters']['space_downsample_leaf_size'] = args.space_downsample_leaf_size
     params['small_point_lio']['ros__parameters'].update({
         'lidar_type': 'livox_pointcloud2', 'lidar_topic': '/livox/lidar', 'imu_topic': '/livox/imu',
         'lidar_frame': 'front_mid360', 'state_frame': 'front_mid360_imu', 'odom_frame': 'odom',

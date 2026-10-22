@@ -1,5 +1,7 @@
 # small_point_lio 上游接入验收
 
+2026-10-22更正：下方早期“按各点时间投影”描述不能作为精确去畸变验收。新源码对照发现dense点未预测到自身时间、体素位置/时间不配对的风险，以及稠密发布绕过距离过滤的可复现缺陷。距离过滤候选已独立构建/回放验证，尚未切换现场实例；完整事实和剩余工作见 [最新对照报告](LIO_SOURCE_COMPARISON_20261022.md)。
+
 来源为 [Yancey2023/small_point_lio](https://github.com/Yancey2023/small_point_lio)，
 固定 ros2 提交 `688d75cfa780049ae532e5100ca64f46ad8b1a93`，保留上游 MIT 许可。
 外部源码位于 `/home/asus/nav_deps/src/small_point_lio`，不复制成新的自研滤波器。

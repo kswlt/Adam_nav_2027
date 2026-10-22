@@ -1,0 +1,26 @@
+{
+  "scope": "matched replay estimates, not independent ground truth",
+  "configured_axis_to_lidar_m": [
+    0.015293518836158204,
+    0.15267217555738066,
+    0.0
+  ],
+  "common_stamp_count": 435,
+  "source_span_s": 43.898939133000006,
+  "runs": {
+    "lio_compare_leaf020_20261022": {
+      "received_count": 436,
+      "imu_xy_max_from_start_m": 0.37548156799243165,
+      "axis_xy_max_from_start_m": 0.05963185483350386,
+      "axis_xy_end_from_start_m": 0.005971604561583439,
+      "axis_z_span_m": 0.013325909503338222
+    },
+    "lio_compare_dense_range020_20261022": {
+      "received_count": 437,
+      "imu_xy_max_from_start_m": 0.37548156799243165,
+      "axis_xy_max_from_start_m": 0.05963185483350386,
+      "axis_xy_end_from_start_m": 0.005971651889672887,
+      "axis_z_span_m": 0.013325909503338222
+    }
+  }
+}
