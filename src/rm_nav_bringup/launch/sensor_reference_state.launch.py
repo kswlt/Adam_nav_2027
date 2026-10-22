@@ -1,8 +1,11 @@
 """Sensor-axis navigation state. No chassis TF, encoder, EKF or serial output."""
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from pathlib import Path
+from ament_index_python.packages import get_package_share_directory
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
@@ -12,7 +15,8 @@ def generate_launch_description():
     health = [('/state/chassis_healthy', '/state/sensor_reference_healthy')]
     calibration = ParameterValue(LaunchConfiguration('calibration_id'), value_type=str)
     return LaunchDescription([
-        DeclareLaunchArgument('lio_params_file', description='small_point_lio MID360 driver/time parameters'),
+        DeclareLaunchArgument('lio_params_file', default_value='', description='LEGACY_DEBUG only: small_point_lio parameters'),
+        DeclareLaunchArgument('legacy_lio', default_value='false', description='Explicit historical small_point_lio regression only'),
         DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument('enable_lio', default_value='true'),
         DeclareLaunchArgument('reference_point', default_value='lidar_center'),
@@ -26,8 +30,11 @@ def generate_launch_description():
         DeclareLaunchArgument('heading_max_correction', default_value='0.25'),
         Node(package='rm_nav_sensors', executable='mid360_cloud_guard', parameters=[sim], output='screen'),
         Node(package='rm_nav_bringup', executable='lio_input_guard', parameters=[sim], output='screen'),
+        IncludeLaunchDescription(PythonLaunchDescriptionSource(str(Path(get_package_share_directory('rm_nav_bringup'))/'launch/z_localization_frontend.launch.py')),
+             condition=IfCondition(PythonExpression(["'", LaunchConfiguration('enable_lio'), "' == 'true' and '", LaunchConfiguration('legacy_lio'), "' != 'true'"])),
+             launch_arguments={'use_sim_time': LaunchConfiguration('use_sim_time')}.items()),
         Node(package='small_point_lio', executable='small_point_lio_node', name='small_point_lio',
-             condition=IfCondition(LaunchConfiguration('enable_lio')),
+             condition=IfCondition(PythonExpression(["'", LaunchConfiguration('enable_lio'), "' == 'true' and '", LaunchConfiguration('legacy_lio'), "' == 'true'"])),
              parameters=[LaunchConfiguration('lio_params_file'), sim, {
                  'publish_tf': False, 'odom_frame': 'odom', 'state_frame': 'front_mid360_imu',
                  'lidar_frame': 'front_mid360', 'lidar_type': 'livox_pointcloud2',

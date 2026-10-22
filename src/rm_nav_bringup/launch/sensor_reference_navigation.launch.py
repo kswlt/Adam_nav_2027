@@ -22,6 +22,12 @@ def start(context):
     manifest = LaunchConfiguration('map_bundle').perform(context)
     map_profile=LaunchConfiguration('map_profile').perform(context)
     bundle, artifacts = contract.load_published_bundle(manifest, navigation=True,expected_profile=map_profile)
+    zspec = importlib.util.spec_from_file_location('zconfig', Path(__file__).with_name('z_localization_config.py'))
+    zconfig = importlib.util.module_from_spec(zspec); zspec.loader.exec_module(zconfig)
+    zconfig.native_bundle(manifest, bundle)  # validate before starting map server/Nav2
+    geometry = yaml.safe_load((share/'config/vehicle_164_geometry.yaml').read_text(encoding='utf-8'))
+    if bundle['z_localization'].get('calibration_id') != geometry['mount']['reference_calibration_id']:
+        raise ValueError('Z native map calibration differs from vehicle reference geometry')
     sim = LaunchConfiguration('use_sim_time').perform(context)
     profile_spec = importlib.util.spec_from_file_location('sensor_profile', Path(__file__).with_name('sensor_reference_profile.py'))
     profile = importlib.util.module_from_spec(profile_spec)

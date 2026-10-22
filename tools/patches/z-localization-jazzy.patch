@@ -1,0 +1,23 @@
+diff --git a/src/backend/CMakeLists.txt b/src/backend/CMakeLists.txt
+--- a/src/backend/CMakeLists.txt
++++ b/src/backend/CMakeLists.txt
+@@ -5,3 +5,3 @@
+ endif()
+-project(backend LANGUAGES CXX)
++project(backend LANGUAGES C CXX)
+ include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/Warnings.cmake)
+diff --git a/src/backend/src/keyframe_map.cpp b/src/backend/src/keyframe_map.cpp
+--- a/src/backend/src/keyframe_map.cpp
++++ b/src/backend/src/keyframe_map.cpp
+@@ -166,1 +166,1 @@
+-        std::vector<std::pair<std::size_t, double>> hits;
++        std::vector<nanoflann::ResultItem<std::size_t, double>> hits;
+@@ -170,1 +170,1 @@
+-        tree->radiusSearch(p.data(), bound + margin, hits, nanoflann::SearchParams());
++        tree->radiusSearch(p.data(), bound + margin, hits, nanoflann::SearchParameters());
+diff --git a/src/bringup/launch/bringup.launch.py b/src/bringup/launch/bringup.launch.py
+--- a/src/bringup/launch/bringup.launch.py
++++ b/src/bringup/launch/bringup.launch.py
+@@ -40,1 +40,1 @@
+-                        'launch_ROS2', 'msg_MID360_launch.py'
++                        'launch', 'msg_MID360_launch.py'

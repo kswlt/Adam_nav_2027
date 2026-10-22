@@ -48,7 +48,7 @@ def main():
         with log_path.open('w') as log:
             commands = [
                 ['ros2', 'launch', 'rm_nav_bringup', 'frozen_map_localization.launch.py',
-                 'map_version:=kiss-test-v1', 'enable_recovery:=true',
+                 'legacy_localization:=true','map_version:=kiss-test-v1', 'enable_recovery:=true',
                  'field_bounds:=[-12.0,12.0,-12.0,12.0]'],
                 ['ros2', 'run', 'rm_nav_control', 'motion_gate'],
             ]

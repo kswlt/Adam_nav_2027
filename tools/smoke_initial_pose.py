@@ -17,7 +17,7 @@ def main():
     try:
         with logs.open('w') as log:
             process=subprocess.Popen(['ros2','launch','rm_nav_bringup','frozen_map_localization.launch.py',
-                'map_version:=TEST_ONLY_initial_pose'],stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
+                'legacy_localization:=true','map_version:=TEST_ONLY_initial_pose'],stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
             require(node.wait(lambda: node.map.get_subscription_count()>0 and node.healthy is False,15),'Startup failed')
             require(node.tf is None,'Unverified startup TF')
             broadcaster=StaticTransformBroadcaster(node)

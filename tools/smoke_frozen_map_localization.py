@@ -100,7 +100,7 @@ def main():
         with log_path.open('w') as log:
             process = subprocess.Popen([
                 'ros2', 'launch', 'rm_nav_bringup', 'frozen_map_localization.launch.py',
-                'map_version:=acceptance-v1'], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+                'legacy_localization:=true','map_version:=acceptance-v1'], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             require(node.wait(lambda: node.healthy is False and node.map.get_subscription_count() > 0
                               and node.submap.get_subscription_count() > 0, 15), 'Nodes did not start')
             require(node.tf is None and node.transform is None, 'Unverified startup TF published')

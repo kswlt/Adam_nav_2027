@@ -57,7 +57,7 @@ def main():
         with log_path.open('w') as log:
             for command in [
                 ['ros2','launch','rm_nav_bringup','frozen_map_localization.launch.py',
-                 'map_version:=transaction-v1','enable_recovery:=true','enable_recovery_transaction:=true',
+                 'legacy_localization:=true','map_version:=transaction-v1','enable_recovery:=true','enable_recovery_transaction:=true',
                  'recovery_timeout:=20.0','field_bounds:=[-12.0,12.0,-12.0,12.0]'],
                 ['ros2','launch','rm_nav_bringup','mppi_baseline.launch.py'],
             ]:

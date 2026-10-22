@@ -21,6 +21,10 @@
   <exec_depend>rm_nav_control</exec_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>sensor_msgs_py</exec_depend>
+  <exec_depend>frontend</exec_depend>
+  <exec_depend>backend</exec_depend>
+  <exec_depend>localization_interfaces</exec_depend>
   <exec_depend>pointcloud_to_laserscan</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>tf2_ros</exec_depend>

@@ -76,7 +76,7 @@ def load_free_space(mask_path, metadata_path, source, profile='official'):
     return metadata,width,height,float(resolution),float(origin[0]),float(origin[1]),cells
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('--draft',required=True); ap.add_argument('--alignment',required=True); ap.add_argument('--output',required=True); ap.add_argument('--resolution',type=float,default=.05); ap.add_argument('--min-z',type=float,default=.15); ap.add_argument('--max-z',type=float,default=2.0); ap.add_argument('--free-space-mask'); ap.add_argument('--free-space-metadata'); ap.add_argument('--profile',choices=('official','local_site'),default='official'); args=ap.parse_args()
+    ap=argparse.ArgumentParser(); ap.add_argument('--draft',required=True); ap.add_argument('--alignment',required=True); ap.add_argument('--output',required=True); ap.add_argument('--resolution',type=float,default=.05); ap.add_argument('--min-z',type=float,default=.15); ap.add_argument('--max-z',type=float,default=2.0); ap.add_argument('--free-space-mask'); ap.add_argument('--free-space-metadata'); ap.add_argument('--profile',choices=('official','local_site'),default='official'); ap.add_argument('--z-native-bundle',help='Native Z backend snapshot used for the local draft'); args=ap.parse_args()
     draft_path=Path(args.draft).resolve(strict=True); alignment_path=Path(args.alignment).resolve(strict=True); output=Path(args.output).resolve()
     if output.exists(): raise FileExistsError('Published output exists; refusing overwrite')
     draft=json.loads(draft_path.read_text()); align=load_alignment(alignment_path)
@@ -127,6 +127,23 @@ def main():
     staging=Path(tempfile.mkdtemp(prefix=output.name+'.partial-',dir=str(output.parent)))
     try:
         (staging/'maps').mkdir()
+        z_native=None
+        if args.z_native_bundle:
+            if args.profile!='local_site' or draft.get('source')!='z-localization/backend':
+                raise ValueError('Native Z publication requires its own local-site draft; official alignment must transform native poses too')
+            native=Path(args.z_native_bundle).resolve(strict=True)
+            if output==native or native in output.parents:
+                raise ValueError('Published output must be outside the native source bundle')
+            if (not (native/'keyframes.txt').is_file() or not (native/'clouds').is_dir() or
+                    digest(native/'map.pcd')!=draft.get('z_native_map_sha256')):
+                raise ValueError('Z native snapshot does not match the draft map')
+            for item in native.rglob('*'):
+                if item.is_symlink() or (not item.is_dir() and not item.is_file()):
+                    raise ValueError('Z native map cannot contain links/special files')
+            shutil.copytree(native,staging/'z_native')
+            z_native={'backend':'z-localization','upstream_commit':'76e126328b670adc92981d9b4900cc059a6f2343',
+                      'native_bundle':'z_native','keyframe_index_sha256':digest(staging/'z_native/keyframes.txt'),
+                      'calibration_id':draft['calibration_id']}
         write_pcd(staging/'maps'/'localization_map.pcd',aligned,
                   'map; official alignment applied' if args.profile=='official' else 'map; explicit local session coordinates')
         # An endpoint-only PCD contains no free-space evidence. Never mark unseen cells free.
@@ -140,6 +157,7 @@ def main():
             'free_space_evidence':'unavailable_endpoint_only_pcd','occupancy_unknown_value':205,
             'obstacle_height_range_m':[args.min_z,args.max_z], 'terrain_traversability_verified':False})
         published['occupancy_ignored_outside_points']=outside_points
+        if z_native is not None: published['z_localization']=z_native
         if mask_metadata is not None:
             mask_name='official_free_space' if args.profile=='official' else 'local_reviewed_free_space'
             shutil.copyfile(args.free_space_mask,staging/'maps'/(mask_name+'.pgm'))
@@ -151,6 +169,8 @@ def main():
         # Changing grid resolution/height filtering/terrain must invalidate consumers
         # even when the localization PCD itself is identical.
         published['version']='map-'+hashlib.sha256(json.dumps(published['artifacts'],sort_keys=True).encode()).hexdigest()[:16]
+        if z_native is not None:
+            published['version']='z-map-'+hashlib.sha256(json.dumps([published['artifacts'],z_native],sort_keys=True).encode()).hexdigest()[:16]
         (staging/'map_bundle.json').write_text(json.dumps(published,indent=2,sort_keys=True)+'\n'); staging.rename(output)
         print(json.dumps(published,indent=2))
     except Exception:

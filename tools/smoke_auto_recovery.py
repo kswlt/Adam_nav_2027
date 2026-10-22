@@ -21,7 +21,7 @@ def main():
     try:
         with log_path.open('w') as log:
             command=['ros2','launch','rm_nav_bringup','frozen_map_localization.launch.py',
-                     'map_version:=transaction-v1','enable_recovery:=true','enable_auto_recovery:=true',
+                     'legacy_localization:=true','map_version:=transaction-v1','enable_recovery:=true','enable_auto_recovery:=true',
                      'recovery_timeout:=10.0','field_bounds:=[-12.0,12.0,-12.0,12.0]']
             processes.append(subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,start_new_session=True))
             require(node.wait(lambda:node.submap.get_subscription_count()>0,15),'Matcher missing')

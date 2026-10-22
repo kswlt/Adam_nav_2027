@@ -7,8 +7,7 @@ platform:
   target: ASUS NUC 15 Pro
 profiles:
   stable_baseline:
-    - small_point_lio
-    - small_gicp
+    - z_localization
     - ros-jazzy-nav2-bringup
     - ros-jazzy-nav2-mppi-controller
     - ros-jazzy-ros2-control
@@ -22,6 +21,15 @@ profiles:
   enhanced:
     - rog_map
 sources:
+  z_localization:
+    url: https://github.com/mozihe/z-localization.git
+    commit: 76e126328b670adc92981d9b4900cc059a6f2343
+    license: GPL-2.0-only
+    build: tools/bootstrap_z_localization.bash
+    patch: tools/patches/z-localization-jazzy.patch
+    patch_apply: tools/patch_z_jazzy.py
+    options: Jazzy; GTSAM4.2; external official Livox driver; LOCALIZATION_WARNINGS_AS_ERRORS=OFF; bounded parallel build
+    replaces: small_point_lio runtime frontend; frozen_map_matcher; map_odom_manager; RM online localization backend
   osqp:
     url: https://github.com/osqp/osqp.git
     commit: 0dd00a578cf1c2691c5c379965d504c75bf6cfad

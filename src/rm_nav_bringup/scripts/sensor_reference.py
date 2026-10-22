@@ -10,7 +10,7 @@ import time
 import numpy as np
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import qos_profile_sensor_data, QoSProfile, DurabilityPolicy
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import TransformStamped, TwistStamped
 from std_msgs.msg import Bool, String
@@ -66,7 +66,23 @@ class SensorReference(Node):
         self.create_subscription(Odometry, '/lio/sensor_odometry', self.pose, qos_profile_sensor_data)
         self.create_subscription(Bool, '/nav/motion_allowed', self.permission, 10)
         self.create_subscription(TwistStamped, '/nav/cmd_vel_safe', self.velocity, 1)
+        self.lio_identity = None
+        self.create_subscription(String, '/lio/session_identity', self.session_identity,
+                                 QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.create_timer(.02, self.tick)
+
+    def session_identity(self, msg):
+        if msg.data == self.lio_identity:
+            return
+        self.lio_identity = msg.data
+        self.command = self.previous = None
+        self.pose_ok = self.allowed = False
+        self.last_stamp = self.last_command_stamp = 0
+        self.pose_at = self.allowed_at = -math.inf
+        self.heading.reset()
+        limits = self.continuity
+        self.continuity = PoseContinuity(limits.max_gap, limits.max_speed, limits.max_angular_speed)
+        self.detail = 'ZLIO session changed; waiting for new real poses and new task permission'
 
     def raw(self, msg):
         self.raw_ok, self.raw_at = msg.data, time.monotonic()

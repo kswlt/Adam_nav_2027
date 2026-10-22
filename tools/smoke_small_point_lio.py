@@ -115,9 +115,9 @@ def main():
                 '-r','/cloud_registered:=/lio/deskewed_odom_cloud']
             if pipeline:
                 command=['ros2','launch','rm_nav_bringup','local_state.launch.py',
-                         'calibration_file:='+str(calibration),'lio_params_file:='+str(config)]
+                         'legacy_lio:=true','calibration_file:='+str(calibration),'lio_params_file:='+str(config)]
                 processes.append(subprocess.Popen(['ros2','launch','rm_nav_bringup','frozen_map_localization.launch.py',
-                    'map_version:=synthetic-lio-pipeline'],stdout=log,stderr=subprocess.STDOUT,start_new_session=True))
+                    'legacy_localization:=true','map_version:=synthetic-lio-pipeline'],stdout=log,stderr=subprocess.STDOUT,start_new_session=True))
                 if mapping:
                     archive_root=Path(tempfile.mkdtemp(prefix='lio_mapping_capture_'))
                     print('Retained native-filesystem archive root: '+str(archive_root),flush=True)

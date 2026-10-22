@@ -17,12 +17,16 @@ class LioInputGuard(Node):
             self.declare_parameter('max_input_gap', .5).value,
             self.declare_parameter('max_source_age', .25).value,
             self.declare_parameter('max_sensor_skew', .25).value)
+        # 200Hz IMU can arrive in short recorder/DDS bursts. Retain them without
+        # changing source-age/gap checks; depth=5 silently loses only 25ms of history.
+        imu_qos = rclpy.qos.QoSProfile(depth=4000,
+                                      reliability=rclpy.qos.ReliabilityPolicy.BEST_EFFORT)
         self.pubs = {
-            'imu':self.create_publisher(Imu, '/lio/input/imu', qos_profile_sensor_data),
+            'imu':self.create_publisher(Imu, '/lio/input/imu', imu_qos),
             'cloud':self.create_publisher(PointCloud2, '/lio/input/cloud', qos_profile_sensor_data)}
         self.health = self.create_publisher(Bool, '/lio/input_healthy', 10)
         self.reason = self.create_publisher(String, '/lio/input_reason', 10)
-        self.create_subscription(Imu, '/livox/imu', lambda m:self.receive('imu',m), qos_profile_sensor_data)
+        self.create_subscription(Imu, '/livox/imu', lambda m:self.receive('imu',m), imu_qos)
         self.create_subscription(PointCloud2, '/sensors/front_mid360/guarded_points', lambda m:self.receive('cloud',m), qos_profile_sensor_data)
         self.create_timer(.02, self.tick)
         self.reported_fault = ''

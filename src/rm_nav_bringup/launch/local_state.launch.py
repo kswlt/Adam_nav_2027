@@ -1,12 +1,13 @@
 """Raw upstream LIO -> time-aligned SE3 resolver -> upstream robot_localization."""
 import math
 import os
+import json
 from ament_index_python.packages import get_package_share_directory
 import yaml
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from launch.conditions import IfCondition
@@ -42,7 +43,9 @@ def nodes(context):
               2*(x*y+z*w),1-2*(x*x+z*z),2*(y*z-x*w),
               2*(x*z-y*w),2*(y*z+x*w),1-2*(x*x+y*y)]
     sim=ParameterValue(LaunchConfiguration('use_sim_time'),value_type=bool)
-    raw_guard = LaunchConfiguration('enable_mid360_guard').perform(context)=='true'
+    z_frontend = (LaunchConfiguration('enable_lio').perform(context)=='true' and
+                  LaunchConfiguration('legacy_lio').perform(context)!='true')
+    raw_guard = LaunchConfiguration('enable_mid360_guard').perform(context)=='true' or z_frontend
     lio_input = {'lidar_type':'livox_pointcloud2',
                  'lidar_topic':'/sensors/front_mid360/guarded_points'} if raw_guard else {}
     ekf={'use_sim_time':sim,'frequency':50.0,'sensor_timeout':0.2,'two_d_mode':False,
@@ -70,7 +73,7 @@ def nodes(context):
         raise ValueError('Legacy hard-coded TF requires the original frame names')
     return [
         Node(package='rm_nav_sensors',executable='mid360_cloud_guard',
-             condition=IfCondition(LaunchConfiguration('enable_mid360_guard')),
+             condition=IfCondition(str(raw_guard).lower()),
              parameters=[{'use_sim_time':sim,'sensor_frame':frames['lidar']}],output='screen'),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(os.path.join(
             get_package_share_directory('rm_nav_bringup'), 'launch', 'legacy_static_tf.launch.py')),
@@ -82,8 +85,16 @@ def nodes(context):
             'yaw_sign':float(bundle['encoder']['sign']),'yaw_offset':float(bundle['encoder']['zero_offset']),
             'yaw_joint':bundle['encoder']['joint']}],output='screen')),
         *fixed_nodes[1:],
+        Node(package='rm_nav_bringup',executable='lio_input_guard',
+             condition=IfCondition(PythonExpression(["'",LaunchConfiguration('enable_lio'),"' == 'true' and '",LaunchConfiguration('legacy_lio'),"' != 'true'"])),
+             parameters=[{'use_sim_time':sim}],output='screen'),
+        IncludeLaunchDescription(PythonLaunchDescriptionSource(os.path.join(get_package_share_directory('rm_nav_bringup'),'launch','z_localization_frontend.launch.py')),
+             condition=IfCondition(PythonExpression(["'",LaunchConfiguration('enable_lio'),"' == 'true' and '",LaunchConfiguration('legacy_lio'),"' != 'true'"])),
+             launch_arguments={'use_sim_time':LaunchConfiguration('use_sim_time'),'sensor_frame':frames['imu'],
+                 'imu_to_lidar_translation':json.dumps(transforms['imu_to_lidar']['translation']),
+                 'imu_to_lidar_quaternion':json.dumps(transforms['imu_to_lidar']['quaternion_xyzw'])}.items()),
         Node(package='small_point_lio',executable='small_point_lio_node',name='small_point_lio',
-             condition=IfCondition(LaunchConfiguration('enable_lio')),
+             condition=IfCondition(PythonExpression(["'",LaunchConfiguration('enable_lio'),"' == 'true' and '",LaunchConfiguration('legacy_lio'),"' == 'true'"])),
              parameters=[LaunchConfiguration('lio_params_file'),{'use_sim_time':sim,
                  'publish_tf':False,'odom_frame':'odom','state_frame':frames['imu'],'lidar_frame':frames['lidar'],
                  'extrinsic_est_en':False,'extrinsic_T':transforms['imu_to_lidar']['translation'],
@@ -110,7 +121,8 @@ def nodes(context):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('calibration_file',description='Verified measured calibration YAML'),
-        DeclareLaunchArgument('lio_params_file',description='Driver topics, timing and filter parameters'),
+        DeclareLaunchArgument('lio_params_file',default_value='',description='LEGACY_DEBUG only: small_point_lio settings'),
+        DeclareLaunchArgument('legacy_lio',default_value='false'),
         DeclareLaunchArgument('use_sim_time',default_value='false'),
         DeclareLaunchArgument('enable_lio',default_value='true'),
         DeclareLaunchArgument('enable_mid360_guard',default_value='false',

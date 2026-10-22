@@ -18,7 +18,8 @@ def generate_launch_description():
             mount.get('axis_reference')!='point_on_yaw_axis_at_lidar_height'):
         raise ValueError('Missing user-confirmed horizontal yaw-axis geometry')
     return LaunchDescription([
-        DeclareLaunchArgument('lio_params_file',description='Actual small_point_lio sensor parameters'),
+        DeclareLaunchArgument('lio_params_file',default_value='',description='LEGACY_DEBUG only; ZLIO uses pinned upstream configuration'),
+        DeclareLaunchArgument('legacy_lio',default_value='false'),
         DeclareLaunchArgument('use_sim_time',default_value='false'),
         DeclareLaunchArgument('enable_lio',default_value='true'),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(str(share/'launch/sensor_reference_state.launch.py')),
@@ -26,6 +27,7 @@ def generate_launch_description():
                 'lio_params_file':LaunchConfiguration('lio_params_file'),
                 'use_sim_time':LaunchConfiguration('use_sim_time'),
                 'enable_lio':LaunchConfiguration('enable_lio'),
+                'legacy_lio':LaunchConfiguration('legacy_lio'),
                 'reference_point':'gimbal_axis',
                 'gimbal_axis_to_lidar':json.dumps(mount['axis_to_lidar_at_reference_height']),
                 'reference_geometry_verified':str(mount['reference_geometry_verified']).lower(),

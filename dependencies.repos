@@ -1,4 +1,8 @@
 repositories:
+  z-localization:
+    type: git
+    url: https://github.com/mozihe/z-localization.git
+    version: 76e126328b670adc92981d9b4900cc059a6f2343
   Livox-SDK2:
     type: git
     url: https://github.com/Livox-SDK/Livox-SDK2.git

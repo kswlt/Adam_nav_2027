@@ -60,7 +60,7 @@ def acceptance(mode):
             for command in [
                 [sys.executable, __file__, '--fixture', mode],
                 ['ros2', 'launch', 'rm_nav_bringup', 'frozen_map_localization.launch.py',
-                 'map_version:=transaction-v1', 'enable_recovery:=true', 'enable_recovery_transaction:=true',
+                 'legacy_localization:=true','map_version:=transaction-v1', 'enable_recovery:=true', 'enable_recovery_transaction:=true',
                  'recovery_timeout:=20.0', 'field_bounds:=[-12.0,12.0,-12.0,12.0]'],
                 ['ros2', 'run', 'rm_nav_control', 'motion_gate'],
             ]:

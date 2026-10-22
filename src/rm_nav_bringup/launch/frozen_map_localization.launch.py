@@ -1,4 +1,4 @@
-"""External frozen-map inputs; optionally require a published aligned MapBundle."""
+"""Native Z prior localization by default; explicit legacy matcher regression retained."""
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
@@ -11,6 +11,22 @@ def nodes(context):
     bundle_path=LaunchConfiguration('map_bundle').perform(context)
     map_version=LaunchConfiguration('map_version').perform(context)
     map_nodes=[]
+    legacy=LaunchConfiguration('legacy_localization').perform(context)=='true'
+    if not legacy:
+        from launch.actions import IncludeLaunchDescription
+        from launch.launch_description_sources import PythonLaunchDescriptionSource
+        if not bundle_path:
+            raise ValueError('Z-Localization requires a published RM MapBundle with native Z priors')
+        spec=importlib.util.spec_from_file_location('rm_nav_bundle_contract',Path(__file__).with_name('map_bundle_contract.py'))
+        contract=importlib.util.module_from_spec(spec);spec.loader.exec_module(contract)
+        bundle,_=contract.load_published_bundle(bundle_path,expected_profile=LaunchConfiguration('map_profile').perform(context))
+        if bundle['version']!=map_version: raise ValueError('MapBundle version mismatch')
+        spec=importlib.util.spec_from_file_location('zconfig',Path(__file__).with_name('z_localization_config.py'))
+        config=importlib.util.module_from_spec(spec);spec.loader.exec_module(config)
+        native=config.native_bundle(bundle_path,bundle)
+        return [IncludeLaunchDescription(PythonLaunchDescriptionSource(str(Path(__file__).with_name('z_localization_backend.launch.py'))),
+            launch_arguments={'mode':'localization','prior_map':str(native),'map_version':map_version,
+                              'use_sim_time':LaunchConfiguration('use_sim_time')}.items())]
     if bundle_path:
         spec=importlib.util.spec_from_file_location('rm_nav_bundle_contract',Path(__file__).with_name('map_bundle_contract.py'))
         contract=importlib.util.module_from_spec(spec);spec.loader.exec_module(contract)
@@ -37,6 +53,7 @@ def nodes(context):
 
 def generate_launch_description():
     return LaunchDescription([
+        DeclareLaunchArgument('legacy_localization',default_value='false',description='LEGACY_DEBUG only: old frozen matcher/MapOdomManager regression'),
         DeclareLaunchArgument('tracking_frame',default_value='base_link'),
         DeclareLaunchArgument('hint_body_frame',default_value='base_footprint'),
         DeclareLaunchArgument('odom_topic',default_value='/odom'),
