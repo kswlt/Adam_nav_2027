@@ -1,5 +1,7 @@
 # Adam_nav_2027 使用说明
 
+**累计建图预览：** Foxglove选择 `/visualization/live_map_preview`、参考系 `odom`；在线回环地图选择 `/mapping/optimized_map_preview`、参考系 `mapping_odom`。新预览到点数上限会粗化全局，不再删除旧区域。默认5万点/1 Hz，纯核心合成测试峰值约61 MiB；查看方法、内存及精度取舍见 [累计点云指南](docs/ACCUMULATED_MAP_VIEW.md)。待部署ASUS。
+
 **安装关系更正（2026-10-22）：左16 cm指yaw轴→雷达偏心，不是底盘中心→yaw轴。** 按用户要求，车辆专用入口使用录包拟合值：前1.53 cm、左15.27 cm，半径约15.34 cm，显式标为拟合调试配置。建图/录制使用新ID和新会话，原始点云不做反向平移。见 [配置与使用方法](docs/VEHICLE164_GEOMETRY_CORRECTION_20261022.md)。ASUS尚未部署。
 
 **2026-10-22软件修复：** 已修复旋转时使用旧LIO朝向换算当前速度、旧速度指令覆盖新指令的问题，增加显式实测轴心参考模式。WSL Jazzy全14包构建，61项测试0失败/1跳过；真实MCAP匹配1170帧，默认参考位置保持一致。ASUS尚未部署；15.3cm拟合未冒充实测外参。配置、验证命令和剩余问题见 [修复说明](docs/SENSOR_REFERENCE_FIX_20261022.md)。
@@ -139,7 +141,7 @@ python3 "$NAV_RUNTIME/vehicle_session.py" start bag
 | `/livox/lidar` | 雷达刚扫描到的原始点云 | 查雷达是否正常；不是整张地图 |
 | `/lio/deskewed_odom_cloud` | small_point_lio 去畸变、放进 odom 的当前扫描 | 看实时配准；仍主要是当前扫描 |
 | `/localization/odom_submap` | 近期观测组成的滚动局部子图 | 给定位匹配使用；不是永久全图 |
-| `/visualization/live_map_preview` | 历史扫描累积预览 | 直观看建图扩大；不包含历史回环修正 |
+| `/visualization/live_map_preview` | 历史扫描累积预览，容量不足时全局粗化，不按新旧删区域 | 看覆盖范围；`live_map_status.voxel_m`显示实际分辨率，不包含历史回环修正 |
 | `/mapping/optimized_map_preview` | 经过后端修正的全历史地图预览 | 在线建图时优先看这个 |
 | `/mapping/optimized_map` | 后端完整体素地图 | 点较多，日常显示用 preview |
 | `/visualization/sensor_reference_path` | 雷达轴平面参考点走过的轨迹 | 不表示底盘中心的轨迹 |
@@ -156,7 +158,7 @@ python3 "$NAV_RUNTIME/vehicle_session.py" start bag
 
 底部 `/visualization/map_cloud.header` 一直“等待消息”时，常见原因是没有加载冻结 PCD 地图。建图阶段改看上表的实时/优化点云即可。图表面板要手工选数值字段，例如影子速度的 `twist.linear.x/y`。
 
-卡顿时：只打开一种大点云，优先 preview；关闭 full map 和原始点云同时显示，关闭长时间点云累积。预览本来会降频，不能拿它的刷新率当作 LIO 频率。
+卡顿时：只打开一种大点云，优先preview；关闭full map和原始点云同时显示。累计由ASUS端预览节点完成，Foxglove只显示最新一份全图，关闭客户端跨消息的长时间Decay累积，避免重复堆全图。预览本来会降频，不能拿它的刷新率当作LIO频率。详见 [累计点云指南](docs/ACCUMULATED_MAP_VIEW.md)。
 
 ## 5. 怎么进入导航
 

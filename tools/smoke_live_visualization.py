@@ -51,18 +51,27 @@ def main():
         spin(.7)
         require(all(p.poll() is None for p in procs),'visualization callback crashed')
         require(paths and len(paths[-1].poses)==10,'bounded multi-message path not generated')
-        require(maps and maps[-1].width==10,'bounded accumulation not generated')
-        xyz=struct.unpack('<fff',maps[-1].data[-12:])
-        require(abs(xyz[0]-5.8)<1e-4 and xyz[1:]==(1.,2.),'odom coordinates transformed twice')
+        require(maps and 1<=maps[-1].width<=10,'bounded accumulation not generated')
+        points=list(struct.iter_unpack('<fff',maps[-1].data))
+        require(min(p[0] for p in points)<.3,'early mapped region was discarded')
+        require(any(abs(p[0]-5.8)<1e-4 for p in points),'latest region missing')
+        require(all(p[1:]==(1.,2.) for p in points),'odom coordinates transformed twice')
+        require(states and states[-1]['coarsening_count']>0,'global adaptive retention not exercised')
         ns=lambda stamp:stamp.sec*10**9+stamp.nanosec
         require(ns(maps[-1].header.stamp)==ns(c.header.stamp),'preview source timestamp changed')
         old_path_count=len(paths); old_map_count=len(maps)
         odom.publish(m); cloud.publish(c);spin(.7)
         require(len(paths)==old_path_count and len(maps)==old_map_count,'duplicate source time accepted/cached map republished')
         require(states and states[-1]['input_stale'],'retained map marked as live after dropout')
+        late=[]
+        node.create_subscription(PointCloud2,'/visualization/live_map_preview',late.append,qos)
+        spin(.4)
+        require(late and late[-1].data==maps[-1].data,'late viewer could not receive retained snapshot')
         report={'passed':True,'scope':'explicit synthetic inputs, real ROS visualization nodes',
                 'path_poses':len(paths[-1].poses),'preview_points':maps[-1].width,
                 'evicted_voxels':states[-1]['evicted_voxels'],
+                'coarsening_count':states[-1]['coarsening_count'],
+                'retained_first_region':True,'late_subscriber_snapshot':True,
                 'checks':['multi-pose callback remains alive','trace/map bounded','native odom coordinates preserved',
                           'source timestamp preserved','duplicate time rejected','dropout stale; no cached restamping']}
         Path('log/live_visualization_report.json').write_text(json.dumps(report,indent=2)+'\n')

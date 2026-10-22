@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+**累计预览更新：** 修复live_map_preview的LRU删旧区域，改为容量受控的全局体素粗化；保留旧区域覆盖、真实源时间与断流stale，晚连接者收到快照。WSL重建/回归通过，汇总64 tests零失败/1跳过；纯核心容量测试5万/20万点峰值约61/121 MiB，不含ROS/LIO/浏览器。用法见 [累计点云指南](ACCUMULATED_MAP_VIEW.md)，尚未部署ASUS。
+
 **安装语义最新更正：** 用户明确16 cm是yaw轴→雷达偏心，随后批准使用录包拟合值。车辆入口 `vehicle_164_sensor_reference_state.launch.py` 当前使用前1.53cm、左15.27cm（半径15.34cm），参考点定义在yaw轴与LiDAR同高处；`reference_fit_debug_approved=true`、实测verified保持false。C→G未知，完整底盘标定仍draft。新ID为 `vehicle164_yaw_axis_fit153cm_debug_v3`，旧包络不再视为已验证。详见 [安装更正](VEHICLE164_GEOMETRY_CORRECTION_20261022.md)，未部署ASUS。
 
 **2026-10-22修复进展：** 新增 [旋转参考链修复报告](SENSOR_REFERENCE_FIX_20261022.md)。两帧真实LIO的有界yaw外推修复50Hz转换滞后，拒绝乱序速度；轴心模式要求实测几何和新标定ID。WSL新目录全14包构建，61 tests零失败/1跳过；实际MCAP状态链1170/1180帧匹配、XY差0；原Adam串口PTY通过。未部署ASUS、未改实车外参、未发实车命令。上一条“本机没有ROS环境”仅指Windows终端，现已使用本机WSL Jazzy完成软件回归。

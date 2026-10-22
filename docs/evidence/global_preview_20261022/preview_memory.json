@@ -1,0 +1,36 @@
+[
+  {
+    "scope": "synthetic 20k-point batches in isolated Python process; no ROS/LIO/browser",
+    "capacity": 50000,
+    "baseline_rss_bytes": 34103296,
+    "final_rss_bytes": 48852992,
+    "process_peak_rss_bytes": 64200704,
+    "retained_points": 22445,
+    "largest_retained_snapshot_points": 50000,
+    "coarsenings": 1,
+    "effective_voxel_m": 0.3,
+    "batch_seconds_p50_p95_max": [
+      0.03533823650000001,
+      0.08134630229999994,
+      0.08899907399999996
+    ],
+    "largest_snapshot_xyz_bytes": 600000
+  },
+  {
+    "scope": "synthetic 20k-point batches in isolated Python process; no ROS/LIO/browser",
+    "capacity": 200000,
+    "baseline_rss_bytes": 34222080,
+    "final_rss_bytes": 72097792,
+    "process_peak_rss_bytes": 126943232,
+    "retained_points": 67335,
+    "largest_retained_snapshot_points": 200000,
+    "coarsenings": 1,
+    "effective_voxel_m": 0.3,
+    "batch_seconds_p50_p95_max": [
+      0.03272292099999996,
+      0.13048009350000012,
+      0.21736290200000008
+    ],
+    "largest_snapshot_xyz_bytes": 2400000
+  }
+]

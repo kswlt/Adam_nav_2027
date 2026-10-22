@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "scope": "explicit synthetic inputs, real ROS visualization nodes",
+  "path_poses": 10,
+  "preview_points": 8,
+  "evicted_voxels": 0,
+  "coarsening_count": 3,
+  "retained_first_region": true,
+  "late_subscriber_snapshot": true,
+  "checks": [
+    "multi-pose callback remains alive",
+    "trace/map bounded",
+    "native odom coordinates preserved",
+    "source timestamp preserved",
+    "duplicate time rejected",
+    "dropout stale; no cached restamping"
+  ]
+}

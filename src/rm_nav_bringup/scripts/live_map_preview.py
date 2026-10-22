@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Bounded odom cloud accumulation for display, independent of optimized/frozen maps."""
 import argparse
-from collections import OrderedDict
 import json
 import math
 import time
@@ -11,6 +10,7 @@ from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data, QoSProfile, DurabilityPolicy
 from sensor_msgs.msg import PointCloud2, PointField
 from std_msgs.msg import String
+from voxel_preview import GlobalVoxelPreview
 
 
 class LiveMapPreview(Node):
@@ -18,13 +18,12 @@ class LiveMapPreview(Node):
         super().__init__('live_map_preview')
         self.voxel = voxel
         self.limit = max_voxels
-        self.voxels = OrderedDict()
+        self.voxels = GlobalVoxelPreview(voxel,max_voxels)
         self.header = None
         self.last_ns = -1
         self.received_at = 0.
         self.dirty = False
         self.accepted = 0
-        self.evicted = 0
         self.reason = 'waiting for deskewed odom cloud'
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.cloud_pub = self.create_publisher(PointCloud2, '/visualization/live_map_preview', qos)
@@ -54,21 +53,14 @@ class LiveMapPreview(Node):
             xyz = np.column_stack([scan[k] for k in ('x','y','z')])
             if not np.isfinite(xyz).all() or np.abs(xyz).max() > 10000:
                 raise ValueError('nonfinite or out-of-bounds odom geometry')
-            keys = np.floor(xyz/self.voxel).astype(np.int64)
             # No TF conversion: upstream has already placed these points in odom.
-            for key, point in zip(keys, xyz):
-                k = tuple(int(v) for v in key)
-                self.voxels[k] = tuple(float(v) for v in point)
-                self.voxels.move_to_end(k)
-                if len(self.voxels) > self.limit:
-                    self.voxels.popitem(last=False)
-                    self.evicted += 1
+            self.voxels.add(xyz)
             self.header = msg.header
             self.last_ns = stamp_ns
             self.received_at = time.monotonic()
             self.accepted += 1
             self.dirty = True
-            self.reason = 'preview updated from native odom points'
+            self.reason = 'global coverage retained; resolution coarsens at point limit'
         except (ValueError, OverflowError) as exc:
             self.reason = str(exc)
 
@@ -83,13 +75,19 @@ class LiveMapPreview(Node):
             msg.point_step = 12
             msg.row_step = 12*msg.width
             msg.is_dense = True
-            msg.data = np.asarray(list(self.voxels.values()), dtype='<f4').tobytes()
+            msg.data = self.voxels.points().astype('<f4',copy=False).tobytes()
             self.cloud_pub.publish(msg)
             self.dirty = False
         status = String()
         status.data = json.dumps({'scope':'odom preview only; not optimized or frozen navigation map',
-                                  'frame':'odom', 'voxel_m':self.voxel, 'points':len(self.voxels),
-                                  'point_limit':self.limit, 'evicted_voxels':self.evicted,
+                                  'frame':'odom', 'voxel_m':self.voxels.voxel,
+                                  'initial_voxel_m':self.voxel, 'points':len(self.voxels),
+                                  'point_limit':self.limit, 'evicted_voxels':0,
+                                  'retention_policy':'global_adaptive_voxel',
+                                  'coarsening_count':self.voxels.coarsenings,
+                                  'merged_voxels':self.voxels.merged,
+                                  'preview_xyz_bytes':12*len(self.voxels),
+                                  'session_retention':'until process restart; not disk persistence',
                                   'accepted_scans':self.accepted, 'last_source_stamp_ns':self.last_ns,
                                   'input_stale':not self.header or time.monotonic()-self.received_at > .5,
                                   'reason':self.reason})
