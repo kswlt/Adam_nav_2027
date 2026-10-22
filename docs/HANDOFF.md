@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+**当前正在实车建图：** 已启动新runtime的driver/state/foxglove/capture/online和600秒原始录包，物理输出/导航未启动。会话 `session_1792670869656779404_3581137020`，新拟合debug-v3标定。用户已被提示可以遥控绕场并回起点；完成后继续导出、停止采集、离线优化与导航验收。实际路径、启动探针和限制见 [当前会话](MAPPING_TEST_SESSION_20261022.md)，不要误停原车工作区或清理原始数据。
+
 **ASUS最新部署：** 2026-10-22代码8a9a9b1已部署至新release `20261022_fit153_console`、新runtime `runtime_20261022_fit153_console`；ASUS全14包构建/64 tests零失败1跳过，菜单CLI3项通过。旧release脏修改未覆盖，当前组件均未启动、物理输出关闭。用新runtime的 `start_console.bash`进入中文菜单。见 [部署交接](ASUS_DEPLOY_20261022.md)，此前“ASUS离线/未部署”均为历史状态。
 
 **中文终端菜单：** 新增 `tools/deployment/20261021/nav_console.py`，复用受标记会话管理器；建图、录包、新会话在线优化、draft导出、地图选择、影子导航、日志与消息集中操作。真实串口是独立选项。管理器新增navigation组件和无缓冲Python日志。3项无设备CLI回归及语法检查通过；未做ASUS实机整流程。详见 [操作与Foxglove配置](NAV_CONSOLE.md)。

@@ -38,8 +38,10 @@ case "$nav_component" in
       calibration_id:=vehicle164_yaw_axis_fit153cm_debug_v3 body_frame:=nav_reference \
       state_health_topic:=/state/sensor_reference_healthy ;;
   bag)
+    nav_duration="${1:-180}"
+    [[ "$nav_duration" =~ ^[0-9]{1,4}$ ]] && (( 10#$nav_duration >= 10 && 10#$nav_duration <= 3600 )) || { echo 'Bag duration must be 10..3600 seconds' >&2; exit 2; }
     mkdir -p "$nav_runtime/bags"
-    exec timeout --signal=INT --kill-after=10s 180 ros2 bag record -s mcap \
+    exec timeout --signal=INT --kill-after=10s "$nav_duration" ros2 bag record -s mcap \
       --max-cache-size 16777216 -o "$nav_runtime/bags/run_$(date +%Y%m%d_%H%M%S)" \
       /livox/lidar /livox/imu /lio/sensor_odometry /lio/deskewed_odom_cloud \
       /sensor_reference/odom /tf /tf_static /state/sensor_reference_healthy \

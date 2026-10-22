@@ -1,0 +1,116 @@
+{
+  "scope": "REAL_SENSOR_READ_ONLY_NO_MOTION",
+  "passed": true,
+  "counts": {
+    "/visualization/live_map_preview": 14,
+    "/livox/lidar": 135,
+    "/lio/sensor_odometry": 132,
+    "/lio/deskewed_odom_cloud": 132,
+    "/localization/odom_submap": 65,
+    "/sensor_reference/odom": 128
+  },
+  "health_and_reasons": {
+    "/sensors/front_mid360/cloud_healthy": true,
+    "/sensors/front_mid360/cloud_reason": "accepted native scan; valid_points=7141; eigen_ratio=0.153004",
+    "/localization/submap_reason": "fresh primary observation added; bounded rolling window",
+    "/localization/submap_healthy": true,
+    "/lio/input_healthy": true,
+    "/lio/input_reason": "continuous original inputs",
+    "/state/sensor_reference_healthy": true,
+    "/state/sensor_reference_reason": "real gimbal_axis state; chassis orientation unobserved"
+  },
+  "points": {
+    "/visualization/live_map_preview": 9615,
+    "/livox/lidar": 20064,
+    "/lio/deskewed_odom_cloud": 17755,
+    "/localization/odom_submap": 11832
+  },
+  "publishers": {
+    "/livox/lidar": [
+      "nav20261021_livox"
+    ],
+    "/lio/sensor_odometry": [
+      "small_point_lio"
+    ],
+    "/lio/deskewed_odom_cloud": [
+      "small_point_lio"
+    ],
+    "/sensor_reference/odom": [
+      "sensor_reference"
+    ],
+    "/localization/odom_submap": [
+      "observation_submap"
+    ],
+    "/visualization/live_map_preview": [
+      "live_map_preview"
+    ]
+  },
+  "tf_parents": {
+    "front_mid360_imu": [
+      "odom"
+    ],
+    "nav_reference": [
+      "odom"
+    ],
+    "sensor_yaw_reference": [
+      "odom"
+    ],
+    "front_mid360": [
+      "front_mid360_imu"
+    ]
+  },
+  "actual_tf_authorities": {},
+  "publisher_gid_available_in_python": false,
+  "tf_publishers": {
+    "/tf": [
+      "small_point_lio",
+      "sensor_reference"
+    ],
+    "/tf_static": [
+      "sensor_reference"
+    ]
+  },
+  "maximum_candidate_speed": 0.0,
+  "physical_transport_present": false,
+  "physical_publishers": {
+    "cmd_vel": 0,
+    "cmd_yaw_angle": 0
+  },
+  "source_age_s": {
+    "/visualization/live_map_preview": {
+      "p50": 0.034617376000000005,
+      "p95": 0.1578089971499999,
+      "max": 0.373934146
+    },
+    "/livox/lidar": {
+      "p50": 0.10155757400000001,
+      "p95": 0.1024117934,
+      "max": 0.102867579
+    },
+    "/lio/sensor_odometry": {
+      "p50": 0.007892115500000001,
+      "p95": 0.011597024299999998,
+      "max": 0.013225147000000001
+    },
+    "/lio/deskewed_odom_cloud": {
+      "p50": 0.00855196,
+      "p95": 0.012510228849999994,
+      "max": 0.013923581
+    },
+    "/localization/odom_submap": {
+      "p50": 0.11535537400000001,
+      "p95": 0.1281994534,
+      "max": 0.130744732
+    },
+    "/sensor_reference/odom": {
+      "p50": 0.009259599,
+      "p95": 0.0125115984,
+      "max": 0.014300533
+    }
+  },
+  "observed_position_span_m": 0.011347860934210663,
+  "operator_confirmed_stationary": false,
+  "lio_3d_span_m": 0.01537629958325367,
+  "lio_orientation_span_rad": 0.002887327427704373,
+  "stationary_drift_or_ground_truth_verified": false
+}
