@@ -1,0 +1,32 @@
+Starting >>> pb_rm_interfaces
+Finished <<< pb_rm_interfaces [26.4s]
+Starting >>> rm_nav_frames
+Finished <<< rm_nav_frames [8.35s]
+Starting >>> rm_nav_interfaces
+Finished <<< rm_nav_interfaces [28.5s]
+Starting >>> rm_nav_perception
+Finished <<< rm_nav_perception [6.00s]
+Starting >>> rm_nav_planning
+--- stderr: rm_nav_planning
+CMake Error at CMakeLists.txt:8 (add_library):
+  Cannot find source file:
+
+    /root/adam_nav_submap_full_20261022/third_party/tdt_minimum_jerk/minimumSnap.cpp
+
+  Tried extensions .c .C .c++ .cc .cpp .cxx .cu .mpp .m .M .mm .ixx .cppm
+  .ccm .cxxm .c++m .h .hh .h++ .hm .hpp .hxx .in .txx .f .F .for .f77 .f90
+  .f95 .f03 .hip .ispc
+
+
+CMake Error at CMakeLists.txt:8 (add_library):
+  No SOURCES given to target: timed_trajectory
+
+
+CMake Generate step failed.  Build files cannot be regenerated correctly.
+---
+Failed   <<< rm_nav_planning [5.98s, exited with code 1]
+
+Summary: 4 packages finished [1min 15s]
+  1 package failed: rm_nav_planning
+  1 package had stderr output: rm_nav_planning
+  9 packages not processed

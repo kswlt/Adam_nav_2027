@@ -1,0 +1,2 @@
+Retained native-filesystem fixture: /tmp/loop_mapping_mbrofdum
+PASS real KISS/GICP bidirectional loop accepted and sent to GTSAM; loops=2; evidence=/tmp/loop_mapping_mbrofdum

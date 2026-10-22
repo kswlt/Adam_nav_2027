@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+**本机离线后端进展（2026-10-22）：** 原160帧档案在显式 `--adjacent-submap --enable-loops` 下通过VGICP/回环/GTSAM全链路，重建83,229点。139→140边从单帧RMSE0.153856m降为0.140308m，门限仍0.15m。目标最多3帧/5秒/3米，使用已验收配准位姿对齐。默认模式和在线后端未改。ASUS SSH多次超时，最新24帧回放及ASUS部署NOT TESTED；现场原LIO状态未经重新确认。详情见 [本轮报告](ADJACENT_SUBMAP_REVIEW_20261022.md)。
+
 **当前现场已切换（2026-10-22 21:30）：** 仅启用range＋dense_time补丁，原0.2m采样不变；新库 `/home/asus/nav_2027_vehicle_config_164/lio_review_dense_time_20261022/install`，由runtime内lio_overlay.path选择。实际库路径、健康和15秒数据检查通过，LIO年龄P95约14ms。64项兼容测试零失败/1跳过、独立C++2项通过；真实点/1ms/平均时间三种体素实验静止回归失败，不能部署。新24帧回放的离线配准仍在9→10帧约0.162m处拒绝。物理输出、导航、录包和采集均未启动，旧地图未自动清理。见 [本轮交接](LIO_TEMPORAL_FIX_20261022.md)，下方“现场未替换”为此前快照。
 
 **LIO对照审查：** 已参考原Adam/rose/sentry26等源码，g单位及工厂内部外参与当前一致；发现dense点绕过距离过滤，隔离候选修复构建/真实Preprocess回归/45秒MCAP回放通过，旧库同测失败。现场LIO未替换，体素位置/时间配对及dense精确时间风险仍待修复，不能把在线地图或叶长对照当作已完成定位验收。完整原始MCAP及关键帧已本机备份。见 [本轮报告](LIO_SOURCE_COMPARISON_20261022.md)。

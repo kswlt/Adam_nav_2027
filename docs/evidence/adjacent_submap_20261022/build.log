@@ -1,0 +1,118 @@
+Starting >>> pb_rm_interfaces
+Finished <<< pb_rm_interfaces [0.66s]
+Starting >>> rm_nav_frames
+Finished <<< rm_nav_frames [0.07s]
+Starting >>> rm_nav_interfaces
+Finished <<< rm_nav_interfaces [0.52s]
+Starting >>> rm_nav_perception
+Finished <<< rm_nav_perception [0.06s]
+Starting >>> rm_nav_planning
+--- stderr: rm_nav_planning
+In file included from /usr/include/c++/13/array:43,
+                 from /root/adam_nav_submap_full_20261022/third_party/tdt_minimum_jerk/sfcSquare.hpp:9,
+                 from /root/adam_nav_submap_full_20261022/third_party/tdt_minimum_jerk/sfcSquare.cpp:1:
+In static member function ‘static constexpr _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const std::array<float, 4>; _Up = std::array<float, 4>; bool _IsMove = false]’,
+    inlined from ‘constexpr _OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const array<float, 4>*; _OI = array<float, 4>*]’ at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from ‘constexpr _OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const array<float, 4>*; _OI = array<float, 4>*]’ at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from ‘constexpr _OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = __gnu_cxx::__normal_iterator<const array<float, 4>*, vector<array<float, 4> > >; _OI = array<float, 4>*]’ at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from ‘constexpr _OI std::copy(_II, _II, _OI) [with _II = __gnu_cxx::__normal_iterator<const array<float, 4>*, vector<array<float, 4> > >; _OI = array<float, 4>*]’ at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from ‘static _ForwardIterator std::__uninitialized_copy<true>::__uninit_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = __gnu_cxx::__normal_iterator<const std::array<float, 4>*, std::vector<std::array<float, 4> > >; _ForwardIterator = std::array<float, 4>*]’ at /usr/include/c++/13/bits/stl_uninitialized.h:147:27,
+    inlined from ‘_ForwardIterator std::uninitialized_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = __gnu_cxx::__normal_iterator<const array<float, 4>*, vector<array<float, 4> > >; _ForwardIterator = array<float, 4>*]’ at /usr/include/c++/13/bits/stl_uninitialized.h:185:15,
+    inlined from ‘constexpr _ForwardIterator std::__uninitialized_copy_a(_InputIterator, _InputIterator, _ForwardIterator, allocator<_Tp>&) [with _InputIterator = __gnu_cxx::__normal_iterator<const array<float, 4>*, vector<array<float, 4> > >; _ForwardIterator = array<float, 4>*; _Tp = array<float, 4>]’ at /usr/include/c++/13/bits/stl_uninitialized.h:373:37,
+    inlined from ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = std::array<float, 4>; _Alloc = std::allocator<std::array<float, 4> >]’ at /usr/include/c++/13/bits/stl_vector.h:606:31,
+    inlined from ‘constexpr SfcSquare::CorridorOutput::CorridorOutput(const SfcSquare::CorridorOutput&)’ at /root/adam_nav_submap_full_20261022/third_party/tdt_minimum_jerk/sfcSquare.hpp:28:12,
+    inlined from ‘static SfcSquare::CorridorOutput SfcSquare::_removeRedundant(CorridorOutput&, float)’ at /root/adam_nav_submap_full_20261022/third_party/tdt_minimum_jerk/sfcSquare.cpp:515:16:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: ‘void* __builtin_memmove(void*, const void*, long unsigned int)’ writing between 17 and 9223372036854775807 bytes into a region of size 16 overflows the destination [-Wstringop-overflow=]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:33,
+                 from /usr/include/c++/13/bits/allocator.h:46,
+                 from /usr/include/c++/13/vector:63,
+                 from /root/adam_nav_submap_full_20261022/third_party/tdt_minimum_jerk/sfcSquare.hpp:10:
+In member function ‘_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = std::array<float, 4>]’,
+    inlined from ‘constexpr _Tp* std::allocator< <template-parameter-1-1> >::allocate(std::size_t) [with _Tp = std::array<float, 4>]’ at /usr/include/c++/13/bits/allocator.h:198:40,
+    inlined from ‘static constexpr _Tp* std::allocator_traits<std::allocator<_Up> >::allocate(allocator_type&, size_type) [with _Tp = std::array<float, 4>]’ at /usr/include/c++/13/bits/alloc_traits.h:482:28,
+    inlined from ‘constexpr std::_Vector_base<_Tp, _Alloc>::pointer std::_Vector_base<_Tp, _Alloc>::_M_allocate(std::size_t) [with _Tp = std::array<float, 4>; _Alloc = std::allocator<std::array<float, 4> >]’ at /usr/include/c++/13/bits/stl_vector.h:381:33,
+    inlined from ‘constexpr void std::_Vector_base<_Tp, _Alloc>::_M_create_storage(std::size_t) [with _Tp = std::array<float, 4>; _Alloc = std::allocator<std::array<float, 4> >]’ at /usr/include/c++/13/bits/stl_vector.h:398:44,
+    inlined from ‘constexpr std::_Vector_base<_Tp, _Alloc>::_Vector_base(std::size_t, const allocator_type&) [with _Tp = std::array<float, 4>; _Alloc = std::allocator<std::array<float, 4> >]’ at /usr/include/c++/13/bits/stl_vector.h:335:26,
+    inlined from ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = std::array<float, 4>; _Alloc = std::allocator<std::array<float, 4> >]’ at /usr/include/c++/13/bits/stl_vector.h:603:61,
+    inlined from ‘constexpr SfcSquare::CorridorOutput::CorridorOutput(const SfcSquare::CorridorOutput&)’ at /root/adam_nav_submap_full_20261022/third_party/tdt_minimum_jerk/sfcSquare.hpp:28:12,
+    inlined from ‘static SfcSquare::CorridorOutput SfcSquare::_removeRedundant(CorridorOutput&, float)’ at /root/adam_nav_submap_full_20261022/third_party/tdt_minimum_jerk/sfcSquare.cpp:515:16:
+/usr/include/c++/13/bits/new_allocator.h:151:55: note: destination object of size 16 allocated by ‘operator new’
+  151 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+      |                                                       ^
+---
+Finished <<< rm_nav_planning [21.1s]
+Starting >>> rm_nav_registration
+Finished <<< rm_nav_registration [24.0s]
+Starting >>> rm_nav_sim
+Finished <<< rm_nav_sim [6.05s]
+Starting >>> my_serial_py
+Finished <<< my_serial_py [2.04s]
+Starting >>> rm_nav_control
+Finished <<< rm_nav_control [54.4s]
+Starting >>> rm_nav_sensors
+Finished <<< rm_nav_sensors [24.2s]
+Starting >>> rm_nav_hardware
+--- stderr: rm_nav_hardware
+/root/adam_nav_submap_full_20261022/src/rm_nav_hardware/src/rm_serial_hardware_interface.cpp: In member function ‘virtual hardware_interface::CallbackReturn rm_nav_hardware::RmSerialHardwareInterface::on_init(const hardware_interface::HardwareInfo&)’:
+/root/adam_nav_submap_full_20261022/src/rm_nav_hardware/src/rm_serial_hardware_interface.cpp:14:31: warning: ‘virtual rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn hardware_interface::HardwareComponentInterface::on_init(const hardware_interface::HardwareInfo&)’ is deprecated: Use on_init(const HardwareComponentInterfaceParams & params) instead. [-Wdeprecated-declarations]
+   14 |   if (SystemInterface::on_init(info)!=hardware_interface::CallbackReturn::SUCCESS) return hardware_interface::CallbackReturn::ERROR;
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+In file included from /opt/ros/jazzy/include/hardware_interface/hardware_interface/system_interface.hpp:18,
+                 from /root/adam_nav_submap_full_20261022/src/rm_nav_hardware/include/rm_nav_hardware/rm_serial_hardware_interface.hpp:2,
+                 from /root/adam_nav_submap_full_20261022/src/rm_nav_hardware/src/rm_serial_hardware_interface.cpp:1:
+/opt/ros/jazzy/include/hardware_interface/hardware_interface/hardware_component_interface.hpp:140:26: note: declared here
+  140 |   virtual CallbackReturn on_init(const HardwareInfo & hardware_info);
+      |                          ^~~~~~~
+In file included from /usr/include/c++/13/cassert:44,
+                 from /opt/ros/jazzy/include/class_loader/class_loader/class_loader.hpp:36,
+                 from /opt/ros/jazzy/include/class_loader/class_loader/multi_library_class_loader.hpp:52,
+                 from /opt/ros/jazzy/include/pluginlib/pluginlib/class_loader.hpp:38,
+                 from /root/adam_nav_submap_full_20261022/src/rm_nav_hardware/test/hardware_transport_test.cpp:5:
+/root/adam_nav_submap_full_20261022/src/rm_nav_hardware/test/hardware_transport_test.cpp: In function ‘int main(int, char**)’:
+/root/adam_nav_submap_full_20261022/src/rm_nav_hardware/test/hardware_transport_test.cpp:24:27: warning: ‘virtual rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn hardware_interface::HardwareComponentInterface::on_init(const hardware_interface::HardwareInfo&)’ is deprecated: Use on_init(const HardwareComponentInterfaceParams & params) instead. [-Wdeprecated-declarations]
+   24 |   assert(hardware->on_init(info)==Callback::SUCCESS);
+      |          ~~~~~~~~~~~~~~~~~^~~~~~
+In file included from /opt/ros/jazzy/include/hardware_interface/hardware_interface/system_interface.hpp:18,
+                 from /root/adam_nav_submap_full_20261022/src/rm_nav_hardware/include/rm_nav_hardware/rm_serial_hardware_interface.hpp:2,
+                 from /root/adam_nav_submap_full_20261022/src/rm_nav_hardware/test/hardware_transport_test.cpp:1:
+/opt/ros/jazzy/include/hardware_interface/hardware_interface/hardware_component_interface.hpp:140:26: note: declared here
+  140 |   virtual CallbackReturn on_init(const HardwareInfo & hardware_info);
+      |                          ^~~~~~~
+/root/adam_nav_submap_full_20261022/src/rm_nav_hardware/test/hardware_transport_test.cpp:25:48: warning: ‘virtual std::vector<hardware_interface::StateInterface> hardware_interface::HardwareComponentInterface::export_state_interfaces()’ is deprecated: Replaced by vector<StateInterface::ConstSharedPtr> on_export_state_interfaces() method. Exporting is handled by the Framework. [-Wdeprecated-declarations]
+   25 |   auto states=hardware->export_state_interfaces();auto commands=hardware->export_command_interfaces();
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+/opt/ros/jazzy/include/hardware_interface/hardware_interface/hardware_component_interface.hpp:177:3: note: declared here
+  177 |   export_state_interfaces();
+      |   ^~~~~~~~~~~~~~~~~~~~~~~
+/root/adam_nav_submap_full_20261022/src/rm_nav_hardware/test/hardware_transport_test.cpp:25:100: warning: ‘virtual std::vector<hardware_interface::CommandInterface> hardware_interface::HardwareComponentInterface::export_command_interfaces()’ is deprecated: Replaced by vector<CommandInterface::SharedPtr> on_export_command_interfaces() method. Exporting is handled by the Framework. [-Wdeprecated-declarations]
+   25 |   auto states=hardware->export_state_interfaces();auto commands=hardware->export_command_interfaces();
+      |                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+/opt/ros/jazzy/include/hardware_interface/hardware_interface/hardware_component_interface.hpp:212:3: note: declared here
+  212 |   export_command_interfaces();
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~
+/root/adam_nav_submap_full_20261022/src/rm_nav_hardware/test/hardware_transport_test.cpp:26:78: warning: ‘double hardware_interface::Handle::get_value() const’ is deprecated: Use std::optional<T> get_optional() instead to retrieve the value. This method will be removed by the ROS 2 Kilted Kaiju release. [-Wdeprecated-declarations]
+   26 |   assert(states.size()==3&&commands.size()==3&&std::isnan(states[0].get_value()));
+      |                                                           ~~~~~~~~~~~~~~~~~~~^~
+In file included from /opt/ros/jazzy/include/hardware_interface/hardware_interface/hardware_component_interface.hpp:28:
+/opt/ros/jazzy/include/hardware_interface/hardware_interface/handle.hpp:304:10: note: declared here
+  304 |   double get_value() const
+      |          ^~~~~~~~~
+/root/adam_nav_submap_full_20261022/src/rm_nav_hardware/test/hardware_transport_test.cpp:50:38: warning: ‘double hardware_interface::Handle::get_value() const’ is deprecated: Use std::optional<T> get_optional() instead to retrieve the value. This method will be removed by the ROS 2 Kilted Kaiju release. [-Wdeprecated-declarations]
+   50 |   assert(std::abs(states[2].get_value()-.4)<1e-9);
+      |                   ~~~~~~~~~~~~~~~~~~~^~
+/opt/ros/jazzy/include/hardware_interface/hardware_interface/handle.hpp:304:10: note: declared here
+  304 |   double get_value() const
+      |          ^~~~~~~~~
+---
+Finished <<< rm_nav_hardware [39.6s]
+Starting >>> rm_nav_localization
+Finished <<< rm_nav_localization [1min 27s]
+Starting >>> rm_nav_mapping
+Finished <<< rm_nav_mapping [54.5s]
+Starting >>> rm_nav_bringup
+Finished <<< rm_nav_bringup [9.51s]
+
+Summary: 14 packages finished [5min 23s]
+  2 packages had stderr output: rm_nav_hardware rm_nav_planning

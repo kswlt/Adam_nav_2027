@@ -4,6 +4,7 @@
 #include "rm_nav_mapping/loop_candidate_manager.hpp"
 #include "rm_nav_mapping/loop_validator.hpp"
 #include "rm_nav_mapping/overlap.hpp"
+#include "rm_nav_mapping/adjacent_submap.hpp"
 #include "rm_nav_registration/small_gicp_backend.hpp"
 #include "rm_nav_registration/kiss_gicp_backend.hpp"
 #include <small_gicp/registration/registration_helper.hpp>
@@ -72,8 +73,14 @@ int main(int argc,char ** argv)
 {
   try {
     const auto started=std::chrono::steady_clock::now();
-    require(argc==3 || (argc==4 && std::string(argv[3])=="--enable-loops"),"Usage: offline_graph_optimizer <completed-session-dir> <new-output-dir> [--enable-loops]");
-    const bool enable_loops=argc==4;
+    require(argc>=3 && argc<=5,"Usage: offline_graph_optimizer <completed-session-dir> <new-output-dir> [--enable-loops] [--adjacent-submap]");
+    bool enable_loops=false,use_adjacent_submap=false;
+    for(int i=3;i<argc;++i) {
+      const std::string option(argv[i]);
+      if(option=="--enable-loops" && !enable_loops)enable_loops=true;
+      else if(option=="--adjacent-submap" && !use_adjacent_submap)use_adjacent_submap=true;
+      else throw std::invalid_argument("Unknown or duplicate optimizer option: "+option);
+    }
     const fs::path session=fs::canonical(argv[1]);const fs::path output=fs::weakly_canonical(fs::absolute(argv[2]));
     require(fs::is_directory(session) && !fs::exists(output),"Input must be a session; output must not exist");
     const auto relative=output.lexically_relative(session);
@@ -90,10 +97,14 @@ int main(int argc,char ** argv)
     std::vector<ArchivedFrame> frames;std::vector<Eigen::Isometry3d> initial;
     std::vector<rm_nav_mapping::GraphEdge> edges;std::vector<rm_nav_registration::RegistrationResult> qualities;
     std::vector<Eigen::Vector3d> target;
+    rm_nav_mapping::AdjacentSubmap adjacent_history;
+    Eigen::Isometry3d validated_pose=Eigen::Isometry3d::Identity();
+    std::vector<std::vector<std::uint64_t>> target_frame_ids;
     std::vector<rm_nav_mapping::Keyframe> keyframes;std::vector<rm_nav_mapping::GraphEdge> loop_edges;
     std::vector<rm_nav_registration::RegistrationResult> loop_qualities;
     rm_nav_registration::SmallGicpConfig config;config.use_voxelized_target=true;config.num_threads=1;
-    config.max_input_points=200000;rm_nav_registration::SmallGicpBackend backend(config);
+    config.max_input_points=use_adjacent_submap ? rm_nav_mapping::AdjacentSubmap::max_target_points : 200000;
+    rm_nav_registration::SmallGicpBackend backend(config);
     for(const auto & item:directories) {
       ArchivedFrame frame;auto points=load(item.second,frame,true);
       require(frame.id==frames.size(),"Missing/noncontiguous keyframe ID");
@@ -103,19 +114,30 @@ int main(int argc,char ** argv)
                 frame.body==previous.body && frame.stamp>previous.stamp && frame.sequence>previous.sequence,
                 "Mixed calibration/source/reference point or nonmonotonic recording");
         rm_nav_registration::RegistrationRequest request;request.target_points=target;request.source_points=points;
+        std::vector<std::uint64_t> history_ids{previous.id};
+        if(use_adjacent_submap) {
+          auto history=adjacent_history.target();
+          request.target_points=std::move(history.points);history_ids=std::move(history.frame_ids);
+        }
         request.initial_target_T_source=previous.pose.inverse()*frame.pose;
         require(request.initial_target_T_source.translation().norm()<=2. &&
                 Eigen::AngleAxisd(request.initial_target_T_source.rotation()).angle()<=1.,"Adjacent seed jump too large");
         const auto result=backend.register_clouds(request);
         std::cout<<"edge="<<previous.id<<"->"<<frame.id<<" converged="<<result.converged<<" rmse="<<result.residual
-          <<" inliers="<<result.inlier_ratio<<" condition="<<result.condition_score<<'\n';
+          <<" inliers="<<result.inlier_ratio<<" condition="<<result.condition_score
+          <<" translation_delta="<<result.translation_delta<<" rotation_delta="<<result.rotation_delta
+          <<" target_frames="<<history_ids.size()<<" target_points="<<request.target_points.size()<<'\n';
         require(rm_nav_registration::minimally_valid(result) && result.inlier_count>=50 && result.inlier_ratio>=.6 &&
                 result.residual<=.15 && result.condition_score>=1e-6 && result.translation_delta<=.5 && result.rotation_delta<=.3,
                 "VGICP adjacent edge rejected; no odometry-only bridge inserted");
         rm_nav_mapping::GraphEdge edge;edge.from=previous.id;edge.to=frame.id;edge.from_T_to=result.target_T_source;
         edges.push_back(edge);qualities.push_back(result);
+        target_frame_ids.push_back(std::move(history_ids));
+        validated_pose=validated_pose*result.target_T_source;
       }
-      target=std::move(points);initial.push_back(frame.pose);frames.push_back(frame);
+      if(use_adjacent_submap)adjacent_history.push(frame.id,frame.stamp,validated_pose,std::move(points));
+      else target=std::move(points);
+      initial.push_back(frame.pose);frames.push_back(frame);
       keyframes.push_back({frame.id,frame.stamp,frame.pose});
     }
     if(enable_loops) {
@@ -224,6 +246,9 @@ int main(int argc,char ** argv)
     for(std::size_t i=0;i<edges.size();++i) {
       const auto & quality=qualities[i];audit<<(i?",":"")<<"{\"from\":"<<edges[i].from<<",\"to\":"<<edges[i].to
         <<",\"algorithm\":\"small_gicp_VGICP\",\"matrix\":";matrix_json(audit,edges[i].from_T_to);
+      audit<<",\"target_mode\":\""<<(use_adjacent_submap?"validated_history_submap":"previous_frame")<<"\",\"target_frame_ids\":[";
+      for(std::size_t j=0;j<target_frame_ids[i].size();++j)audit<<(j?",":"")<<target_frame_ids[i][j];
+      audit<<']';
       audit<<",\"rmse_m\":"<<quality.residual<<",\"inlier_ratio\":"<<quality.inlier_ratio<<",\"condition\":"<<quality.condition_score
         <<",\"sigmas_rotation_translation\":[0.03,0.03,0.03,0.05,0.05,0.05]}";
     }audit<<"]\n";audit.close();

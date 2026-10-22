@@ -26,6 +26,8 @@ def main():
     ap.add_argument('--bag', type=Path, required=True)
     ap.add_argument('--params-file', type=Path, required=True)
     ap.add_argument('--output', type=Path, required=True)
+    ap.add_argument('--adjacent-submap', action='store_true',
+                    help='Explicit bounded validated-history target for offline optimization')
     args = ap.parse_args()
     if os.environ.get('ROS_DOMAIN_ID') in (None, '', '0', '97'):
         raise ValueError('Require explicit non-live DDS domain')
@@ -70,7 +72,8 @@ def main():
 
     errors = []
     report = {'scope': 'real raw inputs through frontend/state/archive/optimizer; no independent truth',
-              'bag': str(args.bag), 'output': str(args.output), 'navigation_accepted': False}
+              'bag': str(args.bag), 'output': str(args.output), 'navigation_accepted': False,
+              'adjacent_target_mode': 'validated_history_submap' if args.adjacent_submap else 'previous_frame'}
     try:
         state = start('state', ['ros2', 'launch', 'rm_nav_bringup',
             'vehicle_164_sensor_reference_state.launch.py', 'use_sim_time:=true',
@@ -111,8 +114,11 @@ def main():
         report['session'] = str(sessions[0])
         if min(len(odometry), len(reference), len(clouds)) < 100 or not any(health):
             raise RuntimeError('Insufficient real state/cloud output or real-input health')
-        optimizer = start('optimizer', ['ros2', 'run', 'rm_nav_mapping', 'offline_graph_optimizer',
-            str(sessions[0]), str(args.output/'optimized'), '--enable-loops'])
+        command = ['ros2', 'run', 'rm_nav_mapping', 'offline_graph_optimizer',
+            str(sessions[0]), str(args.output/'optimized'), '--enable-loops']
+        if args.adjacent_submap:
+            command.append('--adjacent-submap')
+        optimizer = start('optimizer', command)
         report['optimizer_exit'] = optimizer.wait(timeout=360)
         if report['optimizer_exit'] != 0:
             raise RuntimeError('Offline optimizer refused; inspect optimizer.log and retain archives')

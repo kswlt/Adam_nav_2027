@@ -48,9 +48,10 @@ def main():
         (directory/'metadata.json').write_text(json.dumps(metadata));frames.append(frame)
     snapshot={path:hashlib.sha256(path.read_bytes()).hexdigest() for path in session.rglob('*') if path.is_file()}
     command=['ros2','run','rm_nav_mapping','offline_graph_optimizer']
-    def run(source,output,loops=False):
+    def run(source,output,loops=False,submap=False):
         args=[*command,str(source),str(output)]
         if loops: args.append('--enable-loops')
+        if submap: args.append('--adjacent-submap')
         return subprocess.run(args,capture_output=True,text=True,timeout=120)
     valid=root/'optimized';result=run(session,valid)
     (root/'optimization.log').write_text(result.stdout+result.stderr)
@@ -81,6 +82,21 @@ def main():
     require(loop_data['loop_count']==len(loop_edges)==0,
             'Loop-enabled no-candidate fixture produced an unexpected loop edge')
     require((loop_valid/'loop_edges.json').read_bytes()==b'[]\n','Loop artifact is not deterministic empty JSON')
+    submap_output=root/'optimized_submap'
+    submap_result=run(session,submap_output,submap=True)
+    (root/'submap_optimization.log').write_text(submap_result.stdout+submap_result.stderr)
+    require(submap_result.returncode==0,'Validated-history submap optimizer failed: '+submap_result.stdout+submap_result.stderr)
+    submap_data=json.loads((submap_output/'optimized_poses.json').read_text())
+    submap_poses=[np.array(item['matrix']).reshape(4,4) for item in submap_data['poses']]
+    require(max(np.linalg.norm(a[:3,3]-b[:3,3]) for a,b in zip(truth,submap_poses))<.10,
+            'Submap target frame or factor direction is wrong')
+    submap_edges=json.loads((submap_output/'adjacent_edges.json').read_text())
+    require(all(e['target_mode']=='validated_history_submap' and
+                e['target_frame_ids']==list(range(max(0,i-2),i+1))
+                for i,e in enumerate(submap_edges)), 'Submap history provenance missing or unbounded')
+    duplicate=subprocess.run([*command,str(session),str(root/'duplicate_flags'),'--adjacent-submap','--adjacent-submap'],
+                             capture_output=True,text=True,timeout=30)
+    require(duplicate.returncode!=0 and not (root/'duplicate_flags').exists(),'Duplicate option accepted')
     require(all(hashlib.sha256(path.read_bytes()).hexdigest()==value for path,value in snapshot.items()),'Optimizer modified original archive')
     repeated=run(session,valid)
     require(repeated.returncode!=0,'Existing optimized output overwritten')
@@ -112,6 +128,10 @@ def main():
         output=root/(mode+'_output');rejected=run(source,output)
         (root/(mode+'.log')).write_text(rejected.stdout+rejected.stderr)
         require(rejected.returncode!=0 and not output.exists(),'Malformed session generated an optimized map: '+mode)
+        submap_bad=root/(mode+'_submap_output')
+        refused=run(source,submap_bad,submap=True)
+        require(refused.returncode!=0 and not submap_bad.exists(),
+                'Submap bypassed archive/geometry refusal: '+mode)
     print(f'PASS actual VGICP + GTSAM archive graph: pose errors={errors}, graph error={data["initial_error"]}->{data["final_error"]}; '
           'original-cloud map reconstruction, immutable inputs, no-overwrite and malformed/nonoverlap refusal; evidence='+str(root),flush=True)
 

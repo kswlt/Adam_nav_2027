@@ -1,0 +1,316 @@
+edge=0->1 converged=1 rmse=0.0957373 inliers=0.99121 condition=0.00545267 translation_delta=0.00395372 rotation_delta=0.000992682 target_frames=1 target_points=17879
+edge=1->2 converged=1 rmse=0.0743948 inliers=0.999312 condition=0.00585163 translation_delta=0.00748429 rotation_delta=0.000533818 target_frames=2 target_points=35431
+edge=2->3 converged=1 rmse=0.0481534 inliers=0.999483 condition=0.0043864 translation_delta=0.00650718 rotation_delta=0.000779714 target_frames=3 target_points=52944
+edge=3->4 converged=1 rmse=0.0399845 inliers=0.999829 condition=0.0052022 translation_delta=0.00157597 rotation_delta=0.000767318 target_frames=3 target_points=53061
+edge=4->5 converged=1 rmse=0.0444084 inliers=0.999318 condition=0.0048289 translation_delta=0.0027666 rotation_delta=0.000407768 target_frames=3 target_points=53468
+edge=5->6 converged=1 rmse=0.0327483 inliers=0.99983 condition=0.00463095 translation_delta=0.00198952 rotation_delta=0.000126726 target_frames=3 target_points=53978
+edge=6->7 converged=1 rmse=0.0507288 inliers=1 condition=0.00579498 translation_delta=0.00474645 rotation_delta=0.00102221 target_frames=3 target_points=54512
+edge=7->8 converged=1 rmse=0.0656301 inliers=0.994974 condition=0.00560854 translation_delta=0.00616328 rotation_delta=0.00278008 target_frames=3 target_points=53945
+edge=8->9 converged=1 rmse=0.064205 inliers=0.999654 condition=0.00455388 translation_delta=0.00190378 rotation_delta=0.00145281 target_frames=3 target_points=53985
+edge=9->10 converged=1 rmse=0.0436837 inliers=0.999831 condition=0.00475764 translation_delta=0.00256612 rotation_delta=0.000752245 target_frames=3 target_points=53402
+edge=10->11 converged=1 rmse=0.0457549 inliers=0.99983 condition=0.00471161 translation_delta=0.00624377 rotation_delta=0.000327412 target_frames=3 target_points=54583
+edge=11->12 converged=1 rmse=0.0487476 inliers=0.99949 condition=0.0055299 translation_delta=0.00533748 rotation_delta=0.00092885 target_frames=3 target_points=54635
+edge=12->13 converged=1 rmse=0.0663006 inliers=0.993854 condition=0.00733092 translation_delta=0.00305785 rotation_delta=0.00113569 target_frames=3 target_points=54708
+edge=13->14 converged=1 rmse=0.049213 inliers=0.998794 condition=0.00550847 translation_delta=0.00356632 rotation_delta=0.000743153 target_frames=3 target_points=54596
+edge=14->15 converged=1 rmse=0.0494898 inliers=1 condition=0.00518832 translation_delta=0.00162153 rotation_delta=0.000473847 target_frames=3 target_points=54335
+edge=15->16 converged=1 rmse=0.0424746 inliers=1 condition=0.00531018 translation_delta=0.00290496 rotation_delta=0.000547767 target_frames=3 target_points=54213
+edge=16->17 converged=1 rmse=0.0458069 inliers=0.999833 condition=0.00517939 translation_delta=0.00129934 rotation_delta=0.000320917 target_frames=3 target_points=53849
+edge=17->18 converged=1 rmse=0.0526499 inliers=0.99845 condition=0.00537346 translation_delta=0.00199767 rotation_delta=0.00115225 target_frames=3 target_points=54514
+edge=18->19 converged=1 rmse=0.0463655 inliers=0.99949 condition=0.00591301 translation_delta=0.00187152 rotation_delta=0.00140204 target_frames=3 target_points=54527
+edge=19->20 converged=1 rmse=0.0445456 inliers=1 condition=0.0047062 translation_delta=0.00212717 rotation_delta=0.000614543 target_frames=3 target_points=54546
+edge=20->21 converged=1 rmse=0.0425346 inliers=0.998968 condition=0.00559708 translation_delta=0.00145762 rotation_delta=0.000572967 target_frames=3 target_points=54527
+edge=21->22 converged=1 rmse=0.0497711 inliers=1 condition=0.00555706 translation_delta=0.00330997 rotation_delta=0.000321127 target_frames=3 target_points=54607
+edge=22->23 converged=1 rmse=0.042547 inliers=0.999657 condition=0.00642304 translation_delta=0.0123074 rotation_delta=0.00112047 target_frames=3 target_points=54938
+edge=23->24 converged=1 rmse=0.059713 inliers=0.99862 condition=0.00598242 translation_delta=0.00754714 rotation_delta=0.000412264 target_frames=3 target_points=54416
+edge=24->25 converged=1 rmse=0.045577 inliers=0.999827 condition=0.00541853 translation_delta=0.00521428 rotation_delta=0.000887133 target_frames=3 target_points=54504
+edge=25->26 converged=1 rmse=0.0558057 inliers=0.995909 condition=0.00624827 translation_delta=0.0023918 rotation_delta=0.000561356 target_frames=3 target_points=53374
+edge=26->27 converged=1 rmse=0.060159 inliers=0.993975 condition=0.00507493 translation_delta=0.00348197 rotation_delta=0.00128942 target_frames=3 target_points=53913
+edge=27->28 converged=1 rmse=0.0490187 inliers=0.999826 condition=0.00539526 translation_delta=0.00424062 rotation_delta=0.00185236 target_frames=3 target_points=53830
+edge=28->29 converged=1 rmse=0.0753932 inliers=0.996423 condition=0.00651221 translation_delta=0.00205227 rotation_delta=0.000926447 target_frames=3 target_points=54453
+edge=29->30 converged=1 rmse=0.0453769 inliers=1 condition=0.00494646 translation_delta=0.0073924 rotation_delta=0.000290002 target_frames=3 target_points=53944
+edge=30->31 converged=1 rmse=0.058178 inliers=0.997779 condition=0.00482248 translation_delta=0.00326441 rotation_delta=0.000891747 target_frames=3 target_points=54006
+edge=31->32 converged=1 rmse=0.0556286 inliers=0.999477 condition=0.00530071 translation_delta=0.00309468 rotation_delta=0.000392461 target_frames=3 target_points=54042
+edge=32->33 converged=1 rmse=0.067253 inliers=0.999824 condition=0.00483184 translation_delta=0.00120802 rotation_delta=0.000932642 target_frames=3 target_points=54239
+edge=33->34 converged=1 rmse=0.0516149 inliers=0.999813 condition=0.00506174 translation_delta=0.00263733 rotation_delta=0.00100106 target_frames=3 target_points=54239
+edge=34->35 converged=1 rmse=0.0450551 inliers=0.999451 condition=0.0045228 translation_delta=0.00131114 rotation_delta=0.00124013 target_frames=3 target_points=54318
+edge=35->36 converged=1 rmse=0.081825 inliers=0.977226 condition=0.00384032 translation_delta=0.00437461 rotation_delta=0.000583265 target_frames=3 target_points=54257
+edge=36->37 converged=1 rmse=0.0857183 inliers=0.998924 condition=0.00528453 translation_delta=0.00918659 rotation_delta=0.000476202 target_frames=3 target_points=54220
+edge=37->38 converged=1 rmse=0.0695482 inliers=0.995969 condition=0.00498545 translation_delta=0.0040244 rotation_delta=0.000469129 target_frames=3 target_points=54139
+edge=38->39 converged=1 rmse=0.0537436 inliers=0.990336 condition=0.00483854 translation_delta=0.00594317 rotation_delta=0.0010474 target_frames=3 target_points=53903
+edge=39->40 converged=1 rmse=0.0486048 inliers=0.999321 condition=0.00602889 translation_delta=0.00657026 rotation_delta=0.000920316 target_frames=3 target_points=53858
+edge=40->41 converged=1 rmse=0.0778671 inliers=0.991777 condition=0.00624338 translation_delta=0.00604171 rotation_delta=0.00079257 target_frames=3 target_points=53734
+edge=41->42 converged=1 rmse=0.0506228 inliers=0.999314 condition=0.0055982 translation_delta=0.00537252 rotation_delta=0.000581713 target_frames=3 target_points=53753
+edge=42->43 converged=1 rmse=0.0487245 inliers=1 condition=0.0063664 translation_delta=0.00289961 rotation_delta=0.000187543 target_frames=3 target_points=53659
+edge=43->44 converged=1 rmse=0.0433055 inliers=1 condition=0.00579769 translation_delta=0.00279902 rotation_delta=0.00111149 target_frames=3 target_points=53731
+edge=44->45 converged=1 rmse=0.065135 inliers=0.994276 condition=0.00634516 translation_delta=0.00262475 rotation_delta=0.000728602 target_frames=3 target_points=53749
+edge=45->46 converged=1 rmse=0.0458709 inliers=0.99966 condition=0.00552538 translation_delta=0.00256915 rotation_delta=0.000503705 target_frames=3 target_points=53817
+edge=46->47 converged=1 rmse=0.0535711 inliers=1 condition=0.00503511 translation_delta=0.00469136 rotation_delta=0.000652146 target_frames=3 target_points=54013
+edge=47->48 converged=1 rmse=0.0513954 inliers=0.999658 condition=0.00562321 translation_delta=0.00251866 rotation_delta=0.0013483 target_frames=3 target_points=54095
+edge=48->49 converged=1 rmse=0.0458999 inliers=0.999663 condition=0.00584209 translation_delta=0.00431053 rotation_delta=0.00161877 target_frames=3 target_points=54118
+edge=49->50 converged=1 rmse=0.0444096 inliers=1 condition=0.0049515 translation_delta=0.00447515 rotation_delta=0.00061101 target_frames=3 target_points=53926
+edge=50->51 converged=1 rmse=0.0545424 inliers=0.998124 condition=0.00521675 translation_delta=0.00580019 rotation_delta=0.00116826 target_frames=3 target_points=53737
+edge=51->52 converged=1 rmse=0.0555327 inliers=0.998964 condition=0.00523306 translation_delta=0.00669096 rotation_delta=0.000103243 target_frames=3 target_points=53618
+edge=52->53 converged=1 rmse=0.0479675 inliers=0.999312 condition=0.00574837 translation_delta=0.00439539 rotation_delta=0.000560515 target_frames=3 target_points=53614
+edge=53->54 converged=1 rmse=0.0519663 inliers=0.99983 condition=0.00510545 translation_delta=0.00366889 rotation_delta=0.00103506 target_frames=3 target_points=53683
+edge=54->55 converged=1 rmse=0.0570658 inliers=0.999492 condition=0.00589697 translation_delta=0.00425059 rotation_delta=0.00114635 target_frames=3 target_points=53906
+edge=55->56 converged=1 rmse=0.0448924 inliers=0.999828 condition=0.0043074 translation_delta=0.002584 rotation_delta=0.0010819 target_frames=3 target_points=54069
+edge=56->57 converged=1 rmse=0.0513569 inliers=0.998102 condition=0.00598542 translation_delta=0.00435817 rotation_delta=0.000444759 target_frames=3 target_points=54170
+edge=57->58 converged=1 rmse=0.0445487 inliers=1 condition=0.00589711 translation_delta=0.00435731 rotation_delta=0.000409016 target_frames=3 target_points=54083
+edge=58->59 converged=1 rmse=0.059416 inliers=0.994954 condition=0.0058061 translation_delta=0.00320335 rotation_delta=0.000698042 target_frames=3 target_points=53832
+edge=59->60 converged=1 rmse=0.0464993 inliers=0.999494 condition=0.00489078 translation_delta=0.00316955 rotation_delta=0.000345318 target_frames=3 target_points=53769
+edge=60->61 converged=1 rmse=0.0435139 inliers=0.999663 condition=0.00505329 translation_delta=0.00169715 rotation_delta=0.00081083 target_frames=3 target_points=53863
+edge=61->62 converged=1 rmse=0.0409251 inliers=1 condition=0.00550535 translation_delta=0.0024321 rotation_delta=0.000405459 target_frames=3 target_points=54101
+edge=62->63 converged=1 rmse=0.0427013 inliers=0.999658 condition=0.00494481 translation_delta=0.0033114 rotation_delta=0.00202265 target_frames=3 target_points=54664
+edge=63->64 converged=1 rmse=0.0629363 inliers=0.998814 condition=0.00545883 translation_delta=0.0039579 rotation_delta=0.00118444 target_frames=3 target_points=54527
+edge=64->65 converged=1 rmse=0.0430413 inliers=0.999829 condition=0.0042113 translation_delta=0.00383397 rotation_delta=0.000419564 target_frames=3 target_points=54453
+edge=65->66 converged=1 rmse=0.0456706 inliers=0.999483 condition=0.00503052 translation_delta=0.00317539 rotation_delta=0.000912258 target_frames=3 target_points=53876
+edge=66->67 converged=1 rmse=0.0557829 inliers=0.999012 condition=0.00469985 translation_delta=0.000829916 rotation_delta=0.000956057 target_frames=3 target_points=53963
+edge=67->68 converged=1 rmse=0.0457868 inliers=0.99914 condition=0.00412269 translation_delta=0.00132697 rotation_delta=0.000997072 target_frames=3 target_points=54492
+edge=68->69 converged=1 rmse=0.0470593 inliers=0.99966 condition=0.00499229 translation_delta=0.00296073 rotation_delta=0.000895087 target_frames=3 target_points=54483
+edge=69->70 converged=1 rmse=0.0441313 inliers=0.999493 condition=0.00456488 translation_delta=0.00262861 rotation_delta=0.000587023 target_frames=3 target_points=54422
+edge=70->71 converged=1 rmse=0.0406532 inliers=0.999298 condition=0.00447343 translation_delta=0.00466705 rotation_delta=0.000341678 target_frames=3 target_points=54006
+edge=71->72 converged=1 rmse=0.0506553 inliers=0.999306 condition=0.00521829 translation_delta=0.00627637 rotation_delta=0.000423852 target_frames=3 target_points=54079
+edge=72->73 converged=1 rmse=0.0423343 inliers=1 condition=0.0047361 translation_delta=0.00204396 rotation_delta=0.000867401 target_frames=3 target_points=54029
+edge=73->74 converged=1 rmse=0.0478209 inliers=0.999328 condition=0.00502531 translation_delta=0.00168222 rotation_delta=0.00112652 target_frames=3 target_points=53943
+edge=74->75 converged=1 rmse=0.0525642 inliers=0.998619 condition=0.00515469 translation_delta=0.00391015 rotation_delta=0.000834076 target_frames=3 target_points=53954
+edge=75->76 converged=1 rmse=0.0572933 inliers=0.996867 condition=0.00605235 translation_delta=0.0029567 rotation_delta=0.00112759 target_frames=3 target_points=53999
+edge=76->77 converged=1 rmse=0.0479779 inliers=1 condition=0.00495155 translation_delta=0.00470049 rotation_delta=0.000690322 target_frames=3 target_points=54004
+edge=77->78 converged=1 rmse=0.0439346 inliers=0.999484 condition=0.00523905 translation_delta=0.00552104 rotation_delta=0.000703667 target_frames=3 target_points=54007
+edge=78->79 converged=1 rmse=0.0429068 inliers=0.99983 condition=0.00504818 translation_delta=0.00334597 rotation_delta=0.00136362 target_frames=3 target_points=53984
+edge=79->80 converged=1 rmse=0.0541381 inliers=0.999647 condition=0.00561796 translation_delta=0.00184607 rotation_delta=0.000522327 target_frames=3 target_points=53839
+edge=80->81 converged=1 rmse=0.0472221 inliers=0.999481 condition=0.00568263 translation_delta=0.00407061 rotation_delta=0.000577275 target_frames=3 target_points=53019
+edge=81->82 converged=1 rmse=0.0592761 inliers=0.997785 condition=0.00627418 translation_delta=0.00132932 rotation_delta=0.000272414 target_frames=3 target_points=52998
+edge=82->83 converged=1 rmse=0.0468019 inliers=0.999492 condition=0.00599233 translation_delta=0.00396039 rotation_delta=0.000262166 target_frames=3 target_points=53230
+edge=83->84 converged=1 rmse=0.0432809 inliers=0.999828 condition=0.00487109 translation_delta=0.00409452 rotation_delta=0.000955505 target_frames=3 target_points=54003
+edge=84->85 converged=1 rmse=0.0648951 inliers=0.998942 condition=0.00605258 translation_delta=0.00351555 rotation_delta=0.00130737 target_frames=3 target_points=53253
+edge=85->86 converged=1 rmse=0.0587417 inliers=0.999828 condition=0.00631615 translation_delta=0.00414412 rotation_delta=0.000824952 target_frames=3 target_points=52394
+edge=86->87 converged=1 rmse=0.048848 inliers=0.998826 condition=0.00499899 translation_delta=0.00362073 rotation_delta=0.000428384 target_frames=3 target_points=52376
+edge=87->88 converged=1 rmse=0.0442792 inliers=0.99983 condition=0.00581685 translation_delta=0.00176324 rotation_delta=0.000706925 target_frames=3 target_points=53257
+edge=88->89 converged=1 rmse=0.0418409 inliers=1 condition=0.00587393 translation_delta=0.0049179 rotation_delta=0.000268247 target_frames=3 target_points=53982
+edge=89->90 converged=1 rmse=0.0493282 inliers=0.999146 condition=0.00575546 translation_delta=0.0029696 rotation_delta=0.000160421 target_frames=3 target_points=53694
+edge=90->91 converged=1 rmse=0.053462 inliers=0.999334 condition=0.00601422 translation_delta=0.00612114 rotation_delta=0.00106488 target_frames=3 target_points=53772
+edge=91->92 converged=1 rmse=0.0411198 inliers=0.999133 condition=0.00553747 translation_delta=0.00762472 rotation_delta=0.000618109 target_frames=3 target_points=53815
+edge=92->93 converged=1 rmse=0.0406943 inliers=0.999493 condition=0.00539009 translation_delta=0.0041218 rotation_delta=0.000625931 target_frames=3 target_points=53998
+edge=93->94 converged=1 rmse=0.0506346 inliers=0.99983 condition=0.0056948 translation_delta=0.00304524 rotation_delta=0.000452513 target_frames=3 target_points=53976
+edge=94->95 converged=1 rmse=0.0446624 inliers=1 condition=0.0061279 translation_delta=0.00206861 rotation_delta=0.00089076 target_frames=3 target_points=53887
+edge=95->96 converged=1 rmse=0.0606463 inliers=0.997442 condition=0.00631154 translation_delta=0.00618828 rotation_delta=0.000856143 target_frames=3 target_points=54086
+edge=96->97 converged=1 rmse=0.052273 inliers=0.999315 condition=0.00630729 translation_delta=0.00647119 rotation_delta=0.000712223 target_frames=3 target_points=53944
+edge=97->98 converged=1 rmse=0.0519591 inliers=0.999657 condition=0.00490861 translation_delta=0.0035714 rotation_delta=0.000699363 target_frames=3 target_points=53856
+edge=98->99 converged=1 rmse=0.0399486 inliers=0.999496 condition=0.00586841 translation_delta=0.00401523 rotation_delta=0.000227952 target_frames=3 target_points=53830
+edge=99->100 converged=1 rmse=0.0440757 inliers=0.999829 condition=0.00543132 translation_delta=0.00192479 rotation_delta=0.000981552 target_frames=3 target_points=54544
+edge=100->101 converged=1 rmse=0.0526378 inliers=1 condition=0.00629966 translation_delta=0.00321432 rotation_delta=0.000228759 target_frames=3 target_points=54778
+edge=101->102 converged=1 rmse=0.0458665 inliers=0.999137 condition=0.0054646 translation_delta=0.00383276 rotation_delta=0.000207382 target_frames=3 target_points=54680
+edge=102->103 converged=1 rmse=0.0413203 inliers=0.999658 condition=0.00455132 translation_delta=0.00294256 rotation_delta=0.000577209 target_frames=3 target_points=54198
+edge=103->104 converged=1 rmse=0.0402892 inliers=0.999139 condition=0.00455923 translation_delta=0.00416655 rotation_delta=0.000729868 target_frames=3 target_points=54017
+edge=104->105 converged=1 rmse=0.0886719 inliers=0.995362 condition=0.00793251 translation_delta=0.00583628 rotation_delta=0.000616252 target_frames=3 target_points=54286
+edge=105->106 converged=1 rmse=0.0466977 inliers=0.999302 condition=0.00518935 translation_delta=0.0051326 rotation_delta=0.000862589 target_frames=3 target_points=54016
+edge=106->107 converged=1 rmse=0.0360358 inliers=0.999151 condition=0.0050004 translation_delta=0.00383938 rotation_delta=0.000572006 target_frames=3 target_points=54204
+edge=107->108 converged=1 rmse=0.0544225 inliers=0.999151 condition=0.00504907 translation_delta=0.00166084 rotation_delta=0.00038692 target_frames=3 target_points=54069
+edge=108->109 converged=1 rmse=0.0543668 inliers=0.999489 condition=0.00509804 translation_delta=0.00642367 rotation_delta=0.000311918 target_frames=3 target_points=54307
+edge=109->110 converged=1 rmse=0.0587977 inliers=0.997915 condition=0.00516741 translation_delta=0.00543471 rotation_delta=0.000571151 target_frames=3 target_points=54194
+edge=110->111 converged=1 rmse=0.0459195 inliers=0.999481 condition=0.00511789 translation_delta=0.00148186 rotation_delta=0.001111 target_frames=3 target_points=54213
+edge=111->112 converged=1 rmse=0.0471456 inliers=1 condition=0.00508092 translation_delta=0.00312762 rotation_delta=0.00120923 target_frames=3 target_points=53996
+edge=112->113 converged=1 rmse=0.051156 inliers=0.999494 condition=0.00510457 translation_delta=0.00571266 rotation_delta=0.000656925 target_frames=3 target_points=54039
+edge=113->114 converged=1 rmse=0.0421592 inliers=0.999318 condition=0.00419945 translation_delta=0.00679091 rotation_delta=0.000764603 target_frames=3 target_points=54211
+edge=114->115 converged=1 rmse=0.0518873 inliers=0.999486 condition=0.00542623 translation_delta=0.00426192 rotation_delta=0.000395304 target_frames=3 target_points=54300
+edge=115->116 converged=1 rmse=0.0459368 inliers=0.999309 condition=0.0049764 translation_delta=0.00154167 rotation_delta=0.000379213 target_frames=3 target_points=54269
+edge=116->117 converged=1 rmse=0.0498124 inliers=0.999143 condition=0.00476883 translation_delta=0.0031693 rotation_delta=0.000541837 target_frames=3 target_points=53883
+edge=117->118 converged=1 rmse=0.0427379 inliers=0.999326 condition=0.00419821 translation_delta=0.00545209 rotation_delta=0.000827845 target_frames=3 target_points=53900
+edge=118->119 converged=1 rmse=0.0425816 inliers=1 condition=0.00530161 translation_delta=0.00694163 rotation_delta=0.000903541 target_frames=3 target_points=53822
+edge=119->120 converged=1 rmse=0.0496504 inliers=0.999828 condition=0.00516475 translation_delta=0.00109589 rotation_delta=0.000991432 target_frames=3 target_points=54080
+edge=120->121 converged=1 rmse=0.0419385 inliers=0.998786 condition=0.00516215 translation_delta=0.00222072 rotation_delta=0.000723109 target_frames=3 target_points=54019
+edge=121->122 converged=1 rmse=0.0692348 inliers=0.993699 condition=0.0064142 translation_delta=0.00329211 rotation_delta=0.00108546 target_frames=3 target_points=54257
+edge=122->123 converged=1 rmse=0.0450324 inliers=0.999492 condition=0.00578373 translation_delta=0.00372246 rotation_delta=0.00087401 target_frames=3 target_points=54113
+edge=123->124 converged=1 rmse=0.042086 inliers=0.999149 condition=0.00522093 translation_delta=0.00224799 rotation_delta=0.000616553 target_frames=3 target_points=54248
+edge=124->125 converged=1 rmse=0.0547285 inliers=0.997573 condition=0.00655237 translation_delta=0.00145638 rotation_delta=0.00130395 target_frames=3 target_points=54086
+edge=125->126 converged=1 rmse=0.0499734 inliers=1 condition=0.00552553 translation_delta=0.00334787 rotation_delta=0.000537293 target_frames=3 target_points=54134
+edge=126->127 converged=1 rmse=0.0553512 inliers=0.999659 condition=0.00510032 translation_delta=0.00501512 rotation_delta=0.000433953 target_frames=3 target_points=54025
+edge=127->128 converged=1 rmse=0.0413492 inliers=0.999663 condition=0.00468347 translation_delta=0.00373424 rotation_delta=0.000491911 target_frames=3 target_points=54178
+edge=128->129 converged=1 rmse=0.0352945 inliers=0.998471 condition=0.00563707 translation_delta=0.00134626 rotation_delta=0.00102644 target_frames=3 target_points=54152
+edge=129->130 converged=1 rmse=0.0538111 inliers=0.997905 condition=0.0060612 translation_delta=0.00238821 rotation_delta=0.00235191 target_frames=3 target_points=54309
+edge=130->131 converged=1 rmse=0.0588613 inliers=0.99931 condition=0.0052699 translation_delta=0.00162272 rotation_delta=0.000656525 target_frames=3 target_points=54121
+edge=131->132 converged=1 rmse=0.0705309 inliers=0.99797 condition=0.00504533 translation_delta=0.00478264 rotation_delta=0.00130068 target_frames=3 target_points=54169
+edge=132->133 converged=1 rmse=0.0597133 inliers=0.999397 condition=0.00587129 translation_delta=0.000995352 rotation_delta=0.000350223 target_frames=3 target_points=53969
+edge=133->134 converged=1 rmse=0.077385 inliers=0.998947 condition=0.00541959 translation_delta=0.00669642 rotation_delta=0.000650731 target_frames=3 target_points=53356
+edge=134->135 converged=1 rmse=0.0510039 inliers=0.999485 condition=0.00529901 translation_delta=0.00466967 rotation_delta=0.000628693 target_frames=3 target_points=53416
+edge=135->136 converged=1 rmse=0.0730557 inliers=0.996336 condition=0.00573005 translation_delta=0.00365456 rotation_delta=0.000372919 target_frames=3 target_points=53417
+edge=136->137 converged=1 rmse=0.0468123 inliers=0.999832 condition=0.00455979 translation_delta=0.0061663 rotation_delta=0.00028593 target_frames=3 target_points=54084
+edge=137->138 converged=1 rmse=0.0627272 inliers=0.998468 condition=0.00524082 translation_delta=0.00230003 rotation_delta=0.000540931 target_frames=3 target_points=54054
+edge=138->139 converged=1 rmse=0.0600029 inliers=0.99959 condition=0.00320564 translation_delta=0.00363098 rotation_delta=0.00107476 target_frames=3 target_points=54085
+edge=139->140 converged=1 rmse=0.140308 inliers=0.868809 condition=0.00440679 translation_delta=0.0657833 rotation_delta=0.0417385 target_frames=3 target_points=53721
+edge=140->141 converged=1 rmse=0.082662 inliers=0.991268 condition=0.00311697 translation_delta=0.0702221 rotation_delta=0.0462975 target_frames=3 target_points=53771
+edge=141->142 converged=1 rmse=0.0950906 inliers=0.985271 condition=0.00315748 translation_delta=0.00899819 rotation_delta=0.000674987 target_frames=3 target_points=53636
+edge=142->143 converged=1 rmse=0.0607454 inliers=0.997123 condition=0.00445473 translation_delta=0.0159031 rotation_delta=0.00833626 target_frames=3 target_points=53918
+edge=143->144 converged=1 rmse=0.0533912 inliers=0.997515 condition=0.0041122 translation_delta=0.00158398 rotation_delta=0.00161727 target_frames=3 target_points=53745
+edge=144->145 converged=1 rmse=0.0396575 inliers=0.999833 condition=0.00429243 translation_delta=0.00261015 rotation_delta=0.00042501 target_frames=3 target_points=53806
+edge=145->146 converged=1 rmse=0.0483448 inliers=1 condition=0.00564317 translation_delta=0.00276897 rotation_delta=0.000610668 target_frames=3 target_points=53909
+edge=146->147 converged=1 rmse=0.0453681 inliers=0.999831 condition=0.00429733 translation_delta=0.00501471 rotation_delta=0.00026259 target_frames=3 target_points=54036
+edge=147->148 converged=1 rmse=0.0658937 inliers=0.998332 condition=0.00476955 translation_delta=0.003827 rotation_delta=0.000504564 target_frames=3 target_points=54117
+edge=148->149 converged=1 rmse=0.051816 inliers=0.999155 condition=0.00501349 translation_delta=0.00328545 rotation_delta=0.000863613 target_frames=3 target_points=54115
+edge=149->150 converged=1 rmse=0.0482881 inliers=1 condition=0.00531731 translation_delta=0.00393118 rotation_delta=0.00152419 target_frames=3 target_points=53914
+edge=150->151 converged=1 rmse=0.046496 inliers=0.99949 condition=0.00517035 translation_delta=0.00519175 rotation_delta=0.000966479 target_frames=3 target_points=53928
+edge=151->152 converged=1 rmse=0.0435977 inliers=0.999833 condition=0.00398445 translation_delta=0.00424293 rotation_delta=0.00116433 target_frames=3 target_points=53902
+edge=152->153 converged=1 rmse=0.054747 inliers=0.999664 condition=0.00514122 translation_delta=0.00255054 rotation_delta=0.000601626 target_frames=3 target_points=53947
+edge=153->154 converged=1 rmse=0.0580022 inliers=0.999669 condition=0.00494071 translation_delta=0.00167871 rotation_delta=0.000219958 target_frames=3 target_points=53837
+edge=154->155 converged=1 rmse=0.0592922 inliers=0.999665 condition=0.00514439 translation_delta=0.00384786 rotation_delta=0.000486773 target_frames=3 target_points=53948
+edge=155->156 converged=1 rmse=0.0442762 inliers=0.999509 condition=0.00384396 translation_delta=0.00388475 rotation_delta=0.000623745 target_frames=3 target_points=53906
+edge=156->157 converged=1 rmse=0.0534368 inliers=0.999667 condition=0.00525728 translation_delta=0.00725732 rotation_delta=0.00179916 target_frames=3 target_points=54086
+edge=157->158 converged=1 rmse=0.0476651 inliers=1 condition=0.00415472 translation_delta=0.00451776 rotation_delta=0.00110369 target_frames=3 target_points=54309
+edge=158->159 converged=1 rmse=0.0446603 inliers=1 condition=0.00465049 translation_delta=0.00183229 rotation_delta=0.000592818 target_frames=3 target_points=54127
+loop=0->5 accepted=1 reason=accepted bidirectional loop
+loop=1->6 accepted=1 reason=accepted bidirectional loop
+loop=1->7 accepted=1 reason=accepted bidirectional loop
+loop=3->8 accepted=1 reason=accepted bidirectional loop
+loop=0->9 accepted=1 reason=accepted bidirectional loop
+loop=0->10 accepted=1 reason=accepted bidirectional loop
+loop=1->11 accepted=1 reason=accepted bidirectional loop
+loop=7->12 accepted=1 reason=accepted bidirectional loop
+loop=2->13 accepted=1 reason=accepted bidirectional loop
+loop=9->14 accepted=1 reason=accepted bidirectional loop
+loop=4->15 accepted=1 reason=accepted bidirectional loop
+loop=2->16 accepted=1 reason=accepted bidirectional loop
+loop=2->17 accepted=1 reason=accepted bidirectional loop
+loop=7->18 accepted=1 reason=accepted bidirectional loop
+loop=0->19 accepted=1 reason=accepted bidirectional loop
+loop=5->20 accepted=1 reason=accepted bidirectional loop
+loop=2->21 accepted=1 reason=accepted bidirectional loop
+loop=4->22 accepted=1 reason=accepted bidirectional loop
+loop=18->23 accepted=1 reason=accepted bidirectional loop
+loop=15->24 accepted=1 reason=accepted bidirectional loop
+loop=4->25 accepted=1 reason=accepted bidirectional loop
+loop=6->26 accepted=1 reason=accepted bidirectional loop
+loop=6->27 accepted=1 reason=accepted bidirectional loop
+loop=12->28 accepted=1 reason=accepted bidirectional loop
+loop=5->29 accepted=1 reason=accepted bidirectional loop
+loop=14->30 accepted=1 reason=accepted bidirectional loop
+loop=24->31 accepted=1 reason=accepted bidirectional loop
+loop=3->32 accepted=1 reason=accepted bidirectional loop
+loop=23->33 accepted=1 reason=accepted bidirectional loop
+loop=8->34 accepted=1 reason=accepted bidirectional loop
+loop=15->35 accepted=1 reason=accepted bidirectional loop
+loop=22->36 accepted=1 reason=accepted bidirectional loop
+loop=23->37 accepted=1 reason=accepted bidirectional loop
+loop=32->38 accepted=1 reason=accepted bidirectional loop
+loop=19->39 accepted=1 reason=accepted bidirectional loop
+loop=32->40 accepted=1 reason=accepted bidirectional loop
+loop=35->41 accepted=1 reason=accepted bidirectional loop
+loop=17->42 accepted=1 reason=accepted bidirectional loop
+loop=4->43 accepted=1 reason=accepted bidirectional loop
+loop=25->44 accepted=1 reason=accepted bidirectional loop
+loop=34->45 accepted=1 reason=accepted bidirectional loop
+loop=14->46 accepted=1 reason=accepted bidirectional loop
+loop=10->47 accepted=1 reason=accepted bidirectional loop
+loop=9->48 accepted=1 reason=accepted bidirectional loop
+loop=18->49 accepted=1 reason=accepted bidirectional loop
+loop=45->50 accepted=1 reason=accepted bidirectional loop
+loop=37->51 accepted=1 reason=accepted bidirectional loop
+loop=24->52 accepted=1 reason=accepted bidirectional loop
+loop=22->53 accepted=1 reason=accepted bidirectional loop
+loop=45->54 accepted=1 reason=accepted bidirectional loop
+loop=15->55 accepted=1 reason=accepted bidirectional loop
+loop=13->56 accepted=1 reason=accepted bidirectional loop
+loop=5->57 accepted=1 reason=accepted bidirectional loop
+loop=26->58 accepted=1 reason=accepted bidirectional loop
+loop=28->59 accepted=1 reason=accepted bidirectional loop
+loop=7->60 accepted=1 reason=accepted bidirectional loop
+loop=49->61 accepted=1 reason=accepted bidirectional loop
+loop=49->62 accepted=1 reason=accepted bidirectional loop
+loop=24->63 accepted=1 reason=accepted bidirectional loop
+loop=28->64 accepted=1 reason=accepted bidirectional loop
+loop=1->65 accepted=1 reason=accepted bidirectional loop
+loop=2->66 accepted=1 reason=accepted bidirectional loop
+loop=31->67 accepted=1 reason=accepted bidirectional loop
+loop=36->68 accepted=1 reason=accepted bidirectional loop
+loop=20->69 accepted=1 reason=accepted bidirectional loop
+loop=8->70 accepted=1 reason=accepted bidirectional loop
+loop=14->71 accepted=1 reason=accepted bidirectional loop
+loop=34->72 accepted=1 reason=accepted bidirectional loop
+loop=36->73 accepted=1 reason=accepted bidirectional loop
+loop=40->74 accepted=1 reason=accepted bidirectional loop
+loop=3->75 accepted=1 reason=accepted bidirectional loop
+loop=23->76 accepted=1 reason=accepted bidirectional loop
+loop=40->77 accepted=1 reason=accepted bidirectional loop
+loop=35->78 accepted=1 reason=accepted bidirectional loop
+loop=14->79 accepted=1 reason=accepted bidirectional loop
+loop=16->80 accepted=1 reason=accepted bidirectional loop
+loop=53->81 accepted=1 reason=accepted bidirectional loop
+loop=17->82 accepted=1 reason=accepted bidirectional loop
+loop=72->83 accepted=1 reason=accepted bidirectional loop
+loop=41->84 accepted=1 reason=accepted bidirectional loop
+loop=56->85 accepted=1 reason=accepted bidirectional loop
+loop=8->86 accepted=1 reason=accepted bidirectional loop
+loop=59->87 accepted=1 reason=accepted bidirectional loop
+loop=18->88 accepted=1 reason=accepted bidirectional loop
+loop=35->89 accepted=1 reason=accepted bidirectional loop
+loop=38->90 accepted=1 reason=accepted bidirectional loop
+loop=60->91 accepted=1 reason=accepted bidirectional loop
+loop=68->92 accepted=1 reason=accepted bidirectional loop
+loop=32->93 accepted=1 reason=accepted bidirectional loop
+loop=62->94 accepted=1 reason=accepted bidirectional loop
+loop=41->95 accepted=1 reason=accepted bidirectional loop
+loop=33->96 accepted=1 reason=accepted bidirectional loop
+loop=90->97 accepted=1 reason=accepted bidirectional loop
+loop=53->98 accepted=1 reason=accepted bidirectional loop
+loop=35->99 accepted=1 reason=accepted bidirectional loop
+loop=18->100 accepted=1 reason=accepted bidirectional loop
+loop=16->101 accepted=1 reason=accepted bidirectional loop
+loop=26->102 accepted=1 reason=accepted bidirectional loop
+loop=62->103 accepted=1 reason=accepted bidirectional loop
+loop=26->104 accepted=1 reason=accepted bidirectional loop
+loop=76->105 accepted=1 reason=accepted bidirectional loop
+loop=67->106 accepted=1 reason=accepted bidirectional loop
+loop=71->107 accepted=1 reason=accepted bidirectional loop
+loop=45->108 accepted=1 reason=accepted bidirectional loop
+loop=44->109 accepted=1 reason=accepted bidirectional loop
+loop=43->110 accepted=1 reason=accepted bidirectional loop
+loop=20->111 accepted=1 reason=accepted bidirectional loop
+loop=30->112 accepted=1 reason=accepted bidirectional loop
+loop=58->113 accepted=1 reason=accepted bidirectional loop
+loop=4->114 accepted=1 reason=accepted bidirectional loop
+loop=17->115 accepted=1 reason=accepted bidirectional loop
+loop=106->116 accepted=1 reason=accepted bidirectional loop
+loop=0->117 accepted=1 reason=accepted bidirectional loop
+loop=10->118 accepted=1 reason=accepted bidirectional loop
+loop=73->119 accepted=1 reason=accepted bidirectional loop
+loop=14->120 accepted=1 reason=accepted bidirectional loop
+loop=58->121 accepted=1 reason=accepted bidirectional loop
+loop=2->122 accepted=1 reason=accepted bidirectional loop
+loop=94->123 accepted=1 reason=accepted bidirectional loop
+loop=81->124 accepted=1 reason=accepted bidirectional loop
+loop=29->125 accepted=1 reason=accepted bidirectional loop
+loop=34->126 accepted=1 reason=accepted bidirectional loop
+loop=53->127 accepted=1 reason=accepted bidirectional loop
+loop=84->128 accepted=1 reason=accepted bidirectional loop
+loop=33->129 accepted=1 reason=accepted bidirectional loop
+loop=62->130 accepted=1 reason=accepted bidirectional loop
+loop=114->131 accepted=1 reason=accepted bidirectional loop
+loop=112->132 accepted=1 reason=accepted bidirectional loop
+loop=58->133 accepted=1 reason=accepted bidirectional loop
+loop=88->134 accepted=1 reason=accepted bidirectional loop
+loop=29->135 accepted=1 reason=accepted bidirectional loop
+loop=71->136 accepted=1 reason=accepted bidirectional loop
+loop=112->137 accepted=1 reason=accepted bidirectional loop
+loop=46->138 accepted=1 reason=accepted bidirectional loop
+loop=118->139 accepted=1 reason=accepted bidirectional loop
+loop=39->140 accepted=1 reason=accepted bidirectional loop
+loop=51->141 accepted=1 reason=accepted bidirectional loop
+loop=51->142 accepted=1 reason=accepted bidirectional loop
+loop=96->143 accepted=1 reason=accepted bidirectional loop
+loop=96->144 accepted=1 reason=accepted bidirectional loop
+loop=12->145 accepted=1 reason=accepted bidirectional loop
+loop=129->146 accepted=1 reason=accepted bidirectional loop
+loop=96->147 accepted=1 reason=accepted bidirectional loop
+loop=143->148 accepted=1 reason=accepted bidirectional loop
+loop=144->149 accepted=1 reason=accepted bidirectional loop
+loop=144->150 accepted=1 reason=accepted bidirectional loop
+loop=144->151 accepted=1 reason=accepted bidirectional loop
+loop=145->152 accepted=1 reason=accepted bidirectional loop
+loop=148->153 accepted=1 reason=accepted bidirectional loop
+loop=149->154 accepted=1 reason=accepted bidirectional loop
+loop=148->155 accepted=1 reason=accepted bidirectional loop
+loop=149->156 accepted=1 reason=accepted bidirectional loop
+loop=149->157 accepted=1 reason=accepted bidirectional loop
+loop=148->158 accepted=1 reason=accepted bidirectional loop
+loop=152->159 accepted=1 reason=accepted bidirectional loop
+resources keyframes=160 peak_rss_kib=127116 cpu_s=622.814 wall_s=31.1048
+PASS actual VGICP + GTSAM adjacent graph; error=5.48117->0.0320378 rebuilt_voxels=83229 output="/root/adam_nav_submap_20261022/submap_160"

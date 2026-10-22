@@ -1,0 +1,46 @@
+{
+  "scope": "recorded odom alignment; not GICP result, truth or admission gate",
+  "source_stamp_ns": 1792671158936748504,
+  "target_stamp_ns": 1792671158337074279,
+  "pair_forward": {
+    "target_points": 17642,
+    "source_points": 18117,
+    "nn_fraction_within_0_5m": 0.9220621515703483,
+    "nn_rmse_within_0_5m": 0.14973297118992906,
+    "nn_distance_p50_p95_m": [
+      0.13814317538221862,
+      0.6918304109131939
+    ],
+    "locally_planar_fraction_of_neighbors": 0.27889853337324155,
+    "local_plane_normal_rmse_m": 0.0812417684073612
+  },
+  "pair_reverse": {
+    "target_points": 18117,
+    "source_points": 17642,
+    "nn_fraction_within_0_5m": 0.9682575671692552,
+    "nn_rmse_within_0_5m": 0.10203005801651467,
+    "nn_distance_p50_p95_m": [
+      0.06075890364325029,
+      0.3239961231792751
+    ],
+    "locally_planar_fraction_of_neighbors": 0.2124458494321508,
+    "local_plane_normal_rmse_m": 0.0454701009136482
+  },
+  "history_ids": [
+    137,
+    138,
+    139
+  ],
+  "history_forward": {
+    "target_points": 53721,
+    "source_points": 18117,
+    "nn_fraction_within_0_5m": 0.9517580173317878,
+    "nn_rmse_within_0_5m": 0.13491912215341173,
+    "nn_distance_p50_p95_m": [
+      0.12027287077828228,
+      0.48891047712752117
+    ],
+    "locally_planar_fraction_of_neighbors": 0.24746273850258077,
+    "local_plane_normal_rmse_m": 0.07922759933582356
+  }
+}

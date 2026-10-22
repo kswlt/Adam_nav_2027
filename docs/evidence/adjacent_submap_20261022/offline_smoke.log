@@ -1,0 +1,2 @@
+Retained native-filesystem fixture: /tmp/offline_mapping_6xcc4no7
+PASS actual VGICP + GTSAM archive graph: pose errors=[7.831730325834911e-23, 7.561047760773505e-05, 0.00015119400279735109, 0.0002107751097584309, 0.0002729543106469112, 0.000238098332263579], graph error=3.789378121142625->7.385051830249918e-30; original-cloud map reconstruction, immutable inputs, no-overwrite and malformed/nonoverlap refusal; evidence=/tmp/offline_mapping_6xcc4no7
