@@ -1,6 +1,6 @@
 schema_version: 1
 status: user_confirmed_geometry
-source: user_confirmation_20261020
+source: user_correction_20261022_yaw_axis_to_lidar_left_16cm
 field_precision_verified: false
 units: metres
 footprint:
@@ -11,8 +11,22 @@ footprint:
   polygon: [[0.25, 0.25], [-0.25, 0.25], [-0.25, -0.25], [0.25, -0.25]]
 mount:
   sensor_moves_with_yaw: true
-  yaw_axis_offset_from_vehicle_center_xy: [0.0, 0.16]
-  lidar_coaxial_with_yaw: true
+  # Previous C->G interpretation was incorrect. Do not invent this translation.
+  yaw_axis_offset_from_vehicle_center_xy: null
+  lidar_coaxial_with_yaw: false
+  gimbal_axis_to_lidar_xy: [0.0, 0.16]
+  # Pick the point on the upright yaw axis at the LiDAR origin's height.
+  # z=0 here defines that axis point; it is NOT a measured yaw-base height.
+  axis_reference: point_on_yaw_axis_at_lidar_height
+  # User approved this recording fit for debugging; do not label it field measured.
+  axis_to_lidar_at_reference_height: [0.015293518836158204, 0.15267217555738066, 0.0]
+  horizontal_geometry_user_confirmed: true
+  reference_geometry_source: recording_fit_user_approved_20261022
+  reference_geometry_verified: false
+  reference_fit_debug_approved: true
+  fit_source_run: run_20261021_202408
+  fit_selection: abs_lio_yaw_rate_above_0.2_rad_s
+  reference_calibration_id: vehicle164_yaw_axis_fit153cm_debug_v3
   chassis_top_above_ground: 0.20
   lidar_origin_above_chassis_top: 0.05
   nominal_lidar_origin_above_ground: 0.25

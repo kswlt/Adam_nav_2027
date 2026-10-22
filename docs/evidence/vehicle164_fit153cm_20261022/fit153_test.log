@@ -1,0 +1,170 @@
+Starting >>> rm_nav_frames
+Finished <<< rm_nav_frames [0.16s]
+Starting >>> rm_nav_bringup
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_bringup/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_bringup/CTestConfiguration.ini
+   Site: DESKTOP-DK9MPIO
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261022-0036 - Experimental
+UpdateCTestConfiguration  from :/root/adam_nav_bugfix_20261022/build/rm_nav_bringup/CTestConfiguration.ini
+Parse Config file:/root/adam_nav_bugfix_20261022/build/rm_nav_bringup/CTestConfiguration.ini
+Test project /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+      Start  1: nav_supervisor_test
+
+1: Test command: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup/nav_supervisor_test
+1: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+1: Test timeout computed to be: 10000000
+ 1/11 Test  #1: nav_supervisor_test ..............   Passed    0.00 sec
+test 2
+      Start  2: ros2_control_input_test
+
+2: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/test/ros2_control_input_test.py" "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/scripts/ros2_control_input.py"
+2: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+2: Test timeout computed to be: 25
+2: PASS real ROS controller input: degree/radian adapter, true feedback prerequisite, independent lease expiry
+ 2/11 Test  #2: ros2_control_input_test ..........   Passed    3.13 sec
+test 3
+      Start  3: lio_continuity_test
+
+3: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/test/lio_continuity_test.py"
+3: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+3: Test timeout computed to be: 10000000
+3: ...........
+3: ----------------------------------------------------------------------
+3: Ran 11 tests in 0.002s
+3:
+3: OK
+ 3/11 Test  #3: lio_continuity_test ..............   Passed    0.04 sec
+test 4
+      Start  4: local_site_bundle_test
+
+4: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/test_local_site_bundle.py"
+4: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+4: Test timeout computed to be: 10000000
+4: test_local_site_never_claims_official_alignment (__main__.LocalSiteTest.test_local_site_never_claims_official_alignment) ... ok
+4: test_localization_only_without_free_space (__main__.LocalSiteTest.test_localization_only_without_free_space) ... ok
+4: test_missing_review_cannot_be_replaced_by_manifest_boolean (__main__.LocalSiteTest.test_missing_review_cannot_be_replaced_by_manifest_boolean) ... ok
+4: test_official_default_does_not_accept_local_alignment (__main__.LocalSiteTest.test_official_default_does_not_accept_local_alignment) ... ok
+4: test_session_coordinates_cannot_hide_arbitrary_alignment (__main__.LocalSiteTest.test_session_coordinates_cannot_hide_arbitrary_alignment) ... ok
+4: test_unreviewed_or_mismatched_masks_refused (__main__.LocalSiteTest.test_unreviewed_or_mismatched_masks_refused) ... ok
+4:
+4: ----------------------------------------------------------------------
+4: Ran 6 tests in 0.027s
+4:
+4: OK
+ 4/11 Test  #4: local_site_bundle_test ...........   Passed    0.13 sec
+test 5
+      Start  5: sensor_reference_math_test
+
+5: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/test/sensor_reference_math_test.py"
+5: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+5: Test timeout computed to be: 10000000
+5: ............
+5: ----------------------------------------------------------------------
+5: Ran 12 tests in 0.001s
+5:
+5: OK
+ 5/11 Test  #5: sensor_reference_math_test .......   Passed    0.04 sec
+test 6
+      Start  6: vehicle_164_geometry_test
+
+6: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/test/vehicle_164_geometry_test.py"
+6: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+6: Test timeout computed to be: 10000000
+6: ..
+6: ----------------------------------------------------------------------
+6: Ran 2 tests in 0.003s
+6:
+6: OK
+ 6/11 Test  #6: vehicle_164_geometry_test ........   Passed    0.05 sec
+test 7
+      Start  7: sensor_reference_ros_test
+
+7: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py"
+7: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+7: Environment variables:
+7:  ROS_DOMAIN_ID=201
+7:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+7: Test timeout computed to be: 45
+7: {"result": "PASS", "mode": "TEST_ONLY", "yaw_rotation": "PASS", "lio_timeout": "PASS", "raw_quality_failure": "PASS", "no_replay": "PASS", "bad_covariance": "PASS", "stale_source": "PASS", "angular_rejection": "PASS", "physical_publishers": 0, "chassis_tf_publishers": 0, "jump_latched_no_odom": true, "out_of_order_command": "PASS", "measured_axis_TEST_ONLY": false}
+ 7/11 Test  #7: sensor_reference_ros_test ........   Passed    8.26 sec
+test 8
+      Start  8: sensor_reference_axis_ros_test
+
+8: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/smoke_sensor_reference.py" "--axis-fixture"
+8: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+8: Environment variables:
+8:  ROS_DOMAIN_ID=207
+8:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+8: Test timeout computed to be: 45
+8: {"result": "PASS", "mode": "TEST_ONLY", "yaw_rotation": "PASS", "lio_timeout": "PASS", "raw_quality_failure": "PASS", "no_replay": "PASS", "bad_covariance": "PASS", "stale_source": "PASS", "angular_rejection": "PASS", "physical_publishers": 0, "chassis_tf_publishers": 0, "jump_latched_no_odom": true, "out_of_order_command": "PASS", "measured_axis_TEST_ONLY": true}
+ 8/11 Test  #8: sensor_reference_axis_ros_test ...   Passed    8.20 sec
+test 9
+      Start  9: sensor_heading_ros_test
+
+9: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/smoke_sensor_heading.py"
+9: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+9: Environment variables:
+9:  ROS_DOMAIN_ID=208
+9:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+9: Test timeout computed to be: 20
+9: {"result": "PASS", "mode": "TEST_ONLY", "lio_hz": 10, "sensor_yaw_rate_rad_s": 1.2, "world_velocity_error_p95_m_s": 1.3877787807814457e-16, "checked_samples": 95, "pose_loss_zero_output": true, "physical_publishers": 0}
+ 9/11 Test  #9: sensor_heading_ros_test ..........   Passed    4.25 sec
+test 10
+      Start 10: legacy_adam_launch_test
+
+10: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/test/legacy_adam_launch_test.py"
+10: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+10: Test timeout computed to be: 10000000
+10: .....
+10: ----------------------------------------------------------------------
+10: Ran 5 tests in 0.017s
+10:
+10: OK
+10/11 Test #10: legacy_adam_launch_test ..........   Passed    0.25 sec
+test 11
+      Start 11: legacy_adam_transport_ros_test
+
+11: Test command: /usr/bin/python3 "/root/adam_nav_bugfix_20261022/src/rm_nav_bringup/../../tools/smoke_legacy_adam_transport.py"
+11: Working Directory: /root/adam_nav_bugfix_20261022/build/rm_nav_bringup
+11: Environment variables:
+11:  ROS_DOMAIN_ID=206
+11:  ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+11: Test timeout computed to be: 65
+11: {
+[Processing: rm_nav_bringup]
+11:   "mode": "TEST_ONLY",
+11:   "physical_io": false,
+11:   "firmware_modified": false,
+11:   "observed_tx_hz": 49.907500241272636,
+11:   "passed": true,
+11:   "tx_bytes": 54,
+11:   "rx_bytes": 26,
+11:   "rotation_and_single_negation": true,
+11:   "contact_angle_not_required": true,
+11:   "cached_yaw_passthrough": true,
+11:   "global_cmd_vel_isolated": true,
+11:   "raw_quality_stop": true,
+11:   "rx_dropout_stop": true,
+11:   "permission_stop": true,
+11:   "lio_dropout_stop": true,
+11:   "command_timeout_stop": true,
+11:   "no_replay": true,
+11:   "full_chassis_stop": "NOT_VERIFIED"
+11: }
+11/11 Test #11: legacy_adam_transport_ros_test ...   Passed   13.05 sec
+
+100% tests passed, 0 tests failed out of 11
+
+Total Test time (real) =  37.40 sec
+Finished <<< rm_nav_bringup [41.1s]
+
+Summary: 2 packages finished [41.5s]

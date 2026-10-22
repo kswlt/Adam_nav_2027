@@ -2,8 +2,9 @@
 import math
 
 
-def reference_offset(imu_to_lidar, reference_point, axis_to_lidar, verified, calibration_id):
-    """Factory IMU->LiDAR plus measured LiDAR->axis, all in sensor axes.
+def reference_offset(imu_to_lidar, reference_point, axis_to_lidar, verified, calibration_id,
+                     fit_debug_approved=False):
+    """Factory IMU->LiDAR plus configured LiDAR->axis, all in sensor axes.
 
     Chassis->gimbal is deliberately not an input to this transformation.
     """
@@ -14,9 +15,11 @@ def reference_offset(imu_to_lidar, reference_point, axis_to_lidar, verified, cal
         if any(v != 0 for v in axis_to_lidar):
             raise ValueError('Nonzero axis geometry requires explicit gimbal_axis mode')
         return tuple(imu_to_lidar)
-    if (reference_point != 'gimbal_axis' or not verified or not calibration_id.strip() or
+    if (reference_point != 'gimbal_axis' or not (verified or fit_debug_approved) or
+            (verified and fit_debug_approved) or
+            (fit_debug_approved and 'debug' not in calibration_id.lower()) or not calibration_id.strip() or
             calibration_id == 'vehicle164_sensor_axis_factory_v1'):
-        raise ValueError('gimbal_axis requires measured geometry and a distinct calibration_id')
+        raise ValueError('gimbal_axis requires measured geometry or approved fit-debug geometry with a distinct ID')
     return tuple(a-b for a,b in zip(imu_to_lidar, axis_to_lidar))
 
 
@@ -88,7 +91,7 @@ def sensor_velocity(vx, vy, sensor_yaw):
     return c*vx+s*vy, -s*vx+c*vy
 
 
-def spinning_radius(length=.5, width=.5, offset_y=.16, margin=.05):
+def spinning_radius(length=.5, width=.5, *, offset_y, margin=.05):
     return math.hypot(length/2, width/2+abs(offset_y))+margin
 
 

@@ -28,10 +28,12 @@ class SensorReference(Node):
             raise ValueError('Invalid factory geometry/timeout')
         self.reference_point = self.declare_parameter('reference_point', 'lidar_center').value
         self.calibration_id = self.declare_parameter('calibration_id', 'vehicle164_sensor_axis_factory_v1').value
+        self.geometry_verified = self.declare_parameter('reference_geometry_verified', False).value
+        self.fit_debug_approved = self.declare_parameter('reference_fit_debug_approved', False).value
         self.reference_offset = reference_offset(
             self.offset, self.reference_point,
             self.declare_parameter('gimbal_axis_to_lidar', [0.,0.,0.]).value,
-            self.declare_parameter('reference_geometry_verified', False).value, self.calibration_id)
+            self.geometry_verified, self.calibration_id, self.fit_debug_approved)
         self.heading = HeadingTracker(
             self.declare_parameter('heading_max_extrapolation', .12).value,
             self.declare_parameter('heading_max_correction', .25).value)
@@ -198,6 +200,8 @@ class SensorReference(Node):
         self.command_reason.publish(String(data=json.dumps({
             'mode': 'sensor_reference_shadow', 'active': active, 'physical_output': False,
             'velocity_point': self.reference_point, 'calibration_id': self.calibration_id,
+            'reference_geometry_verified': self.geometry_verified,
+            'reference_fit_debug_approved': self.fit_debug_approved,
             'axes': 'horizontal_sensor_yaw_xy',
             'heading_source_stamp_ns': self.last_stamp, 'heading_prediction_age_s': heading_age,
             'heading_prediction_correction_rad': heading_correction, 'heading_status': heading_reason,

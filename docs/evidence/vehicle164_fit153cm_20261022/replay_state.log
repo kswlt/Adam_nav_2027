@@ -1,0 +1,48 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-10-22-08-36-44-599422-DESKTOP-DK9MPIO-336
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [mid360_cloud_guard-1]: process started with pid [339]
+[INFO] [lio_input_guard-2]: process started with pid [340]
+[INFO] [sensor_reference-3]: process started with pid [341]
+[INFO] [lio_observation_adapter-4]: process started with pid [342]
+[INFO] [observation_submap-5]: process started with pid [343]
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [observation_submap-5]: sending signal 'SIGINT' to process[observation_submap-5]
+[INFO] [lio_observation_adapter-4]: sending signal 'SIGINT' to process[lio_observation_adapter-4]
+[INFO] [sensor_reference-3]: sending signal 'SIGINT' to process[sensor_reference-3]
+[INFO] [lio_input_guard-2]: sending signal 'SIGINT' to process[lio_input_guard-2]
+[INFO] [mid360_cloud_guard-1]: sending signal 'SIGINT' to process[mid360_cloud_guard-1]
+[mid360_cloud_guard-1] [INFO] [1792629468.319374021] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[lio_observation_adapter-4] [INFO] [1792629468.319363072] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[observation_submap-5] [INFO] [1792629468.319387519] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[observation_submap-5] [INFO] [1792629468.321731085] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[lio_observation_adapter-4] [INFO] [1792629468.322059363] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[sensor_reference-3] Traceback (most recent call last):
+[sensor_reference-3]   File "/root/adam_nav_bugfix_20261022/install/rm_nav_bringup/lib/rm_nav_bringup/sensor_reference", line 225, in <module>
+[mid360_cloud_guard-1] [INFO] [1792629468.322795034] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[sensor_reference-3]     main()
+[sensor_reference-3]   File "/root/adam_nav_bugfix_20261022/install/rm_nav_bringup/lib/rm_nav_bringup/sensor_reference", line 219, in main
+[sensor_reference-3]     node.destroy_node()
+[sensor_reference-3]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1956, in destroy_node
+[sensor_reference-3]     self.destroy_publisher(self._publishers[0])
+[sensor_reference-3]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1836, in destroy_publisher
+[sensor_reference-3]     publisher.destroy()
+[sensor_reference-3]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/publisher.py", line 105, in destroy
+[sensor_reference-3]     self.__publisher.destroy_when_not_in_use()
+[sensor_reference-3] KeyboardInterrupt
+[lio_input_guard-2] Traceback (most recent call last):
+[lio_input_guard-2]   File "/root/adam_nav_bugfix_20261022/install/rm_nav_bringup/lib/rm_nav_bringup/lio_input_guard", line 65, in <module>
+[lio_input_guard-2]     main()
+[lio_input_guard-2]   File "/root/adam_nav_bugfix_20261022/install/rm_nav_bringup/lib/rm_nav_bringup/lio_input_guard", line 59, in main
+[lio_input_guard-2]     node.destroy_node()
+[lio_input_guard-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1962, in destroy_node
+[lio_input_guard-2]     self.destroy_service(self._services[0])
+[lio_input_guard-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1886, in destroy_service
+[lio_input_guard-2]     service.destroy()
+[lio_input_guard-2]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/service.py", line 123, in destroy
+[lio_input_guard-2]     self.__service.destroy_when_not_in_use()
+[lio_input_guard-2] KeyboardInterrupt
+[ERROR] [sensor_reference-3]: process has died [pid 341, exit code -2, cmd '/root/adam_nav_bugfix_20261022/install/rm_nav_bringup/lib/rm_nav_bringup/sensor_reference --ros-args --params-file /tmp/launch_params_v2qcotmb --params-file /tmp/launch_params_g78box8y'].
+[ERROR] [lio_input_guard-2]: process has died [pid 340, exit code -2, cmd '/root/adam_nav_bugfix_20261022/install/rm_nav_bringup/lib/rm_nav_bringup/lio_input_guard --ros-args --params-file /tmp/launch_params_6_20jrbx'].
+[INFO] [mid360_cloud_guard-1]: process has finished cleanly [pid 339]
+[INFO] [observation_submap-5]: process has finished cleanly [pid 343]
+[INFO] [lio_observation_adapter-4]: process has finished cleanly [pid 342]

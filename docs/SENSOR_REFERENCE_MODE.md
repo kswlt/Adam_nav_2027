@@ -1,5 +1,7 @@
 # 雷达参考导航模式
 
+车辆164安装已更正为yaw轴→LiDAR左偏心16 cm；车辆专用入口采用轴心补偿，具体见 [安装更正](VEHICLE164_GEOMETRY_CORRECTION_20261022.md)。下表描述通用入口默认LiDAR中心模式，不代表车辆164的新参考点。
+
 2026-10-21 追加：独立的 [legacy_adam_transport](LEGACY_ADAM_REPLACEMENT.md) 可将影子xy接入原协议；默认仍关闭设备，不改此状态链的yaw/TF语义。
 
 本模式适用于全向底盘自旋、大 yaw 独立扫描、上位机暂时拿不到底盘实际朝向的分工。
@@ -50,7 +52,7 @@ Costmap 使用外切32边形覆盖半径0.54m整圆，Collision Monitor 再扩�
 
 ## 建图兼容
 
-新链使用 `vehicle164_sensor_axis_factory_v1` ID，只描述雷达轴参考和工厂内部外参，未宣称机械角已标定。
+通用默认链使用 `vehicle164_sensor_axis_factory_v1` ID，只描述LiDAR中心参考和工厂内部外参。车辆164专用入口现使用用户批准的拟合ID `vehicle164_yaw_axis_fit153cm_debug_v3`，与旧会话分开；两者均不代表机械编码器或完整底盘外参已经标定。
 新录制指定 `body_frame=nav_reference`；在线后端显式接受这一参考，默认仍为 `base_footprint`，不放宽旧 session 的参考一致性检查。
 使用新目录和新 session，不能修改旧固定安装档案的标定 ID 来混用。
 回环优化仅更新独立 `mapping_odom` 下的历史地图，不回写前端 odom 或伪造正式 map TF。

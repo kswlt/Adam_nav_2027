@@ -10,6 +10,13 @@ spec.loader.exec_module(geometry)
 
 
 class GeometryTest(unittest.TestCase):
+    def test_recorded_fit_requires_explicit_debug_approval_without_false_verification(self):
+        args=((0.,0.,0.),'gimbal_axis',(.015,.153,0.),False)
+        with self.assertRaises(ValueError):geometry.reference_offset(*args,'fit_debug')
+        with self.assertRaises(ValueError):geometry.reference_offset(*args,'production_v3',True)
+        self.assertEqual(geometry.reference_offset(*args,'fit_debug',True),(-.015,-.153,0.))
+        with self.assertRaises(ValueError):
+            geometry.reference_offset((0,0,0),'gimbal_axis',(.015,.153,0),True,'fit_debug',True)
     def test_measured_axis_compensation_preserves_stationary_pivot(self):
         factory = (-.011,-.02329,.04412)
         # Synthetic measured lever, never the recorded/production installation.
@@ -102,7 +109,8 @@ class GeometryTest(unittest.TestCase):
 
     def test_spinning_envelope(self):
         polygon = geometry.circle_polygon()
-        required = geometry.spinning_radius()
+        # Synthetic envelope example; actual C->G is not the reported G->L16cm.
+        required = geometry.spinning_radius(offset_y=.16)
         self.assertLess(required, .54)
         for i, a in enumerate(polygon):
             b = polygon[(i+1) % len(polygon)]

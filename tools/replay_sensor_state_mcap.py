@@ -7,11 +7,13 @@ This validates the state adapter, not a fresh run of the small_point_lio fronten
 """
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 import signal
 import subprocess
 import time
+import yaml
 
 import rclpy
 import rosbag2_py
@@ -26,19 +28,34 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bag',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--vehicle164-axis',action='store_true',help='Vehicle164 configured axis profile')
     args=parser.parse_args()
+    lever=(0.,0.,0.)
+    if args.vehicle164_axis:
+        profile=Path(__file__).parents[1]/'src/rm_nav_bringup/config/vehicle_164_geometry.yaml'
+        lever=yaml.safe_load(profile.read_text())['mount']['axis_to_lidar_at_reference_height']
     os.environ.setdefault('ROS_DOMAIN_ID','209')
     os.environ['ROS_AUTOMATIC_DISCOVERY_RANGE']='LOCALHOST'
     reader=rosbag2_py.SequentialReader()
     reader.open(rosbag2_py.StorageOptions(uri=str(args.bag),storage_id='mcap'),
                 rosbag2_py.ConverterOptions('',''))
-    reader.set_filter(rosbag2_py.StorageFilter(topics=['/sensor_reference/odom']))
+    reader.set_filter(rosbag2_py.StorageFilter(topics=['/sensor_reference/odom','/lio/sensor_odometry']))
     expected={}
+    rotations={}
     while reader.has_next():
-        _,data,_=reader.read_next()
+        topic,data,_=reader.read_next()
         value=deserialize_message(data,Odometry)
         stamp=value.header.stamp.sec*10**9+value.header.stamp.nanosec
-        expected[stamp]=(value.pose.pose.position.x,value.pose.pose.position.y)
+        if topic=='/lio/sensor_odometry':
+            q=value.pose.pose.orientation
+            a,b,c=lever
+            rotations[stamp]=((1-2*(q.y*q.y+q.z*q.z))*a+2*(q.x*q.y-q.z*q.w)*b+2*(q.x*q.z+q.y*q.w)*c,
+                              2*(q.x*q.y+q.z*q.w)*a+(1-2*(q.x*q.x+q.z*q.z))*b+2*(q.y*q.z-q.x*q.w)*c)
+        else:
+            expected[stamp]=(value.pose.pose.position.x,value.pose.pose.position.y)
+    if args.vehicle164_axis:
+        expected={t:(point[0]-rotations[t][0],point[1]-rotations[t][1])
+                  for t,point in expected.items() if t in rotations}
     if not expected:raise ValueError('Bag contains no recorded reference for comparison')
     rclpy.init()
     node=Node('recorded_sensor_state_audit',parameter_overrides=[Parameter('use_sim_time',value=True)])
@@ -58,7 +75,8 @@ def main():
         processes.append(process)
         return process
     try:
-        state=start('state',['ros2','launch','rm_nav_bringup','sensor_reference_state.launch.py',
+        launch='vehicle_164_sensor_reference_state.launch.py' if args.vehicle164_axis else 'sensor_reference_state.launch.py'
+        state=start('state',['ros2','launch','rm_nav_bringup',launch,
             'enable_lio:=false','use_sim_time:=true','lio_params_file:=/unused_lio_disabled.yaml'])
         until=time.monotonic()+3
         while time.monotonic()<until:
@@ -81,8 +99,13 @@ def main():
         assert any(health),'real pointcloud guard never allowed state'
         assert node.count_publishers('/cmd_vel')==node.count_publishers('/cmd_yaw_angle')==0
         result={'result':'PASS','scope':'real MCAP state-adapter replay, not frontend rerun',
+                'reference_mode':'vehicle164_configured_axis' if args.vehicle164_axis else 'recorded_lidar_center',
+                'axis_to_lidar_m':lever,
                 'recorded_samples':len(expected),'matched_samples':len(common),
                 'max_xy_difference_m':error,'real_cloud_health_observed':True,'physical_output':False}
+        points=[measured[t] for t in sorted(common)]
+        result['horizontal_max_from_first_matched_m']=max(math.dist(p,points[0]) for p in points)
+        result['horizontal_end_from_first_matched_m']=math.dist(points[-1],points[0])
         (args.output/'result.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps(result),flush=True)
     finally:

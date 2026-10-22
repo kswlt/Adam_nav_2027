@@ -1,5 +1,7 @@
 # Adam_nav_2027 使用说明
 
+**安装关系更正（2026-10-22）：左16 cm指yaw轴→雷达偏心，不是底盘中心→yaw轴。** 按用户要求，车辆专用入口使用录包拟合值：前1.53 cm、左15.27 cm，半径约15.34 cm，显式标为拟合调试配置。建图/录制使用新ID和新会话，原始点云不做反向平移。见 [配置与使用方法](docs/VEHICLE164_GEOMETRY_CORRECTION_20261022.md)。ASUS尚未部署。
+
 **2026-10-22软件修复：** 已修复旋转时使用旧LIO朝向换算当前速度、旧速度指令覆盖新指令的问题，增加显式实测轴心参考模式。WSL Jazzy全14包构建，61项测试0失败/1跳过；真实MCAP匹配1170帧，默认参考位置保持一致。ASUS尚未部署；15.3cm拟合未冒充实测外参。配置、验证命令和剩余问题见 [修复说明](docs/SENSOR_REFERENCE_FIX_20261022.md)。
 
 **2026-10-22离线分析：** 原始MCAP已完整备份到本机。两段旋转记录显示LiDAR相对某近似固定轴约15.3cm的重复圆轨迹；尚待实测确认安装关系，未写成生产外参。第三组仍有约79cm末尾距起点，不能据此确认导航精度。图表、复现命令与下一步修复约束见 [原始数据复核](docs/GIMBAL_OFFLINE_ANALYSIS_20261022.md)。ASUS当前不可用，本轮仅本机离线分析。
@@ -46,7 +48,7 @@ ROS Domain 是 **97**。这些路径属于当前独立部署，不要混用旧 `
 
 ## 2. 启动建图：按顺序执行
 
-当前已启动，可以直接连接Foxglove。以下后台启动命令会识别本会话已有实例，不会重复创建；先前台运行的实例需自行停止后再切换。
+ASUS当前离线，以下是部署后的操作流程，不表示现在已有组件运行。新的15.3cm拟合配置需要先构建/安装当前代码，并同步运行目录内的组件脚本；仅更新Git源码不会自动替换车上已有运行脚本。后台入口会识别本会话已有实例，不会重复创建。
 
 查询某个组件：`python3 "$NAV_RUNTIME/vehicle_session.py" status state`。日志和PID记录在 `$NAV_RUNTIME`。
 只停止新会话、保留原车程序：
@@ -73,7 +75,7 @@ python3 "$NAV_RUNTIME/vehicle_session.py" start driver
 python3 "$NAV_RUNTIME/vehicle_session.py" start state
 ```
 
-这个入口启动质量门、small_point_lio、传感器 TF、虚拟平面参考点及滚动子图；不启动底盘 EKF、机械 yaw TF 或串口。它使用新运行目录中的 `small_point_lio_live.yaml`，保留旧目录配置。
+当前源码中的state组件使用车辆专用 `vehicle_164_sensor_reference_state.launch.py`，启动质量门、small_point_lio、传感器TF、补偿偏心后的yaw轴平面参考点及滚动子图；不启动底盘EKF、机械yaw TF或串口。拟合配置为前1.53cm、左15.27cm，运行状态中保留debug标识。它使用新运行目录中的 `small_point_lio_live.yaml`，保留旧目录配置。
 
 **第三步：Foxglove**
 
@@ -103,7 +105,7 @@ python3 "$NAV_RUNTIME/vehicle_session.py" start capture
 ros2 topic echo /mapping/recorder_status std_msgs/msg/String --once
 ```
 
-当前交接时录制和online均未启动。执行上面的capture命令后，组件日志和 `/mapping/recorder_status` 会给出新 `session_...` 完整路径，新档案位于 `$NAV_RUNTIME/keyframes`。复制它，再开一个终端；不要使用旧失败会话：
+执行上面的capture命令后，组件日志和 `/mapping/recorder_status` 会给出新 `session_...` 完整路径。部署新组件脚本后，新档案位于 `$NAV_RUNTIME/keyframes_fit153cm_debug_v3`，使用新ID `vehicle164_yaw_axis_fit153cm_debug_v3`。复制它，再开一个终端；不要使用旧参考配置或旧失败会话：
 
 ```bash
 # 把下面路径换成 recorder_status 中的完整 session。

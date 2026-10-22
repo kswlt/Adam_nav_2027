@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "scope": "real MCAP state-adapter replay, not frontend rerun",
+  "reference_mode": "vehicle164_configured_axis",
+  "axis_to_lidar_m": [
+    0.015293518836158204,
+    0.15267217555738066,
+    0.0
+  ],
+  "recorded_samples": 1173,
+  "matched_samples": 1171,
+  "max_xy_difference_m": 5.551115123125783e-17,
+  "real_cloud_health_observed": true,
+  "physical_output": false,
+  "horizontal_max_from_first_matched_m": 0.0156835332953972,
+  "horizontal_end_from_first_matched_m": 0.004475685795109605
+}

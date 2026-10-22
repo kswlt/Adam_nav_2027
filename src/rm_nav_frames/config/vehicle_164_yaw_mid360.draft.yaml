@@ -1,10 +1,10 @@
 schema_version: 1
-bundle_id: vehicle164-yaw-user-geometry-20261020-pending-encoder
+bundle_id: vehicle164-yaw-fit153cm-debug-20261022-pending-chassis-offset
 status: draft
 sensor_mount: moving_big_gimbal_yaw
-source: user_confirmed_mount_geometry_and_pinned_factory_internal_extrinsics
+source: user_approved_recording_fit_and_pinned_factory_internal_extrinsics
 field_calibration_verified: false
-pending: [real_encoder_source, encoder_sign, encoder_zero_offset, encoder_timestamp_validation]
+pending: [chassis_to_yaw_translation, real_encoder_source, encoder_sign, encoder_zero_offset, encoder_timestamp_validation]
 # Chassis origin is defined at the planar vehicle centre, nominal ground
 # reference when level. The yaw reference plane is the chassis top at z=0.20.
 frames:
@@ -25,12 +25,12 @@ transforms:
     translation: [0.0, 0.0, 0.0]
     quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
   chassis_to_yaw_zero:
-    translation: [0.0, 0.16, 0.20]
+    # Unknown C->G: the reported left16cm is G->L, not this transform.
+    translation: null
     quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
-  # yaw_T_lidar = yaw_T_imu * imu_T_lidar = [0,0,0.05].
-  # The LiDAR measurement origin remains coaxial during yaw rotation.
+  # User-approved fit yaw_T_lidar xy; nominal height only. Bundle remains DRAFT.
   yaw_to_imu:
-    translation: [0.011, 0.02329, 0.00588]
+    translation: [0.026293518836158204, 0.17596217555738067, 0.00588]
     quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
   imu_to_lidar:
     translation: [-0.011, -0.02329, 0.04412]

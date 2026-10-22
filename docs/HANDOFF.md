@@ -1,5 +1,7 @@
 # Adam_nav_2027 开发交接文档
 
+**安装语义最新更正：** 用户明确16 cm是yaw轴→雷达偏心，随后批准使用录包拟合值。车辆入口 `vehicle_164_sensor_reference_state.launch.py` 当前使用前1.53cm、左15.27cm（半径15.34cm），参考点定义在yaw轴与LiDAR同高处；`reference_fit_debug_approved=true`、实测verified保持false。C→G未知，完整底盘标定仍draft。新ID为 `vehicle164_yaw_axis_fit153cm_debug_v3`，旧包络不再视为已验证。详见 [安装更正](VEHICLE164_GEOMETRY_CORRECTION_20261022.md)，未部署ASUS。
+
 **2026-10-22修复进展：** 新增 [旋转参考链修复报告](SENSOR_REFERENCE_FIX_20261022.md)。两帧真实LIO的有界yaw外推修复50Hz转换滞后，拒绝乱序速度；轴心模式要求实测几何和新标定ID。WSL新目录全14包构建，61 tests零失败/1跳过；实际MCAP状态链1170/1180帧匹配、XY差0；原Adam串口PTY通过。未部署ASUS、未改实车外参、未发实车命令。上一条“本机没有ROS环境”仅指Windows终端，现已使用本机WSL Jazzy完成软件回归。
 
 **2026-10-22最新：** 用户明确ASUS当前不在，改为本机重读完整MCAP/UART。新增 [旋转原始数据复核](GIMBAL_OFFLINE_ANALYSIS_20261022.md) 与可复现工具：两段旋转的LiDAR候选偏心15.34/15.27cm，未变更生产外参；第三组运动不能由该偏心单独解释。角度时间交集已纠正，第一份RX未覆盖后续明显旋转。新stamped角度消息的ASUS构建仍NOT TESTED。后文设备运行状态均为历史快照。
