@@ -6,6 +6,8 @@ RoboMaster 全向哨兵导航框架，运行于 **Ubuntu 24.04 / ROS 2 Jazzy / N
 
 完整迁移说明、依赖版本、测试证据和限制见 [Z-Localization 迁移记录](docs/Z_LOCALIZATION_MIGRATION.md)。**代码迁移不等于实车导航精度验收通过。**
 
+**2026-10-23 已在 ASUS 实际启动真实 MID-360 + ZLIO + 在线回环建图 + Foxglove。** 当前连接 `ws://192.168.1.164:8765`；累计地图看 `/backend_node/runtime_map`，固定坐标选 `map`。本次后台实例、实测结果、具体保存路径和退出命令见 [现场启动与使用指南](docs/Z_LIVE_START_20261023.md)。本次没有启动底盘运动输出。
+
 ## 先区分三个操作
 
 | 要做的事 | 启动什么 | 得到什么 |

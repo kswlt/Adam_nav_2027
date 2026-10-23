@@ -1,0 +1,72 @@
+{
+  "duration_s": 20.00090511799999,
+  "counts": {
+    "/lio/sensor_odometry": 3938,
+    "/lio/estimator_reason": 991,
+    "/lio/deskewed_odom_cloud": 199,
+    "/livox/imu": 3644,
+    "/livox/lidar": 181,
+    "/backend_node/localization_state": 182,
+    "/tf": 3790,
+    "/lio/input_reason": 906,
+    "/state/sensor_reference_reason": 903,
+    "/backend_node/runtime_map": 9
+  },
+  "last": {
+    "/lio/sensor_odometry": {
+      "frame": "odom",
+      "age_s": 0.002732515335083008
+    },
+    "/lio/estimator_reason": "ZLIO atomic IMU-frame deskewed cloud projected once into odom",
+    "/lio/deskewed_odom_cloud": {
+      "frame": "odom",
+      "age_s": 0.0072438716888427734,
+      "points": 2255
+    },
+    "/livox/imu": {
+      "frame": "livox_frame",
+      "age_s": 0.0007815361022949219
+    },
+    "/livox/lidar": {
+      "frame": "front_mid360",
+      "age_s": 0.10209131240844727,
+      "points": 20064
+    },
+    "/backend_node/localization_state": "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=208;stamp_ns=1792723613953927168;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom",
+    "/lio/input_reason": "continuous original inputs",
+    "/state/sensor_reference_reason": "real gimbal_axis state; chassis orientation unobserved",
+    "/backend_node/runtime_map": {
+      "frame": "map",
+      "age_s": 0.0015659332275390625,
+      "points": 9131
+    }
+  },
+  "parents": {
+    "odom": "map",
+    "front_mid360_imu": "odom",
+    "nav_reference": "odom",
+    "sensor_yaw_reference": "odom"
+  },
+  "age_s": {
+    "/lio/sensor_odometry": {
+      "median": 0.0015728473663330078,
+      "max": 0.3275563716888428
+    },
+    "/lio/deskewed_odom_cloud": {
+      "median": 0.007938385009765625,
+      "max": 0.27495384216308594
+    },
+    "/livox/imu": {
+      "median": 0.00038814544677734375,
+      "max": 0.002729654312133789
+    },
+    "/livox/lidar": {
+      "median": 0.10142207145690918,
+      "max": 0.10285544395446777
+    },
+    "/backend_node/runtime_map": {
+      "median": 0.0006952285766601562,
+      "max": 0.0015659332275390625
+    }
+  }
+}
