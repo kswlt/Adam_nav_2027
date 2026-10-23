@@ -1,0 +1,21 @@
+{
+  "bag": "latency_trace_1830",
+  "health_samples": {
+    "/state/sensor_reference_healthy": {
+      "true": 2915,
+      "false": 2
+    },
+    "/lio/input_healthy": {
+      "true": 2917,
+      "false": 0
+    },
+    "/localization/healthy": {
+      "true": 2790,
+      "false": 85
+    }
+  },
+  "lio_reasons": [
+    "continuous original inputs"
+  ],
+  "scope": "60s recording; not long-term or moving validation"
+}

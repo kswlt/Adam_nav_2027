@@ -1,0 +1,50 @@
+{
+  "telemetry": {
+    "/state/sensor_reference_reason": {
+      "text": "unhealthy/stale: real gimbal_axis state; chassis orientation unobserved",
+      "received": 1792751683.9907577,
+      "received_monotonic": 18163.038737844,
+      "age_s": 0.014166141001624055
+    },
+    "/state/sensor_reference_healthy": {
+      "text": "false",
+      "value": false,
+      "received": 1792751683.9905484,
+      "received_monotonic": 18163.038529281,
+      "age_s": 0.01437645700207213
+    },
+    "/localization/reason": {
+      "text": "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=6;pose_revision=1139;stamp_ns=1792751560761362432;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.0871534/6, p=0.999987",
+      "received": 1792751684.000411,
+      "received_monotonic": 18163.048391675,
+      "age_s": 0.004514908996497979
+    },
+    "/localization/healthy": {
+      "text": "false",
+      "value": false,
+      "received": 1792751684.0004547,
+      "received_monotonic": 18163.048434802,
+      "age_s": 0.00447231200087117
+    },
+    "/lio/input_reason": {
+      "text": "LIO input source age invalid: stream=imu age_s=0.334156 stamp_s=1792751560.849451542 now_s=1792751561.183607578 limit_s=0.250000; restart state and start a new mapping session",
+      "received": 1792751684.0007782,
+      "received_monotonic": 18163.048758711,
+      "age_s": 0.004149152999161743
+    },
+    "/lio/input_healthy": {
+      "text": "false",
+      "value": false,
+      "received": 1792751684.000482,
+      "received_monotonic": 18163.048462393,
+      "age_s": 0.0044460660028562415
+    },
+    "/backend_node/localization_state": {
+      "text": "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=6;pose_revision=1139;stamp_ns=1792751560761362432;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.0871534/6, p=0.999987",
+      "received": 1792751560.7700155,
+      "received_monotonic": 18039.817996395,
+      "age_s": 123.2349129480026
+    }
+  },
+  "physical_output": false
+}

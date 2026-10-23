@@ -121,3 +121,37 @@ ASUS执行：python3 -m unittest discover -s tools/z_operator -p 'test_*.py' -v�
 
 当前仍阻塞：持续原始数据记录并复现延迟、定位稳定恢复、真实目标路径与影子速度验收、
 新Z定位链实车闭环、故障恢复。物理输出false。操作台重启恢复，ROS实例保持原有故障状态以留证。
+
+
+## 18:23后持续复查：轨迹限频、原始记录和真实规划拒绝
+
+代码发现foxglove_trace_publisher在每次高频Odometry回调中序列化整个历史Path，最多5000点。
+改为源时间10Hz采样，5Hz定时序列化，只有新接受点才发布；维持有限长度、原始坐标/时间和重复消息拒绝。
+不改变LIO、TF、规划或控制数据。实机进程CPU生命周期平均读数旧约40.8%、新约28.7%，
+两个读数负载/生命周期不同，不构成受控性能基准，不据此宣称延迟根因修复。
+
+ASUS首次colcon测试失败：Windows上传导致脚本CRLF，shebang出现python3\r。归一LF后重建；
+新增高频测试最初按固定条数断言，测试spin实际耗时超过理想2秒，修正为按实际墙钟限制5Hz。
+最终测试结果见本轮回报；失败输出在ASUS CTest日志保留。新测试覆盖400次高频输入、10Hz采样、
+5Hz输出上限和停止输入后不重复发布。独立ROS_DOMAIN_ID=210，未给生产话题注入虚拟消息。
+
+60秒新原始MCAP：runtime_live_20261023/latency_trace_1830，约591MiB，包含原始IMU/点云、质量门、
+真实里程计和健康状态。报告latency_trace_1830_report.json：LIO健康2917 true/0 false，
+参考点2915 true/2 false，定位2790 true/85 false。不视为全链稳定通过。
+几分钟后再次出现IMU source age=0.334156s，定位锁停；见latency_recurrence_1832.json。
+说明本轮仅解决可视化发布量问题，传感器/DDS/回调时延根因仍未定位，不自动恢复旧会话。
+
+真实ComputePathToPose：当前map坐标约[0.0193,-0.1665]，目标[-0.8750,0.5250]，
+planner_id=GridBased/use_start=false。返回action status6、error_code205、path_points0；
+ASUS安装的nav2_msgs/action/ComputePathToPose.action确认205=START_OCCUPIED。
+只调用规划器，无速度/物理发布。静态地图车体中心格为0，周围不满足完整方形净空；
+自由格1972、分辨率0.05m，不能只依据中心自由就认为足迹可通过。
+随后尝试对比静态/全局代价图时定位再次过期而无当前TF，未完成分层归因。
+尚不能判断为静态地图、实时障碍层、车体回波或footprint参数中的哪一项，不清除真实障碍冒充修复。
+
+最终ASUS命令：colcon build --packages-select rm_nav_bringup --executor sequential；
+colcon test --packages-select rm_nav_bringup --executor sequential；colcon test-result --verbose。
+构建成功，包内16个CTest通过；工作区保存的汇总364 tests/0 errors/0 failures/1 skipped。
+本轮未重跑其他包，不把工作区汇总误称全量重测。
+原始591MiB MCAP与metadata已完整复制到本机桌面：
+新导航框架/实车原始数据备份/20261023_Z延迟排查/latency_trace_1830。

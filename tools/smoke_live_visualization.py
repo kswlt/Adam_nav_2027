@@ -67,8 +67,25 @@ def main():
         node.create_subscription(PointCloud2,'/visualization/live_map_preview',late.append,qos)
         spin(.4)
         require(late and late[-1].data==maps[-1].data,'late viewer could not receive retained snapshot')
+        # TEST_ONLY high-rate odometry must not serialize 5000-pose histories at input rate.
+        count_before=len(paths)
+        high_rate_started=time.monotonic()
+        for i in range(400):
+            m.header.stamp=node.get_clock().now().to_msg()
+            odom.publish(m)
+            spin(.005)
+        spin(.4)
+        high_rate_paths=len(paths)-count_before
+        high_rate_duration=time.monotonic()-high_rate_started
+        require(1<=high_rate_paths<=int(high_rate_duration/.2)+2,
+                'high-rate odometry caused an unbounded Path publish rate: '+str((high_rate_paths,high_rate_duration)))
+        stamps=[ns(p.header.stamp) for p in paths[-1].poses]
+        require(all(b-a>=100_000_000 for a,b in zip(stamps,stamps[1:])),
+                'trace retained samples above 10Hz')
+        stable=len(paths);spin(.5)
+        require(len(paths)==stable,'Path timer replayed cached history without new samples')
         report={'passed':True,'scope':'explicit synthetic inputs, real ROS visualization nodes',
-                'path_poses':len(paths[-1].poses),'preview_points':maps[-1].width,
+                'path_poses':len(paths[-1].poses),'high_rate_paths':high_rate_paths,'preview_points':maps[-1].width,
                 'evicted_voxels':states[-1]['evicted_voxels'],
                 'coarsening_count':states[-1]['coarsening_count'],
                 'retained_first_region':True,'late_subscriber_snapshot':True,
