@@ -6,6 +6,7 @@ from collections import deque
 import fcntl
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import math
 import os
 from pathlib import Path
 import secrets
@@ -42,6 +43,16 @@ class Manager:
         self.lock = threading.Lock()
         self.job = {'busy': False, 'action': '', 'result': '尚未执行操作'}
         self.telemetry = {}
+        self.review = None
+        self.review_id = ''
+        cached_review = self.runtime/'operator_review_preview.json'
+        if cached_review.exists():
+            data = json.loads(cached_review.read_text())
+            cells = bytearray(base64.b64decode(data.pop('cells')))
+            if len(cells) != data['width']*data['height'] or len(cells)>4000000:
+                raise ValueError('Cached review grid is invalid')
+            self.review_id = data.pop('review_id')
+            self.review = {**data, '_cells':cells}
         self.mapping_output = self.procs.get('mapping', {}).get('output', '')
         if not self.mapping_output:
             for token in self.procs.get('mapping', {}).get('command', '').split():
@@ -134,10 +145,51 @@ class Manager:
     def status(self):
         return {'components': {c: {'running': self.alive(c), **self.procs.get(c, {})} for c in COMPONENTS},
                 'job': dict(self.job), 'mapping_output': self.mapping_output,
-                'maps': self.maps(), 'telemetry': dict(self.telemetry),
+                'maps': self.maps(), 'telemetry': {k: {**v, 'age_s': max(0.,time.monotonic()-v['received_monotonic'])
+                    if 'received_monotonic' in v else max(0.,time.time()-v['received'])} for k,v in self.telemetry.items()},
+                'server_time': time.time(),
+                'review_id': self.review_id,
                 'domain': os.environ.get('ROS_DOMAIN_ID', '98'), 'physical_output': False}
 
     def execute(self, action, data):
+        if action == 'prepare_review':
+            from map_review import prepare
+            native = Path(data.get('native', ''))
+            native.resolve(strict=True).relative_to(self.ws/'maps')
+            self.review = prepare(native, float(data.get('resolution',.05)),
+                                  float(data.get('min_z',-.10)), float(data.get('max_z',1.50)))
+            self.review_id = secrets.token_hex(12)
+            from map_review import public
+            cache = self.runtime/'operator_review_preview.json'
+            temp = cache.with_suffix('.tmp')
+            temp.write_text(json.dumps({**public(self.review),'review_id':self.review_id}))
+            temp.replace(cache)
+            return '检查图已生成：灰色未知、黑色障碍。请圈选实际确认可通行的区域；当前自由格仍为0。'
+        if action == 'publish_review':
+            from map_review import publish
+            if not self.review or data.get('review_id') != self.review_id:
+                raise ValueError('检查图已变化，请重新打开并圈选')
+            return '正式本地场地MapBundle：'+publish(self.review, data.get('polygons'),
+                                                       data.get('reviewer'), data.get('confirmed'))
+        if action == 'goal':
+            if not self.alive('navigation'):
+                raise ValueError('先启动影子导航，并等待定位健康')
+            health = self.telemetry.get('/localization/reason', {})
+            if time.monotonic()-health.get('received_monotonic',-math.inf)>3 or 'status=NORMAL;' not in health.get('text',''):
+                raise ValueError('尚未收到近期NORMAL定位状态')
+            x,y,yaw = (float(data.get(k,0)) for k in ('x','y','yaw'))
+            if not all(math.isfinite(v) and abs(v)<20000 for v in (x,y,yaw)):
+                raise ValueError('目标必须为有限的map坐标和弧度朝向')
+            request = {'goal': {'header': {'frame_id':'map'},'pose':{'position':{'x':x,'y':y},
+                        'orientation':{'z':math.sin(yaw/2),'w':math.cos(yaw/2)}}}}
+            command = ['bash','-c','source "$1"; shift; exec "$@"','z_operator',
+                       str(self.repo/'tools/z_environment.bash'),'ros2','service','call',
+                       '/nav/submit_goal','rm_nav_interfaces/srv/SubmitGoal',json.dumps(request)]
+            result = subprocess.run(command,cwd=self.repo,text=True,stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT,timeout=30)
+            if result.returncode or 'accepted=False' in result.stdout or 'accepted: false' in result.stdout:
+                raise RuntimeError(result.stdout[-8000:])
+            return result.stdout+'\n当前为影子导航，不启用物理串口。'
         if action == 'start_mapping':
             if any(self.alive(c) for c in ('mapping', 'state', 'navigation')):
                 raise ValueError('状态/建图/导航已运行。先保存并停止旧任务，再创建新地图')
@@ -268,7 +320,8 @@ def ros_observer(manager):
         node = rclpy.create_node('z_operator_observer')
         subs = []
         def update(topic, message):
-            manager.telemetry[topic] = {'text': message.data, 'received': time.time()}
+            manager.telemetry[topic] = {'text': message.data, 'received': time.time(),
+                                        'received_monotonic': time.monotonic()}
         for topic in ('/backend_node/localization_state', '/localization/reason', '/lio/input_reason', '/state/sensor_reference_reason'):
             subs.append(node.create_subscription(String, topic, lambda m, t=topic: update(t, m), qos_profile_sensor_data))
         rclpy.spin(node)
@@ -297,6 +350,7 @@ def make_handler(manager, token, terminals):
         def do_GET(self):
             url = urlsplit(self.path)
             static = {'/': ('index.html', 'text/html; charset=utf-8'),
+                      '/review.js': ('review.js', 'text/javascript'),
                       '/xterm.js': ('vendor/xterm.js', 'text/javascript'),
                       '/xterm.css': ('vendor/xterm.css', 'text/css')}
             if url.path in static:
@@ -314,6 +368,11 @@ def make_handler(manager, token, terminals):
                 query = parse_qs(url.query)
                 if url.path == '/api/status':
                     self.send(200, manager.status())
+                elif url.path == '/api/review':
+                    from map_review import public
+                    if not manager.review:
+                        raise ValueError('先生成检查图')
+                    self.send(200, {**public(manager.review), 'review_id':manager.review_id})
                 elif url.path == '/api/log':
                     component = query.get('component', ['mapping'])[0]
                     if component not in COMPONENTS:
@@ -339,7 +398,7 @@ def make_handler(manager, token, terminals):
                 return
             try:
                 size = int(self.headers.get('Content-Length', '0'))
-                if size < 0 or size > 32768:
+                if size < 0 or size > 65536:
                     raise ValueError('请求过大')
                 data = json.loads(self.rfile.read(size))
                 if self.path == '/api/action':

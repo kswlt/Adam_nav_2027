@@ -1,0 +1,27 @@
+{
+  "components": {
+    "driver": 3966,
+    "mapping": 11850,
+    "foxglove": 4270
+  },
+  "windows_minus_asus_s": 10.2600736618042,
+  "review_preserved": true,
+  "telemetry": {
+    "/localization/reason": {
+      "age_s": 0.0035870279998562182,
+      "text": "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=4729;stamp_ns=1792728589053822208;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom"
+    },
+    "/lio/input_reason": {
+      "age_s": 0.011709944999893196,
+      "text": "continuous original inputs"
+    },
+    "/state/sensor_reference_reason": {
+      "age_s": 0.014682329000606842,
+      "text": "unhealthy/stale: LIO pose motion exceeds physical continuity limits; explicit state restart required"
+    },
+    "/backend_node/localization_state": {
+      "age_s": 0.5888117190006597,
+      "text": "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=4729;stamp_ns=1792728589053822208;estimator_failure_count=0;last_estimator_failure=;reason=front-end trajectory started with map=odom"
+    }
+  }
+}

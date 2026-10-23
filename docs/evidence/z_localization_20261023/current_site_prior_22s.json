@@ -1,0 +1,105 @@
+{
+  "pipeline_pass": true,
+  "error": "",
+  "counts": {
+    "odom": 3849,
+    "cloud": 195,
+    "optimized_map": 1,
+    "reference": 3849,
+    "backend_pose": 3472
+  },
+  "bag": "/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/runtime_live_20261023/prior_test_raw_20261023",
+  "rate": 1.0,
+  "backend_states_tail": [
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=59;stamp_ns=1792727699953751040;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.117149/6, p=0.999968",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=59;stamp_ns=1792727700053850112;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.117149/6, p=0.999968",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=60;stamp_ns=1792727700154157824;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.117149/6, p=0.999968",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=60;stamp_ns=1792727700253769472;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.117149/6, p=0.999968",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=false;epoch=0;generation=2;pose_revision=61;stamp_ns=0;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.130284/6, p=0.999956",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=61;stamp_ns=1792727700354601984;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.130284/6, p=0.999956",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=61;stamp_ns=1792727700453850368;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.130284/6, p=0.999956",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=61;stamp_ns=1792727700573850368;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.130284/6, p=0.999956",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=62;stamp_ns=1792727700654636288;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.130284/6, p=0.999956",
+    "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=0;generation=2;pose_revision=62;stamp_ns=1792727700753658112;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.130284/6, p=0.999956"
+  ],
+  "reasons": {
+    "/sensors/front_mid360/cloud_reason": "accepted native scan; valid_points=7600; eigen_ratio=0.328705",
+    "/lio/input_reason": "continuous original inputs",
+    "/lio/estimator_reason": "ZLIO atomic IMU-frame deskewed cloud projected once into odom",
+    "/state/sensor_reference_reason": "real gimbal_axis state; chassis orientation unobserved"
+  },
+  "prior_map": "/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/maps/live_20261023",
+  "map_topic": "/backend_node/prior_map",
+  "last_raw_stamp_ns": 1792727700654500712,
+  "last_lio_stamp_ns": 1792727700781131450,
+  "tf_parent_sets": {
+    "front_mid360_imu": [
+      "odom"
+    ],
+    "nav_reference": [
+      "odom"
+    ],
+    "sensor_yaw_reference": [
+      "odom"
+    ],
+    "odom": [
+      "map"
+    ]
+  },
+  "max_estimated_displacement_m": 0.00928794251556404,
+  "sensor_z_span_m": 0.009183900208130383,
+  "max_reference_xy_displacement_m": 0.006061299137543921,
+  "peak_sampled_process_tree_rss_kib": 1016080,
+  "process_resources": {
+    "16389": {
+      "command": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 bag play /home/asus/nav_2027_vehicle_config_164/z_migration_20261023/runtime_live_20261023/prior_test_raw_20261023 --clock 100 --rate 1.0 --delay 2 --read-ahead-queue-size 20000 --topics /livox/lidar /livox/imu ",
+      "peak_rss_kib": 180484
+    },
+    "16242": {
+      "command": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup vehicle_164_sensor_reference_state.launch.py use_sim_time:=true ",
+      "peak_rss_kib": 41532
+    },
+    "16255": {
+      "command": "/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/install/rm_nav_localization/lib/rm_nav_localization/observation_submap --ros-args --params-file /tmp/launch_params_uq2i83eh --params-file /tmp/launch_params_0_o_16v_ -r /state/chassis_healthy:=/state/sensor_reference_healthy ",
+      "peak_rss_kib": 39760
+    },
+    "16254": {
+      "command": "/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/install/rm_nav_sensors/lib/rm_nav_sensors/lio_observation_adapter --ros-args --params-file /tmp/launch_params_d5oiojpm --params-file /tmp/launch_params_f_pkqv03 -r /state/chassis_healthy:=/state/sensor_reference_healthy ",
+      "peak_rss_kib": 37288
+    },
+    "16253": {
+      "command": "python3 /home/asus/nav_2027_vehicle_config_164/z_migration_20261023/install/rm_nav_bringup/lib/rm_nav_bringup/sensor_reference --ros-args --params-file /tmp/launch_params_diua936v --params-file /tmp/launch_params_25vtf81g ",
+      "peak_rss_kib": 78500
+    },
+    "16252": {
+      "command": "python3 /home/asus/nav_2027_vehicle_config_164/z_migration_20261023/install/rm_nav_bringup/lib/rm_nav_bringup/z_localization_bridge --ros-args --params-file /tmp/launch_params_8xa8mquv ",
+      "peak_rss_kib": 77432
+    },
+    "16251": {
+      "command": "/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/install/frontend/lib/frontend/zlio_node --ros-args -r __node:=zlio --params-file /tmp/launch_params_5u_m1mf0 ",
+      "peak_rss_kib": 62800
+    },
+    "16250": {
+      "command": "python3 /home/asus/nav_2027_vehicle_config_164/z_migration_20261023/install/rm_nav_bringup/lib/rm_nav_bringup/lio_input_guard --ros-args --params-file /tmp/launch_params_wbuob6r9 ",
+      "peak_rss_kib": 77200
+    },
+    "16249": {
+      "command": "/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/install/rm_nav_sensors/lib/rm_nav_sensors/mid360_cloud_guard --ros-args --params-file /tmp/launch_params_f4_8mc2c ",
+      "peak_rss_kib": 34132
+    },
+    "16241": {
+      "command": "/usr/bin/python3 /opt/ros/jazzy/bin/ros2 launch rm_nav_bringup z_localization_backend.launch.py use_sim_time:=true mode:=localization prior_map:=/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/maps/live_20261023 map_version:=live_20261023 ",
+      "peak_rss_kib": 41480
+    },
+    "16248": {
+      "command": "python3 /home/asus/nav_2027_vehicle_config_164/z_migration_20261023/install/rm_nav_bringup/lib/rm_nav_bringup/z_localization_bridge --ros-args -r __node:=z_localization_health --params-file /tmp/launch_params_m3l71kti ",
+      "peak_rss_kib": 76372
+    },
+    "16247": {
+      "command": "/home/asus/nav_2027_vehicle_config_164/z_migration_20261023/install/backend/lib/backend/backend_node --ros-args -r __node:=backend_node --params-file /tmp/launch_params_v9rlm4t1 ",
+      "peak_rss_kib": 277840
+    }
+  },
+  "accuracy": "NOT VERIFIED: no ground truth, do not interpret as drift acceptance",
+  "scope": "raw-only MCAP ZLIO/axis reference/online backend/map export; no serial/hardware motion"
+}

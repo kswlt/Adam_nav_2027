@@ -11,6 +11,7 @@ import tempfile
 import threading
 import time
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
@@ -44,6 +45,11 @@ class OperatorTest(unittest.TestCase):
             self.manager.stop('mapping')
             kill.assert_not_called()
 
+    def test_status_age_uses_server_monotonic_clock(self):
+        self.manager.telemetry['test']={'text':'sample','received':9999999999,'received_monotonic':10.}
+        with patch.object(server.time,'monotonic',return_value=12.):
+            self.assertEqual(self.manager.status()['telemetry']['test']['age_s'],2.)
+
     def test_bad_map_name_and_duplicate_do_not_start(self):
         with patch.object(self.manager, 'start') as start:
             for name in ('../escape', 'bad name', '$(x)', ''):
@@ -67,6 +73,21 @@ class OperatorTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.manager.execute('start_mapping', {'name': 'new'})
             stop.assert_not_called()
+
+    def test_goal_encodes_map_pose_and_reports_rejection(self):
+        self.manager.telemetry['/localization/reason']={'text':'status=NORMAL;',
+                                                        'received_monotonic':time.monotonic()}
+        with patch.object(self.manager,'alive',return_value=True), patch.object(server.subprocess,'run') as run:
+            run.return_value=SimpleNamespace(returncode=0,stdout='accepted=True')
+            self.manager.execute('goal',{'x':1.2,'y':-.4,'yaw':0})
+            command=run.call_args.args[0]
+            request=json.loads(command[-1])
+            self.assertEqual(request['goal']['header']['frame_id'],'map')
+            self.assertEqual(request['goal']['pose']['position'],{'x':1.2,'y':-.4})
+            self.assertEqual(request['goal']['pose']['orientation'],{'z':0.,'w':1.})
+            run.return_value=SimpleNamespace(returncode=0,stdout='accepted=False, reason=unhealthy')
+            with self.assertRaises(RuntimeError):
+                self.manager.execute('goal',{'x':0,'y':0})
 
     def test_http_auth_and_unknown_actions(self):
         http = ThreadingHTTPServer(('127.0.0.1', 0), server.make_handler(self.manager, 'secret', {}))
