@@ -27,6 +27,7 @@ def main():
     subscribe(Odometry, '/lio/sensor_odometry', 'odom', qos_profile_sensor_data)
     subscribe(Bool, '/lio/estimator_healthy', 'front')
     subscribe(Bool, '/localization/healthy', 'map')
+    subscribe(String, '/localization/reason', 'reason')
     session = node.create_publisher(FrontendSession, '/frontend/session', QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
     frames = node.create_publisher(FrontendFrame, '/frontend/frame', 10)
     predictions = node.create_publisher(FrontendOdometry, '/frontend/odometry', 10)
@@ -82,6 +83,8 @@ def main():
             end = time.monotonic()+.6
             while time.monotonic() < end: rclpy.spin_once(node, timeout_sec=.02)
             assert not observed['front'].data and not observed['map'].data, 'Stopped input heartbeat stayed healthy'
+            assert observed['reason'].data.startswith('status=UNHEALTHY;'), 'Expired backend still advertised NORMAL'
+            assert 'stale' in observed['reason'].data, 'Missing stale dependency diagnostics'
             print('TEST_ONLY Z adapter: transform, NORMAL, LOST, atomic mismatch, failed session, stale source, dropout PASS')
         except BaseException:
             log.seek(0); print(log.read()[-12000:]); raise

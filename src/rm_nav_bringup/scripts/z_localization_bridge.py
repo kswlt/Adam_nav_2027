@@ -165,7 +165,28 @@ class ZLocalizationBridge(Node):
                 self.state, self.mode, self.session.epoch if self.session else -1,
                 self.get_clock().now().nanoseconds, self.timeout)
         self.health_pub.publish(Bool(data=bool(ok)))
-        self.reason_pub.publish(String(data=self.reason))
+        # Do not repeatedly label stale backend text as a current NORMAL state.
+        # The unmodified backend diagnostic remains on its native topic.
+        if ok:
+            detail = self.reason
+        else:
+            faults = []
+            if not self.session_ok(): faults.append('session missing/failed/reset required')
+            if now < self.quarantine_until: faults.append('session initialization quarantine')
+            if not self.raw_ok: faults.append('LIO input health false')
+            if now-self.raw_at > self.timeout: faults.append('LIO input heartbeat stale')
+            if now-self.pose_at > self.timeout or not self.fresh(self.last_pose):
+                faults.append('pose missing/stale/invalid')
+            if self.role == 'frontend' and (now-self.frame_at > self.timeout or not self.fresh(self.last_frame)):
+                faults.append('atomic frame missing/stale/invalid')
+            if self.role == 'backend':
+                if now-self.state_at > self.timeout: faults.append('backend state stale')
+                elif not trusted_for_navigation(self.state, self.mode,
+                        self.session.epoch if self.session else -1,
+                        self.get_clock().now().nanoseconds, self.timeout):
+                    faults.append('backend trust rejected')
+            detail = 'status=UNHEALTHY;reason='+', '.join(faults)
+        self.reason_pub.publish(String(data=detail))
 
 
 def main():

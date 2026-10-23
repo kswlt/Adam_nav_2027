@@ -1,0 +1,44 @@
+{
+  "scope": "real_map_real_tf_planner_no_physical_output",
+  "map_near_robot_histogram": {
+    "100": 23,
+    "0": 146
+  },
+  "global_costmap_near_robot_histogram": {
+    "100": 23,
+    "99": 146
+  },
+  "robot_map_xy": [
+    0.015723241070924737,
+    -0.10619409707167964
+  ],
+  "current_clear": false,
+  "candidate_count": 1,
+  "resolution": 0.05000000074505806,
+  "map_origin": [
+    -17.1,
+    -11.3
+  ],
+  "free_cells": 1972,
+  "robot_cell_value": 0,
+  "nearest_free_m": 0.02096947096770807,
+  "free_bounds_xy": [
+    [
+      -2.2499997787177577,
+      -1.8499998591840274
+    ],
+    [
+      1.3000002741813645,
+      1.05000018402934
+    ]
+  ],
+  "goal_xy": [
+    -0.874999758228661,
+    0.5250001762062304
+  ],
+  "action_status": 6,
+  "error_code": 205,
+  "path_points": 0,
+  "path_xy": [],
+  "passed": false
+}

@@ -155,3 +155,34 @@ colcon test --packages-select rm_nav_bringup --executor sequential；colcon test
 本轮未重跑其他包，不把工作区汇总误称全量重测。
 原始591MiB MCAP与metadata已完整复制到本机桌面：
 新导航框架/实车原始数据备份/20261023_Z延迟排查/latency_trace_1830。
+
+
+## 18:35后：静态占用分层、现场确认、有效健康提示
+
+检查基线ba716cef5f4f3049abe2b906d701c6fceba550a9，fetch确认开发分支一致。
+静态/map在当前参考点周围约0.6m方形区域有23个100占用格和146个自由格；
+/global_costmap同区域23格100、146格99。即静态障碍已足以导致起点膨胀占用；
+不能断言实时代价层无附加影响。真实规划再次返回205 START_OCCUPIED。
+证据start_occupied_layer_comparison.json。PCD半径0.6m内179点，z约[-0.015,0.813]m，
+均位于当前障碍高度范围；见map_origin_obstacles.json。
+用户随后确认半米内有物体。因此本轮不清除占用、不缩小0.54m调试旋转包络来制造规划通过。
+C→G仍未知，当前包络尚未实测验收；应在场地开阔位置进行后续目标测试。
+
+新增只读tools/capture_live_input_latency.py，记录原始header、DDS发送/接收和回调时间，
+有界环形缓冲、等待真实健康后捕获故障前后数据；不发布ROS消息、不改变源时间和门限。
+首次误以Jazzy MessageInfo为对象，实际为dict而退出，保留首次证据；改为dict访问后真实运行180秒。
+后续运行观察到真实健康，但未捕获新的锁存故障(trigger=null)，不能宣称IMU延迟修复。
+max IMU age约228ms发生在发现启动时，其header到DDS source约227.8ms，DDS收到至回调约0.47ms；
+不能将这段启动积压当作此前334ms故障的根因。约2.7秒quality输出间隔包含受控state重启，
+不能算稳定运行断流。详见timing_capture_1837_summary.json；完整只读记录已备份本机数据目录。
+
+修复z_localization_bridge.py有效状态说明：健康false时发布status=UNHEALTHY及session、
+输入健康、心跳、pose、原子帧、后端信任/过期依赖；不再反复转发旧NORMAL作为有效状态。
+健康算法、时限和上游backend原生状态话题不变。ROS回归新增断流后reason必须UNHEALTHY且说明stale。
+ASUS：colcon build --packages-select rm_nav_bringup --executor sequential成功；
+colcon test --packages-select rm_nav_bringup --executor sequential通过16个CTest；
+colcon test-result --verbose工作区汇总364 tests、0 errors、0 failures、1 skipped。
+只重跑受影响包，其他包沿用已有测试结果。已安装新代码，活跃进程需下次state/navigation重启读取。
+当前不为更新提示打断已恢复的健康会话；本轮没有发送物理控制指令。
+
+后续仍需捕获真正延迟故障、在开阔位置复测规划/影子输出、完整实车到点与故障停车。
