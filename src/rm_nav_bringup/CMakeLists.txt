@@ -53,4 +53,6 @@ install(PROGRAMS scripts/legacy_adam_adapter.py DESTINATION lib/${PROJECT_NAME} 
 add_test(NAME legacy_adam_launch_test COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test/legacy_adam_launch_test.py)
 add_test(NAME legacy_adam_transport_ros_test COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../../tools/smoke_legacy_adam_transport.py)
 set_tests_properties(legacy_adam_transport_ros_test PROPERTIES TIMEOUT 65 ENVIRONMENT "ROS_DOMAIN_ID=206;ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST")
+add_test(NAME task_cancel_ros_test COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../../tools/smoke_task_cancel.py)
+set_tests_properties(task_cancel_ros_test PROPERTIES TIMEOUT 20 ENVIRONMENT "ROS_DOMAIN_ID=229;ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST")
 ament_package()

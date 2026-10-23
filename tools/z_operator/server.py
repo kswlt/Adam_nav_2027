@@ -31,6 +31,18 @@ def identity(pid):
         return None
 
 
+def livox_processes():
+    found = []
+    for path in Path('/proc').glob('[0-9]*/cmdline'):
+        try:
+            args = path.read_bytes().split(b'\0')
+            if args and Path(os.fsdecode(args[0])).name in ('livox_ros_driver2_node', 'livox_ros_driver_node'):
+                found.append(int(path.parent.name))
+        except (OSError, ValueError):
+            continue
+    return found
+
+
 class Manager:
     def __init__(self, workspace, runtime):
         self.ws = workspace.resolve()
@@ -106,6 +118,10 @@ class Manager:
             raise ValueError('未知组件')
         if self.alive(name):
             return f'{name}已经运行，未重复启动'
+        if name == 'driver':
+            occupied = livox_processes()
+            if occupied:
+                raise RuntimeError('已有Livox驱动运行，拒绝竞争设备；请先由操作者完成切换。PID='+str(occupied))
         log = self.runtime/(name+'.log')
         with log.open('ab') as stream:
             stream.write(f'\n--- operator start {time.ctime()} ---\n'.encode())
@@ -177,6 +193,17 @@ class Manager:
             temporary.replace(attempt)
             return '正式本地场地MapBundle：'+publish(self.review, data.get('polygons'),
                                                        data.get('reviewer'), data.get('confirmed'))
+        if action == 'cancel_task':
+            if not self.alive('navigation'):
+                raise ValueError('影子导航未运行')
+            command = ['bash','-c','source "$1"; shift; exec "$@"','z_operator',
+                       str(self.repo/'tools/z_environment.bash'),'ros2','service','call',
+                       '/nav/cancel_task','std_srvs/srv/Trigger','{}']
+            result = subprocess.run(command,cwd=self.repo,text=True,stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT,timeout=15)
+            if result.returncode or 'success=False' in result.stdout or 'success: false' in result.stdout:
+                raise RuntimeError(result.stdout[-8000:])
+            return result.stdout+'\n取消请求已返回；动作结束请看任务状态，不代表实车停车反馈。'
         if action == 'goal':
             if not self.alive('navigation'):
                 raise ValueError('先启动影子导航，并等待定位健康')
@@ -333,13 +360,20 @@ def ros_observer(manager):
         def update(topic, message):
             manager.telemetry[topic] = {'text': message.data, 'received': time.time(),
                                         'received_monotonic': time.monotonic()}
-        for topic in ('/backend_node/localization_state', '/localization/reason', '/lio/input_reason', '/state/sensor_reference_reason'):
+        for topic in ('/backend_node/localization_state', '/localization/reason', '/lio/input_reason', '/state/sensor_reference_reason', '/nav/task_status'):
             subs.append(node.create_subscription(String, topic, lambda m, t=topic: update(t, m), qos_profile_sensor_data))
         def update_health(topic, message):
             manager.telemetry[topic] = {'text': str(message.data).lower(), 'value': message.data,
                                        'received': time.time(), 'received_monotonic': time.monotonic()}
         for topic in ('/localization/healthy', '/state/sensor_reference_healthy', '/lio/input_healthy'):
             subs.append(node.create_subscription(Bool, topic, lambda m, t=topic: update_health(t, m), 10))
+        from geometry_msgs.msg import TwistStamped
+        def velocity(message):
+            v = message.twist
+            manager.telemetry['/nav/sensor_cmd_vel_shadow'] = {
+                'text': f'frame={message.header.frame_id}; vx={v.linear.x:.3f} m/s; vy={v.linear.y:.3f} m/s; wz={v.angular.z:.3f} rad/s',
+                'received': time.time(), 'received_monotonic': time.monotonic()}
+        subs.append(node.create_subscription(TwistStamped, '/nav/sensor_cmd_vel_shadow', velocity, qos_profile_sensor_data))
         rclpy.spin(node)
     except Exception as exc:
         manager.telemetry['observer'] = {'text': str(exc), 'received': time.time()}

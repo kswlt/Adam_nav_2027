@@ -107,6 +107,19 @@ class OperatorTest(unittest.TestCase):
                         with self.assertRaises(ValueError): self.manager.execute('goal',{'x':0,'y':0})
                         run.assert_not_called()
 
+    def test_external_driver_rejected_without_launch_or_stop(self):
+        with patch.object(self.manager,'alive',return_value=False), patch.object(server,'livox_processes',return_value=[123]), patch.object(server.subprocess,'Popen') as launch:
+            with self.assertRaises(RuntimeError): self.manager.start('driver','/real/config.json')
+            launch.assert_not_called()
+
+    def test_cancel_does_not_require_localization_health(self):
+        with patch.object(self.manager,'alive',return_value=True), patch.object(server.subprocess,'run') as run:
+            run.return_value=SimpleNamespace(returncode=0,stdout='success=True')
+            self.manager.execute('cancel_task',{})
+            self.assertIn('/nav/cancel_task',run.call_args.args[0])
+            run.return_value=SimpleNamespace(returncode=0,stdout='success=False')
+            with self.assertRaises(RuntimeError): self.manager.execute('cancel_task',{})
+
     def test_http_auth_and_unknown_actions(self):
         http = ThreadingHTTPServer(('127.0.0.1', 0), server.make_handler(self.manager, 'secret', {}))
         thread = threading.Thread(target=http.serve_forever, daemon=True)

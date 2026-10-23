@@ -7,7 +7,7 @@ reviewSection.innerHTML = `<h2>2a · 俯视检查与可通行区域</h2>
 <div class="row"><button id="finish_polygon">完成当前区域</button><button id="undo_vertex">撤销顶点</button><button id="clear_polygons">清空圈选</button><span id="polygon_count" class="muted"></span></div>
 <p class="muted">在图上依次点击至少3个顶点，再点“完成当前区域”；可圈多个区域。障碍格会保留。发布前确认真实场地、地面高度和障碍物，不能只凭图上颜色判断。</p>
 <div class="row"><input id="reviewer" placeholder="实际检查人的姓名/标识"><label><input style="min-width:0" type="checkbox" id="review_confirm">我已检查本次地图的可通行区域、地面高度和障碍物</label><button class="primary action" id="publish_review">确认并发布本地导航地图</button></div>
-<h2 style="margin-top:18px">2b · 影子导航目标</h2><div class="row"><label>map x(m) <input style="width:85px;min-width:0" id="goal_x" type="number" value="0" step="0.1"></label><label>map y(m) <input style="width:85px;min-width:0" id="goal_y" type="number" value="0" step="0.1"></label><label>yaw(rad) <input style="width:85px;min-width:0" id="goal_yaw" type="number" value="0" step="0.1"></label><button class="action" id="submit_goal">发送影子目标</button></div><p class="muted">先停止建图、启动正式地图的影子导航并等待健康。x/y是地图绝对位置，不是相对前进距离；此入口不打开物理串口。</p>`;
+<h2 style="margin-top:18px">2b · 影子导航目标</h2><div class="row"><label>map x(m) <input style="width:85px;min-width:0" id="goal_x" type="number" value="0" step="0.1"></label><label>map y(m) <input style="width:85px;min-width:0" id="goal_y" type="number" value="0" step="0.1"></label><label>yaw(rad) <input style="width:85px;min-width:0" id="goal_yaw" type="number" value="0" step="0.1"></label><button class="action" id="submit_goal">发送影子目标</button><button class="danger action" id="cancel_task">取消当前任务</button></div><p class="muted">先停止建图、启动正式地图的影子导航并等待健康。x/y是地图绝对位置，不是相对前进距离；此入口不打开物理串口。</p>`;
 el('logcomponent').closest('section').before(reviewSection);
 let reviewData = null, reviewPolygons = [], currentPolygon = [], baseImage = null;
 const canvas = el('review_canvas'), ctx = canvas.getContext('2d');
@@ -57,6 +57,7 @@ el('publish_review').onclick=()=>{
   if(!reviewData||currentPolygon.length||!reviewPolygons.length||!el('review_confirm').checked||!el('reviewer').value.trim()){el('result').textContent='先完成圈选、填写实际检查人并勾选检查确认';return;}
   action('publish_review',{review_id:reviewData.review_id,polygons:reviewPolygons,reviewer:el('reviewer').value,confirmed:true});
 };
+el('cancel_task').onclick=()=>action('cancel_task');
 el('submit_goal').onclick=()=>action('goal',{x:Number(el('goal_x').value),y:Number(el('goal_y').value),yaw:Number(el('goal_yaw').value)});
 let handledPublication='';
 setInterval(()=>{

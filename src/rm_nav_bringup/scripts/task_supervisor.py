@@ -13,6 +13,7 @@ from nav2_msgs.action import ComputePathToPose, NavigateToPose
 from rm_nav_interfaces.msg import RecoveryState
 from rm_nav_interfaces.srv import SubmitGoal, ResumeRecovery
 from std_msgs.msg import Bool, String
+from std_srvs.srv import Trigger
 
 
 class TaskSupervisor(Node):
@@ -42,6 +43,7 @@ class TaskSupervisor(Node):
         self.create_subscription(GoalStatusArray, '/navigate_to_pose/_action/status', self.goal_status,
                                  QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.create_service(SubmitGoal, '/nav/submit_goal', self.submit)
+        self.create_service(Trigger, '/nav/cancel_task', self.cancel_task)
         self.create_timer(0.05, self.tick)
 
     def health(self, msg):
@@ -76,6 +78,14 @@ class TaskSupervisor(Node):
         self.permission.publish(Bool(data=False))
         if self.navigation_handle is not None: self.navigation_handle.cancel_goal_async()
         if self.planner_handle is not None: self.planner_handle.cancel_goal_async()
+
+    def cancel_task(self, request, response):
+        # Revoke permission before asynchronous cancellation. Cancel only owned
+        # handles; delayed accept callbacks already reject a non-starting phase.
+        self.fail('operator cancellation requested; waiting for owned action termination')
+        response.success = True
+        response.message = 'Cancellation requested; motion permission revoked. Check task status for action termination.'
+        return response
 
     def submit(self, request, response):
         p, q = request.goal.pose.position, request.goal.pose.orientation
