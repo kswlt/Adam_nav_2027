@@ -1,0 +1,11 @@
+{
+  "name": "adam-z-operator",
+  "displayName": "Adam Z 操作台",
+  "publisher": "kswlt",
+  "version": "0.1.0",
+  "description": "Z建图、地图保存、影子导航与ASUS终端，使用本机SSH隧道",
+  "license": "Apache-2.0",
+  "main": "./dist/extension.js",
+  "scripts": {"build": "esbuild index.js --bundle --format=cjs --platform=browser --outfile=dist/extension.js"},
+  "devDependencies": {"esbuild": "0.28.2"}
+}

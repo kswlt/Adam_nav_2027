@@ -45,7 +45,14 @@
           "visible": true
         },
         "/backend_node/runtime_map": {
-          "visible": true
+          "visible": true,
+          "colorMode": "colormap",
+          "colorField": "z",
+          "colorMap": "turbo",
+          "minValue": -0.3,
+          "maxValue": 7.0,
+          "pointSize": 2,
+          "decayTime": 0
         }
       }
     },

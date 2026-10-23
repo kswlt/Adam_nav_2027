@@ -1,0 +1,14 @@
+{
+  "unauthenticated_denied": true,
+  "terminal_environment_ok": true,
+  "real_ros_status_received": true,
+  "component_pids_preserved": true,
+  "components": {
+    "driver": 3966,
+    "mapping": 4269,
+    "foxglove": 4270
+  },
+  "physical_output": false,
+  "map_save_or_mode_switch_executed": false,
+  "pass": true
+}

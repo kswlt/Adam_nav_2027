@@ -1,0 +1,90 @@
+{
+  "configById": {
+    "3D!scene": {
+      "followTf": "map",
+      "followMode": "follow-pose",
+      "scene": {
+        "enableStats": true,
+        "transforms": {
+          "showLabel": true,
+          "axisScale": 0.3,
+          "lineWidth": 1
+        }
+      },
+      "transforms": {
+        "frame:odom": {
+          "visible": true
+        },
+        "frame:nav_reference": {
+          "visible": true
+        },
+        "frame:sensor_yaw_reference": {
+          "visible": true
+        },
+        "frame:front_mid360_imu": {
+          "visible": true
+        },
+        "frame:front_mid360": {
+          "visible": true
+        }
+      },
+      "topics": {
+        "/livox/lidar": {
+          "visible": false
+        },
+        "/localization/lio_world_cloud": {
+          "visible": false
+        },
+        "/backend_node/optimized_path": {
+          "visible": true
+        },
+        "/lio/deskewed_odom_cloud": {
+          "visible": false
+        },
+        "/backend_node/loop_edges": {
+          "visible": true
+        },
+        "/backend_node/runtime_map": {
+          "visible": true,
+          "colorMode": "colormap",
+          "colorField": "z",
+          "colorMap": "turbo",
+          "minValue": -0.3,
+          "maxValue": 7.0,
+          "pointSize": 2,
+          "decayTime": 0
+        }
+      }
+    },
+    "RawMessages!tf": {
+      "topicPath": "/tf"
+    },
+    "RawMessages!odom": {
+      "topicPath": "/sensor_reference/odom"
+    },
+    "RawMessages!state": {
+      "topicPath": "/backend_node/localization_state"
+    },
+    "RawMessages!tracking": {
+      "topicPath": "/localization/reason"
+    },
+    "adam-z-operator.Adam Z \u64cd\u4f5c\u53f0!operator": {}
+  },
+  "globalVariables": {},
+  "userNodes": {},
+  "linkedGlobalVariables": [],
+  "playbackConfig": {
+    "speed": 1
+  },
+  "layout": {
+    "direction": "row",
+    "splitPercentage": 60,
+    "first": "3D!scene",
+    "second": {
+      "direction": "column",
+      "splitPercentage": 78,
+      "first": "adam-z-operator.Adam Z \u64cd\u4f5c\u53f0!operator",
+      "second": "RawMessages!state"
+    }
+  }
+}

@@ -14,3 +14,9 @@ __pycache__/
 .ros/
 *.bag
 *.mcap
+
+# Operator front-end generated dependencies and private runtime secrets
+node_modules/
+tools/z_operator/foxglove/dist/
+*.foxe
+operator_token
