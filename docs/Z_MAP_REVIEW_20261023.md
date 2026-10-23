@@ -91,3 +91,33 @@ ASUS操作台17项、既有MapBundle9项，全部通过。覆盖未知不变自�
 现有PCD障碍保留、未知区域保留和导航健康联锁继续生效。
 下一步依赖实际场地检查，不用假数据填充reviewer、编码器或停车反馈。
 提交/推送分支保持audit-p0-tf-costmap，未合并main；最终提交与远端状态见本轮回报。
+
+
+## 18时导航复查与操作台健康修复
+
+检查基线664280e43caf63d34f3e59d1329575f078d7fd53，修改前fetch确认远端开发分支一致；main未合并。
+此前人工圈选已经发布local_site地图，版本z-map-22b974023e5fb251，navigation_ready=true；
+不是官方坐标地图，terrain_traversability_verified=false。原始自交圈选和make_valid分段证据保留。
+
+恢复ASUS服务后首次点云间隔0.757236s触发0.5s联锁；等待驱动稳定并重新初始化后，
+实际观测定位NORMAL、两项健康true、bt_navigator active。随后IMU source age=0.330381s
+超过0.25s再次锁存失败，定位健康false。没有放宽门限，没有下发物理运动。
+后端旧NORMAL文本被桥接器重复发布，操作台原先仅检查该文本，不能反映真实导航许可。
+
+修复tools/z_operator/server.py：观察三个Bool健康心跳；目标入口要求localization、sensor_reference、
+LIO input全部true且单调接收年龄不超过1s。已有Supervisor联锁保留。旧NORMAL不再足以放行。
+兼容影响：旧操作台缺少健康发布者时明确拒绝目标。index.html保留API错误提示，避免轮询覆盖。
+实际发布请求先保存，原始用户圈选留档，不自动把非法区域扩展为自由空间。
+
+ASUS执行：python3 -m unittest discover -s tools/z_operator -p 'test_*.py' -v，18项全部通过。
+新增缺失/false/过期三个健康信号的9种回归情形。真实HTTP请求在NORMAL文本仍存在时
+被健康门拒绝，未调用运动服务，见operator_health_gate_live.json。
+本次仅操作台Python/HTML变更，未重跑colcon build/test；此前364 tests结果不算本次新测试。
+
+30秒只读探针观察：5332条IMU，年龄最大3.14ms，间隔最大8.64ms；原始云266条，年龄最大103.34ms；
+质量门输出274条，最大间隔400.74ms。观察窗口未发现大于20ms系统时钟跳变，网卡计数无丢包。
+原始云与质量门计数不同包含DDS发现及BEST_EFFORT接收差异，不能据此断言质量门复制或丢帧。
+证据input_timing_1818.json；仅为故障后30秒观察，未捕获此前330ms异常的根因，不能宣称修复传感器延迟。
+
+当前仍阻塞：持续原始数据记录并复现延迟、定位稳定恢复、真实目标路径与影子速度验收、
+新Z定位链实车闭环、故障恢复。物理输出false。操作台重启恢复，ROS实例保持原有故障状态以留证。

@@ -1,0 +1,33 @@
+{
+  "duration_s": 30,
+  "scope": "read_only_live_input_timing",
+  "streams": {
+    "guarded": {
+      "count": 274,
+      "age_max_s": 0.10535287857055664,
+      "age_median_s": 0.10256576538085938,
+      "gap_max_s": 0.40074251699843444
+    },
+    "imu": {
+      "count": 5332,
+      "age_max_s": 0.003139972686767578,
+      "age_median_s": 0.0004010200500488281,
+      "gap_max_s": 0.008643529999972088
+    },
+    "cloud": {
+      "count": 266,
+      "age_max_s": 0.10333824157714844,
+      "age_median_s": 0.10155069828033447,
+      "gap_max_s": 0.2020793399969989
+    }
+  },
+  "events": [
+    {
+      "stream": "guarded",
+      "age_s": 0.10279059410095215,
+      "arrival_gap_s": 0.40074251699843444,
+      "wall_s": 1792750820.1642118
+    }
+  ],
+  "wall_monotonic_jumps_s": []
+}

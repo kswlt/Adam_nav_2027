@@ -77,6 +77,8 @@ class OperatorTest(unittest.TestCase):
     def test_goal_encodes_map_pose_and_reports_rejection(self):
         self.manager.telemetry['/localization/reason']={'text':'status=NORMAL;',
                                                         'received_monotonic':time.monotonic()}
+        for topic in ('/localization/healthy','/state/sensor_reference_healthy','/lio/input_healthy'):
+            self.manager.telemetry[topic]={'value':True,'received_monotonic':time.monotonic()}
         with patch.object(self.manager,'alive',return_value=True), patch.object(server.subprocess,'run') as run:
             run.return_value=SimpleNamespace(returncode=0,stdout='accepted=True')
             self.manager.execute('goal',{'x':1.2,'y':-.4,'yaw':0})
@@ -88,6 +90,22 @@ class OperatorTest(unittest.TestCase):
             run.return_value=SimpleNamespace(returncode=0,stdout='accepted=False, reason=unhealthy')
             with self.assertRaises(RuntimeError):
                 self.manager.execute('goal',{'x':0,'y':0})
+
+    def test_normal_text_does_not_override_missing_false_or_stale_health(self):
+        topics=('/localization/healthy','/state/sensor_reference_healthy','/lio/input_healthy')
+        for rejected in topics:
+            for kind in ('missing','false','stale'):
+                with self.subTest(topic=rejected, kind=kind):
+                    self.manager.telemetry={'/localization/reason':{'text':'status=NORMAL;',
+                        'received_monotonic':time.monotonic()}}
+                    for topic in topics:
+                        self.manager.telemetry[topic]={'value':True,'received_monotonic':time.monotonic()}
+                    if kind=='missing': del self.manager.telemetry[rejected]
+                    elif kind=='false': self.manager.telemetry[rejected]['value']=False
+                    else: self.manager.telemetry[rejected]['received_monotonic']-=5
+                    with patch.object(self.manager,'alive',return_value=True), patch.object(server.subprocess,'run') as run:
+                        with self.assertRaises(ValueError): self.manager.execute('goal',{'x':0,'y':0})
+                        run.assert_not_called()
 
     def test_http_auth_and_unknown_actions(self):
         http = ThreadingHTTPServer(('127.0.0.1', 0), server.make_handler(self.manager, 'secret', {}))

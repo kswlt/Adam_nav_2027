@@ -169,6 +169,12 @@ class Manager:
             from map_review import publish
             if not self.review or data.get('review_id') != self.review_id:
                 raise ValueError('检查图已变化，请重新打开并圈选')
+            # Preserve the actual operator submission even if geometry validation
+            # fails; never replace it with an invented region after a reload.
+            attempt = self.runtime/'operator_review_submission.json'
+            temporary = attempt.with_suffix('.tmp')
+            temporary.write_text(json.dumps(data, ensure_ascii=False))
+            temporary.replace(attempt)
             return '正式本地场地MapBundle：'+publish(self.review, data.get('polygons'),
                                                        data.get('reviewer'), data.get('confirmed'))
         if action == 'goal':
@@ -177,6 +183,11 @@ class Manager:
             health = self.telemetry.get('/localization/reason', {})
             if time.monotonic()-health.get('received_monotonic',-math.inf)>3 or 'status=NORMAL;' not in health.get('text',''):
                 raise ValueError('尚未收到近期NORMAL定位状态')
+            for topic in ('/localization/healthy', '/state/sensor_reference_healthy', '/lio/input_healthy'):
+                sample = self.telemetry.get(topic, {})
+                if (sample.get('value') is not True or
+                        not 0 <= time.monotonic()-sample.get('received_monotonic', -math.inf) <= 1.):
+                    raise ValueError('导航健康未通过或心跳过期：'+topic)
             x,y,yaw = (float(data.get(k,0)) for k in ('x','y','yaw'))
             if not all(math.isfinite(v) and abs(v)<20000 for v in (x,y,yaw)):
                 raise ValueError('目标必须为有限的map坐标和弧度朝向')
@@ -313,7 +324,7 @@ def ros_observer(manager):
         import rclpy
         from rclpy.qos import qos_profile_sensor_data
         from rclpy.signals import SignalHandlerOptions
-        from std_msgs.msg import String
+        from std_msgs.msg import Bool, String
         # The HTTP process owns shutdown. ROS must not consume SIGTERM and leave
         # a dead observer with an orphaned listening HTTP socket.
         rclpy.init(signal_handler_options=SignalHandlerOptions.NO)
@@ -324,6 +335,11 @@ def ros_observer(manager):
                                         'received_monotonic': time.monotonic()}
         for topic in ('/backend_node/localization_state', '/localization/reason', '/lio/input_reason', '/state/sensor_reference_reason'):
             subs.append(node.create_subscription(String, topic, lambda m, t=topic: update(t, m), qos_profile_sensor_data))
+        def update_health(topic, message):
+            manager.telemetry[topic] = {'text': str(message.data).lower(), 'value': message.data,
+                                       'received': time.time(), 'received_monotonic': time.monotonic()}
+        for topic in ('/localization/healthy', '/state/sensor_reference_healthy', '/lio/input_healthy'):
+            subs.append(node.create_subscription(Bool, topic, lambda m, t=topic: update_health(t, m), 10))
         rclpy.spin(node)
     except Exception as exc:
         manager.telemetry['observer'] = {'text': str(exc), 'received': time.time()}

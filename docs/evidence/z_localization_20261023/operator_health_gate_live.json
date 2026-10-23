@@ -1,0 +1,50 @@
+{
+  "telemetry": {
+    "/state/sensor_reference_reason": {
+      "text": "unhealthy/stale: real gimbal_axis state; chassis orientation unobserved",
+      "received": 1792750917.820287,
+      "received_monotonic": 17396.868267713,
+      "age_s": 0.007019156000751536
+    },
+    "/state/sensor_reference_healthy": {
+      "text": "false",
+      "value": false,
+      "received": 1792750917.8203335,
+      "received_monotonic": 17396.868313763,
+      "age_s": 0.006974695999815594
+    },
+    "/localization/reason": {
+      "text": "status=NORMAL;pose_trusted=true;tf_frozen=false;tf_published=true;epoch=1;generation=8;pose_revision=255;stamp_ns=1792750611861833216;estimator_failure_count=0;last_estimator_failure=;reason=system global observation accepted: prior scan-to-map NIS=0.0844478/6, p=0.999988",
+      "received": 1792750917.8182309,
+      "received_monotonic": 17396.866211313,
+      "age_s": 0.009077857997908723
+    },
+    "/localization/healthy": {
+      "text": "false",
+      "value": false,
+      "received": 1792750917.8182917,
+      "received_monotonic": 17396.866272167,
+      "age_s": 0.009017562999360962
+    },
+    "/lio/input_reason": {
+      "text": "LIO input source age invalid: stream=imu age_s=0.330381 stamp_s=1792750611.900384903 now_s=1792750612.230765820 limit_s=0.250000; restart state and start a new mapping session",
+      "received": 1792750917.8177454,
+      "received_monotonic": 17396.865726597,
+      "age_s": 0.009563809999235673
+    },
+    "/lio/input_healthy": {
+      "text": "false",
+      "value": false,
+      "received": 1792750917.8178487,
+      "received_monotonic": 17396.865828977,
+      "age_s": 0.009461871999519644
+    }
+  },
+  "job": {
+    "busy": false,
+    "action": "goal",
+    "ok": false,
+    "result": "导航健康未通过或心跳过期：/localization/healthy"
+  },
+  "physical_output": false
+}
